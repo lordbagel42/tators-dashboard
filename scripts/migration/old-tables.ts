@@ -29,91 +29,91 @@ export const getOldTables = (DB: Client) => {
 			DB
 		),
 
-		DiscordAccount: new Table(
-			'discord_account',
-			z.object({
-				key: z.string(),
-				id: z.string(),
-				date: z.number()
-			}),
-			DB
-		),
+		// DiscordAccount: new Table(
+		// 	'discord_account',
+		// 	z.object({
+		// 		key: z.string(),
+		// 		id: z.string(),
+		// 		date: z.number()
+		// 	}),
+		// 	DB
+		// ),
 
-		Members: new Table(
-			'members',
-			z.object({
-				id: z.string(),
-				title: z.string(),
-				status: z.string(),
-				bio: z.union([z.string(), z.null()]).optional(),
-				resume: z.union([z.string(), z.null()]).optional(),
-				board: z.number().int()
-			}),
-			DB
-		),
+		// Members: new Table(
+		// 	'members',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		title: z.string(),
+		// 		status: z.string(),
+		// 		bio: z.union([z.string(), z.null()]).optional(),
+		// 		resume: z.union([z.string(), z.null()]).optional(),
+		// 		board: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
-		Roles: new Table(
-			'roles',
-			z.object({
-				id: z.string(),
-				name: z.string(),
-				description: z.union([z.string(), z.null()]).optional(),
-				rank: z.number().int()
-			}),
-			DB
-		),
+		// Roles: new Table(
+		// 	'roles',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		description: z.union([z.string(), z.null()]).optional(),
+		// 		rank: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
-		AccountRoles: new Table(
-			'account_roles',
-			z.object({
-				account_id: z.string(),
-				role_id: z.string()
-			}),
-			DB
-		),
+		// AccountRoles: new Table(
+		// 	'account_roles',
+		// 	z.object({
+		// 		account_id: z.string(),
+		// 		role_id: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
-		Permissions: new Table(
-			'permissions',
-			z.object({
-				permission: z.string(),
-				description: z.union([z.string(), z.null()]).optional()
-			}),
-			DB
-		),
+		// Permissions: new Table(
+		// 	'permissions',
+		// 	z.object({
+		// 		permission: z.string(),
+		// 		description: z.union([z.string(), z.null()]).optional()
+		// 	}),
+		// 	DB
+		// ),
 
-		RolePermissions: new Table(
-			'role_permissions',
-			z.object({
-				role_id: z.string(),
-				permission: z.string()
-			}),
-			DB
-		),
+		// RolePermissions: new Table(
+		// 	'role_permissions',
+		// 	z.object({
+		// 		role_id: z.string(),
+		// 		permission: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
-		Sessions: new Table(
-			'sessions',
-			z.object({
-				id: z.string(),
-				account_id: z.union([z.string(), z.null()]).optional(),
-				ip: z.union([z.string(), z.null()]).optional(),
-				userAgent: z.union([z.string(), z.null()]).optional(),
-				latestActivity: z.union([z.number(), z.null()]).optional(),
-				requests: z.number().int(),
-				created: z.union([z.string(), z.null()]).optional(),
-				prev_url: z.union([z.string(), z.null()]).optional(),
-				custom_data: z.string()
-			}),
-			DB
-		),
+		// Sessions: new Table(
+		// 	'sessions',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		account_id: z.union([z.string(), z.null()]).optional(),
+		// 		ip: z.union([z.string(), z.null()]).optional(),
+		// 		userAgent: z.union([z.string(), z.null()]).optional(),
+		// 		latestActivity: z.union([z.number(), z.null()]).optional(),
+		// 		requests: z.number().int(),
+		// 		created: z.union([z.string(), z.null()]).optional(),
+		// 		prev_url: z.union([z.string(), z.null()]).optional(),
+		// 		custom_data: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
-		AccountSettings: new Table(
-			'account_settings',
-			z.object({
-				account_id: z.string(),
-				settings: z.string() // JSON
-			}),
-			DB
-		),
+		// AccountSettings: new Table(
+		// 	'account_settings',
+		// 	z.object({
+		// 		account_id: z.string(),
+		// 		settings: z.string() // JSON
+		// 	}),
+		// 	DB
+		// ),
 
 		Events: new Table(
 			'events',
@@ -135,16 +135,16 @@ export const getOldTables = (DB: Client) => {
 			DB
 		),
 
-		Matches: new Table(
-			'matches',
-			z.object({
-				id: z.string(),
-				event_key: z.string(),
-				match_number: z.number().int(),
-				comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr'])
-			}),
-			DB
-		),
+		// Matches: new Table(
+		// 	'matches',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		event_key: z.string(),
+		// 		match_number: z.number().int(),
+		// 		comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr'])
+		// 	}),
+		// 	DB
+		// ),
 
 		CustomMatches: new Table(
 			'custom_matches',
@@ -269,74 +269,74 @@ export const getOldTables = (DB: Client) => {
 			DB
 		),
 
-		TBARequests: new Table(
-			't_b_a_requests',
-			z.object({
-				url: z.string(),
-				response: z.union([z.string(), z.null()]).optional(),
-				updated: z.string(),
-				update: z.number().int()
-			}),
-			DB
-		),
+		// TBARequests: new Table(
+		// 	't_b_a_requests',
+		// 	z.object({
+		// 		url: z.string(),
+		// 		response: z.union([z.string(), z.null()]).optional(),
+		// 		updated: z.string(),
+		// 		update: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
-		Checklists: new Table(
-			'checklists',
-			z.object({
-				id: z.string(),
-				name: z.string(),
-				event_key: z.string(),
-				description: z.string(),
-				archived: z.boolean()
-			}),
-			DB
-		),
+		// Checklists: new Table(
+		// 	'checklists',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		event_key: z.string(),
+		// 		description: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-		ChecklistQuestions: new Table(
-			'checklist_questions',
-			z.object({
-				id: z.string(),
-				checklist_id: z.string(),
-				question: z.string(),
-				interval: z.number().int().min(0),
-				archived: z.boolean()
-			}),
-			DB
-		),
+		// ChecklistQuestions: new Table(
+		// 	'checklist_questions',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		checklist_id: z.string(),
+		// 		question: z.string(),
+		// 		interval: z.number().int().min(0),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-		ChecklistAssignments: new Table(
-			'checklist_assignments',
-			z.object({
-				checklist_id: z.string(),
-				account_id: z.string()
-			}),
-			DB
-		),
+		// ChecklistAssignments: new Table(
+		// 	'checklist_assignments',
+		// 	z.object({
+		// 		checklist_id: z.string(),
+		// 		account_id: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
-		ChecklistAnswers: new Table(
-			'checklist_answers',
-			z.object({
-				id: z.string(),
-				account_id: z.string(),
-				question_id: z.string(),
-				match_id: z.string()
-			}),
-			DB
-		),
+		// ChecklistAnswers: new Table(
+		// 	'checklist_answers',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		account_id: z.string(),
+		// 		question_id: z.string(),
+		// 		match_id: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
-		Alliances: new Table(
-			'alliances',
-			z.object({
-				id: z.string(),
-				name: z.string(),
-				event_key: z.string(),
-				team1: z.number().int(),
-				team2: z.number().int(),
-				team3: z.number().int(),
-				archived: z.boolean()
-			}),
-			DB
-		),
+		// Alliances: new Table(
+		// 	'alliances',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		event_key: z.string(),
+		// 		team1: z.number().int(),
+		// 		team2: z.number().int(),
+		// 		team3: z.number().int(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
 		Strategy: new Table(
 			'strategy',
@@ -366,46 +366,46 @@ export const getOldTables = (DB: Client) => {
 			DB
 		),
 
-		Blacklist: new Table(
-			'blacklist',
-			z.object({
-				id: z.string(),
-				ip: z.union([z.string(), z.null()]).optional(),
-				created: z.string(),
-				account_id: z.union([z.string(), z.null()]).optional(),
-				reason: z.union([z.string(), z.null()]).optional()
-			}),
-			DB
-		),
+		// Blacklist: new Table(
+		// 	'blacklist',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		ip: z.union([z.string(), z.null()]).optional(),
+		// 		created: z.string(),
+		// 		account_id: z.union([z.string(), z.null()]).optional(),
+		// 		reason: z.union([z.string(), z.null()]).optional()
+		// 	}),
+		// 	DB
+		// ),
 
-		MatchScoutingArchive: new Table(
-			'match_scouting_archive',
-			z.object({
-				id: z.number().int(),
-				content: z.string(),
-				event_key: z.string(),
-				match_number: z.number().int(),
-				team_number: z.number().int(),
-				comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr']),
-				created: z.number().int()
-			}),
-			DB
-		),
+		// MatchScoutingArchive: new Table(
+		// 	'match_scouting_archive',
+		// 	z.object({
+		// 		id: z.number().int(),
+		// 		content: z.string(),
+		// 		event_key: z.string(),
+		// 		match_number: z.number().int(),
+		// 		team_number: z.number().int(),
+		// 		comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr']),
+		// 		created: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
-		AccountNotifications: new Table(
-			'account_notifications',
-			z.object({
-				id: z.string(),
-				account_id: z.string(),
-				type: z.string(),
-				data: z.string(),
-				message: z.string(),
-				title: z.string(),
-				read: z.boolean(),
-				created: z.number().int()
-			}),
-			DB
-		)
+		// AccountNotifications: new Table(
+		// 	'account_notifications',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		account_id: z.string(),
+		// 		type: z.string(),
+		// 		data: z.string(),
+		// 		message: z.string(),
+		// 		title: z.string(),
+		// 		read: z.boolean(),
+		// 		created: z.number().int()
+		// 	}),
+		// 	DB
+		// )
 	};
 };
 

@@ -124,7 +124,14 @@ export const main = async () => {
     const tcStream = old.TeamComments.all();
     streams.push(tcStream.await());
     tcStream.pipe(async tc => {
-
+        (await Scouting.TeamComments.new({
+            team: tc.team,
+            comment: tc.comment,
+            accountId: tc.account_id || '',
+            matchScoutingId: tc.match_scouting_id,
+            type: tc.type,
+            eventKey: tc.event_key,
+        })).unwrap();
     });
 
     const stStream = old.Strategy.all();

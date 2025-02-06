@@ -2,6 +2,7 @@ import { boolean } from 'drizzle-orm/pg-core';
 import { integer } from 'drizzle-orm/pg-core';
 import { text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
+import { createEntitlement } from '../utils/entitlements';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -42,6 +43,13 @@ export namespace Scouting {
 		generators: {
 			universe: () => '2122'
 		}
+	});
+
+	createEntitlement({
+		name: 'view-scouting',
+		structs: [MatchScouting, TeamComments],
+		permissions: ['match_scouting:read:*', 'team_comments:read:*'],
+		group: 'Scouting'
 	});
 
 	export namespace PIT {
@@ -113,6 +121,18 @@ export namespace Scouting {
 			generators: {
 				universe: () => '2122'
 			}
+		});
+
+		createEntitlement({
+			name: 'view-pit-scouting',
+			structs: [Sections, Groups, Questions, Answers],
+			permissions: [
+				'pit_sections:read:*',
+				'pit_groups:read:*',
+				'pit_questions:read:*',
+				'pit_answers:read:*'
+			],
+			group: 'Scouting'
 		});
 	}
 }

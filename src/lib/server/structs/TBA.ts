@@ -3,6 +3,7 @@ import { text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
 import { attemptAsync, resolveAll, type Result } from 'ts-utils/check';
 import { z } from 'zod';
+import { createEntitlement } from '../utils/entitlements';
 
 const { TBA_KEY } = process.env;
 if (!TBA_KEY) throw new Error('TBA_KEY not found in .env file');
@@ -127,6 +128,14 @@ export namespace TBA {
 			});
 		});
 	};
+
+	// Blank because it needs to be called customly
+	createEntitlement({
+		name: 'manage-tba',
+		structs: [],
+		permissions: [],
+		group: 'TBA'
+	});
 }
 
 export const _tbaRequestsTable = TBA.Requests.table;

@@ -53,12 +53,14 @@ export namespace Checklist {
 
 	createEntitlement({
 		name: 'view-checklist',
-		struct: Checklists,
-		pemissions: [
-		]
-	});
-
-	createEntitlement({
+		structs: [Checklists, Questions, Assignments, Answers],
+		permissions: [
+			'checklists:read:*',
+			'checklist_answers:read:*',
+			'checklist_assignments:read:*',
+			'checklist_questions:read:*'
+		],
+		group: 'Checklists'
 	});
 }
 

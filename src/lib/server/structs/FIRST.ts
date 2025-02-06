@@ -2,6 +2,7 @@ import { boolean } from 'drizzle-orm/pg-core';
 import { integer } from 'drizzle-orm/pg-core';
 import { text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
+import { createEntitlement } from '../utils/entitlements';
 
 export namespace FIRST {
 	export const TeamPictures = new Struct({
@@ -50,6 +51,13 @@ export namespace FIRST {
 		generators: {
 			universe: () => '2122'
 		}
+	});
+
+	createEntitlement({
+		name: 'view-tba-info',
+		structs: [TeamPictures, Matches, CustomMatches],
+		group: 'FIRST',
+		permissions: ['team_pictures:read:*', 'matches:read:*', 'custom_matches:*:*']
 	});
 }
 

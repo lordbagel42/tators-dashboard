@@ -1,5 +1,6 @@
 import { integer, text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
+import { createEntitlement } from '../utils/entitlements';
 
 export namespace Strategy {
 	export const Whiteboards = new Struct({
@@ -41,6 +42,13 @@ export namespace Strategy {
 		generators: {
 			universe: () => '2122'
 		}
+	});
+
+	createEntitlement({
+		name: 'view-strategy',
+		structs: [Whiteboards, Strategy, Alliances],
+		permissions: ['whiteboards:read:*', 'strategy:read:*', 'alliances:read:*'],
+		group: 'Strategy'
 	});
 }
 

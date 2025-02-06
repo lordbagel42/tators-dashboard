@@ -3,6 +3,7 @@ import { text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
 import { attemptAsync, resolveAll, type Result } from 'ts-utils/check';
 import { z } from 'zod';
+import { createEntitlement } from '../utils/entitlements';
 
 const { TBA_KEY } = process.env;
 if (!TBA_KEY) throw new Error('TBA_KEY not found in .env file');
@@ -15,6 +16,9 @@ export namespace TBA {
 		structure: {
 			url: text('url').notNull().unique(),
 			response: text('response').notNull()
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -24,6 +28,9 @@ export namespace TBA {
 			year: integer('year').notNull(),
 			eventKey: text('event_key').notNull(),
 			data: text('data').notNull() // JSON Event Object
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -48,6 +55,9 @@ export namespace TBA {
 			eventKey: text('event_key').notNull(),
 			teamKey: text('team_key').notNull(), // frcXXXX
 			data: text('data').notNull() // JSON Team Object
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -57,6 +67,9 @@ export namespace TBA {
 			eventKey: text('event_key').notNull(),
 			matchKey: text('match_key').notNull(), // 2020casj_qf1m1
 			data: text('data').notNull() // JSON Match Object
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -115,6 +128,14 @@ export namespace TBA {
 			});
 		});
 	};
+
+	// Blank because it needs to be called customly
+	createEntitlement({
+		name: 'manage-tba',
+		structs: [],
+		permissions: [],
+		group: 'TBA'
+	});
 }
 
 export const _tbaRequestsTable = TBA.Requests.table;

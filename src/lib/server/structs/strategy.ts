@@ -1,5 +1,6 @@
 import { integer, text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
+import { createEntitlement } from '../utils/entitlements';
 
 export namespace Strategy {
 	export const Whiteboards = new Struct({
@@ -8,6 +9,9 @@ export namespace Strategy {
 			strategyId: text('strategy_id').notNull(),
 			board: text('board').notNull(),
 			name: text('name').notNull()
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -19,6 +23,9 @@ export namespace Strategy {
 			matchId: text('match_id').notNull(),
 			customMatchId: text('custom_match_id').notNull(),
 			comment: text('comment').notNull()
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -31,7 +38,17 @@ export namespace Strategy {
 			team2: integer('team2').notNull(),
 			team3: integer('team3').notNull(),
 			team4: integer('team4').notNull()
+		},
+		generators: {
+			universe: () => '2122'
 		}
+	});
+
+	createEntitlement({
+		name: 'view-strategy',
+		structs: [Whiteboards, Strategy, Alliances],
+		permissions: ['whiteboards:read:*', 'strategy:read:*', 'alliances:read:*'],
+		group: 'Strategy'
 	});
 }
 

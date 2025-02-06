@@ -5,6 +5,7 @@ import { attemptAsync } from 'ts-utils';
 import { Scouting } from './scouting';
 import { FIRST } from './FIRST';
 import { eq } from 'drizzle-orm';
+import { createEntitlement } from '../utils/entitlements';
 
 export namespace Potato {
 	export const LevelUpMap = {
@@ -67,6 +68,9 @@ export namespace Potato {
 			level: integer('level').notNull(),
 			name: text('name').notNull(),
 			lastClicked: text('last_clicked').notNull()
+		},
+		generators: {
+			universe: () => '2122'
 		}
 	});
 
@@ -163,6 +167,13 @@ export namespace Potato {
 				.innerJoin(Account.Account.table, eq(Friend.table.account, Account.Account.table.id));
 		});
 	};
+
+	createEntitlement({
+		name: 'view-potatoes',
+		structs: [Friend],
+		group: 'Potatoes',
+		permissions: ['potato_friend:read:*']
+	});
 }
 
 export const _potato = Potato.Friend;

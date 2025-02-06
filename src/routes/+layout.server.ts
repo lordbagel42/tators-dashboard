@@ -7,14 +7,13 @@ import '$lib/server/structs/universe';
 import '$lib/server/structs/checklist';
 import '$lib/server/structs/FIRST';
 import '$lib/server/structs/scouting';
-import '$lib/server/structs/strategy'
-import '$lib/server/structs/TBA'; 
+import '$lib/server/structs/strategy';
+import '$lib/server/structs/TBA';
 import { DB } from '$lib/server/db/';
 import { handleEvent, connectionEmitter } from '$lib/server/event-handler';
 import '$lib/server/utils/files';
 import { env } from '$env/dynamic/private';
 import path from 'path';
-
 config();
 
 Struct.each((struct) => {
@@ -25,7 +24,7 @@ Struct.each((struct) => {
 	}
 });
 
-// Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
+Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
 
 export const load = async (event) => {
 	const session = await Session.getSession(event);
@@ -49,7 +48,11 @@ export const load = async (event) => {
 		}
 	}
 
-	if (event.url.pathname !== '/account/sign-in' && event.url.pathname !== '/account/sign-up') {
+	if (
+		!['/account/sign-in', '/account/sign-up'].includes(event.url.pathname) &&
+		!event.url.pathname.includes('/account/password-reset') &&
+		!event.url.pathname.includes('/status')
+	) {
 		session.value.update({
 			prevUrl: event.url.pathname,
 			requests: session.value.data.requests + 1

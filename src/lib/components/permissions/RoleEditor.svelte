@@ -4,6 +4,7 @@
 	import { Permissions } from '$lib/model/permissions';
 	import { confirm } from '$lib/utils/prompts';
 	import { onMount } from 'svelte';
+	import { z } from 'zod';
 
 	interface Props {
 		role: Permissions.RoleData;
@@ -12,7 +13,7 @@
 	const { role }: Props = $props();
 
 	type S = {
-		struct: string;
+		group: string;
 		permission: string[];
 	};
 
@@ -27,19 +28,24 @@
 	};
 
 	export const reset = () => {
-		value = new Set(JSON.parse(role.data.entitlements ?? '[]'));
+		try {
+			value = new Set(z.array(z.string()).parse(JSON.parse(role.data.entitlements ?? '[]')));
+		} catch (error) {
+			console.error(error);
+			value = new Set();
+		}
 	};
 
 	onMount(() => {
 		Permissions.getEntitlements().then((e) => {
 			if (e.isOk()) {
 				entitlements = e.value.reduce((acc, ent) => {
-					const has = acc.find((e) => e.struct === ent.struct);
+					const has = acc.find((e) => e.group === ent.group);
 					if (has) {
 						has.permission.push(ent.name);
 					} else {
 						acc.push({
-							struct: ent.struct,
+							group: ent.group,
 							permission: [ent.name]
 						});
 					}
@@ -49,7 +55,12 @@
 		});
 
 		return role.subscribe((e) => {
-			value = new Set(JSON.parse(e.entitlements ?? '[]'));
+			try {
+				value = new Set(z.array(z.string()).parse(JSON.parse(e.entitlements ?? '[]')));
+			} catch (error) {
+				console.error(error);
+				value = new Set();
+			}
 		});
 	});
 </script>
@@ -58,7 +69,7 @@
 	<div class="row">
 		{#each entitlements as e, i}
 			<h4>
-				{e.struct}
+				{e.group}
 			</h4>
 			<ul class="list-unstyled">
 				{#each e.permission as p}

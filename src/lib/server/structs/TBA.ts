@@ -129,6 +129,12 @@ export namespace TBA {
 		});
 	};
 
+	createEntitlement({
+		name: 'create-custom-tba-responses',
+		structs: [Requests],
+		permissions: ['*'],
+		group: 'TBA'
+	});
 	// Blank because it needs to be called customly
 	createEntitlement({
 		name: 'manage-tba',

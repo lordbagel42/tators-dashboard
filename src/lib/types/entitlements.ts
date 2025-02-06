@@ -1,5 +1,6 @@
 export type Entitlement = 
-    'manage-roles'
+    'create-custom-tba-responses'
+  | 'manage-roles'
   | 'manage-tba'
   | 'manage-universe'
   | 'view-checklist'
@@ -10,8 +11,8 @@ export type Entitlement =
   | 'view-tba-info'
   | 'view-universe';
 export type Group = 
-    'Roles'
-  | 'TBA'
+    'TBA'
+  | 'Roles'
   | 'Universe'
   | 'Checklists'
   | 'Scouting'

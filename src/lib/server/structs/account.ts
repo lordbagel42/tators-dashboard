@@ -34,6 +34,8 @@ export namespace Account {
 		safes: ['key', 'salt', 'verification']
 	});
 
+	Account.on('create', async (account) => {});
+
 	Account.queryListen('universe-members', async (event, data) => {
 		const session = (await Session.getSession(event)).unwrap();
 		const account = (await Session.getAccount(session)).unwrap();

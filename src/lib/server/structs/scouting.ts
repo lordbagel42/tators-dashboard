@@ -1,8 +1,13 @@
 import { boolean } from 'drizzle-orm/pg-core';
 import { integer } from 'drizzle-orm/pg-core';
 import { text } from 'drizzle-orm/pg-core';
-import { Struct } from 'drizzle-struct/back-end';
+import { Struct, StructStream } from 'drizzle-struct/back-end';
 import { createEntitlement } from '../utils/entitlements';
+import { z } from 'zod';
+import { attemptAsync } from 'ts-utils';
+import { DB } from '../db';
+import { eq } from 'drizzle-orm';
+import { Session } from './session';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -57,9 +62,9 @@ export namespace Scouting {
 			name: 'pit_sections',
 			structure: {
 				name: text('name').notNull(),
-				multiple: boolean('multiple').notNull(),
 				accountId: text('account_id').notNull(),
 				order: integer('order').notNull(),
+				eventKey: text('event_key').notNull()
 			},
 			versionHistory: {
 				type: 'versions',
@@ -70,14 +75,15 @@ export namespace Scouting {
 			}
 		});
 
+		export type SectionData = typeof Sections.sample;
+
 		export const Groups = new Struct({
 			name: 'pit_groups',
 			structure: {
-				eventKey: text('event_key').notNull(),
 				sectionId: text('section_id').notNull(),
 				name: text('name').notNull(),
 				accountId: text('account_id').notNull(),
-				order: integer('order').notNull(),
+				order: integer('order').notNull()
 			},
 			versionHistory: {
 				type: 'versions',
@@ -87,6 +93,8 @@ export namespace Scouting {
 				universe: () => '2122'
 			}
 		});
+
+		export type GroupData = typeof Groups.sample;
 
 		export const Questions = new Struct({
 			name: 'pit_questions',
@@ -98,7 +106,7 @@ export namespace Scouting {
 				type: text('type').notNull(), // boolean/number/text/textarea/etc.
 				accountId: text('account_id').notNull(),
 				options: text('options').notNull(), // JSON string[] for checkboxes/radios
-				order: integer('order').notNull(),
+				order: integer('order').notNull()
 			},
 			versionHistory: {
 				type: 'versions',
@@ -106,8 +114,18 @@ export namespace Scouting {
 			},
 			generators: {
 				universe: () => '2122'
+			},
+			validators: {
+				options: (data) => {
+					if (typeof data !== 'string') return false;
+					return z.array(z.string()).safeParse(JSON.parse(data)).success;
+				},
+				type: (data) => 
+					z.enum(['boolean', 'number', 'text', 'textarea', 'checkboxes', 'radios']).safeParse(data).success,
 			}
 		});
+
+		export type QuestionData = typeof Questions.sample;
 
 		export const Answers = new Struct({
 			name: 'pit_answers',
@@ -122,9 +140,52 @@ export namespace Scouting {
 				amount: 3
 			},
 			generators: {
-				universe: () => '2122'
+				universe: () => '2122',
+			},
+			validators: {
+				answer: (data) => {
+					if (typeof data !== 'string') return false;
+					return z.array(z.string()).safeParse(JSON.parse(data)).success;
+				}
 			}
 		});
+
+		export type AnswerData = typeof Answers.sample;
+
+		Answers.queryListen('from-group', async (event, data) => {
+			const session = (await Session.getSession(event)).unwrap();
+			const account = (await Session.getAccount(session)).unwrap();
+
+			if (!account) throw new Error('Not logged in');
+
+			const { group } = z.object({
+				group: z.string(),
+			}).parse(data);
+
+			const g = (await Groups.fromId(group)).unwrap();
+			if (!g) throw new Error('Group not found');
+
+			const res = (await getAnswersFromGroup(g)).unwrap();
+
+			const stream = new StructStream(Answers);
+
+			setTimeout(() => {
+				for (const r of res) stream.add(r);
+			}, 10);
+
+			return stream;
+		});
+
+		export const getAnswersFromGroup = (group: GroupData) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Answers.table)
+					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
+					.where(eq(Questions.table.groupId, group.id));
+
+				return res.map(r => Answers.Generator(r.pit_answers));
+			});
+		};
 
 		createEntitlement({
 			name: 'view-pit-scouting',

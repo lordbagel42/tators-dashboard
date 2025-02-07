@@ -50,7 +50,7 @@ export namespace Account {
 
 	export type AccountNotificationData = StructData<typeof AccountNotification.data.structure>;
 
-	const self = new SingleWritable(
+	export const self = new SingleWritable(
 		Account.Generator({
 			username: 'Guest',
 			// key: '',
@@ -84,6 +84,7 @@ export namespace Account {
 	};
 
 	export const getNotifs = (limit: number, offset: number) => {
+		return new DataArr(AccountNotification, []);
 		return AccountNotification.query(
 			'get-own-notifs',
 			{},

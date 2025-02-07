@@ -155,7 +155,6 @@ export namespace Scouting {
 		Answers.queryListen('from-group', async (event, data) => {
 			const session = (await Session.getSession(event)).unwrap();
 			const account = (await Session.getAccount(session)).unwrap();
-
 			if (!account) throw new Error('Not logged in');
 
 			const { group } = z.object({

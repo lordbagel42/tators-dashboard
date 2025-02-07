@@ -4,10 +4,16 @@ import { Struct } from 'drizzle-struct/back-end';
 import { Account } from '$lib/server/structs/account';
 import '$lib/server/structs/permissions';
 import '$lib/server/structs/universe';
+import '$lib/server/structs/checklist';
+import '$lib/server/structs/FIRST';
+import '$lib/server/structs/scouting';
+import '$lib/server/structs/strategy';
+import '$lib/server/structs/TBA';
 import { DB } from '$lib/server/db/';
 import { handleEvent, connectionEmitter } from '$lib/server/event-handler';
 import '$lib/server/utils/files';
 import { env } from '$env/dynamic/private';
+import path from 'path';
 config();
 
 Struct.each((struct) => {
@@ -18,7 +24,7 @@ Struct.each((struct) => {
 	}
 });
 
-// Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
+Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
 
 export const load = async (event) => {
 	const session = await Session.getSession(event);

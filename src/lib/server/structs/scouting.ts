@@ -111,15 +111,17 @@ export namespace Scouting {
 				amount: 3
 			},
 			generators: {
-				universe: () => '2122',
+				universe: () => '2122'
 			},
 			validators: {
 				options: (data) => {
 					if (typeof data !== 'string') return false;
 					return z.array(z.string()).safeParse(JSON.parse(data)).success;
 				},
-				type: (data) => 
-					z.enum(['boolean', 'number', 'text', 'textarea', 'checkbox', 'radio', 'select']).safeParse(data).success,
+				type: (data) =>
+					z
+						.enum(['boolean', 'number', 'text', 'textarea', 'checkbox', 'radio', 'select'])
+						.safeParse(data).success
 			}
 		});
 
@@ -131,20 +133,21 @@ export namespace Scouting {
 				questionId: text('question_id').notNull(),
 				answer: text('answer').notNull(),
 				team: integer('team').notNull(),
+				accountId: text('account_id').notNull(),
 			},
 			versionHistory: {
 				type: 'versions',
 				amount: 3
 			},
 			generators: {
-				universe: () => '2122',
+				universe: () => '2122'
 			},
 			validators: {
 				answer: (data) => {
 					if (typeof data !== 'string') return false;
 					return z.array(z.string()).safeParse(JSON.parse(data)).success;
 				}
-			},
+			}
 		});
 
 		export type AnswerData = typeof Answers.sample;
@@ -156,11 +159,14 @@ export namespace Scouting {
 
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
 
-			if (!Permissions.isEntitled(roles, 'view-pit-scouting', 'manage-pit-scouting')) throw new Error('Not entitled');
+			if (!Permissions.isEntitled(roles, 'view-pit-scouting', 'manage-pit-scouting'))
+				throw new Error('Not entitled');
 
-			const { group } = z.object({
-				group: z.string(),
-			}).parse(data);
+			const { group } = z
+				.object({
+					group: z.string()
+				})
+				.parse(data);
 
 			const g = (await Groups.fromId(group)).unwrap();
 			if (!g) throw new Error('Group not found');
@@ -183,7 +189,7 @@ export namespace Scouting {
 					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
 					.where(eq(Questions.table.groupId, group.id));
 
-				return res.map(r => Answers.Generator(r.pit_answers));
+				return res.map((r) => Answers.Generator(r.pit_answers));
 			});
 		};
 
@@ -194,30 +200,32 @@ export namespace Scouting {
 
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
 			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) throw new Error('Not entitled');
-			
-			const parsed = z.object({
-				eventKey: z.string(),
-			}).safeParse(data);
+
+			const parsed = z
+				.object({
+					eventKey: z.string()
+				})
+				.safeParse(data);
 
 			if (!parsed.success) {
 				return {
 					success: false,
-					message: 'Invalid data',
-				}
+					message: 'Invalid data'
+				};
 			}
 
 			const res = await generateBoilerplate(parsed.data.eventKey);
 
 			if (res.isOk()) {
 				return {
-					success: true,
-				}
+					success: true
+				};
 			} else {
 				terminal.error(res.error);
 				return {
 					success: false,
-					message: 'Failed to generate',
-				}
+					message: 'Failed to generate'
+				};
 			}
 		});
 
@@ -229,55 +237,59 @@ export namespace Scouting {
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
 			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) throw new Error('Not entitled');
 
-			const parsed = z.object({
-				from: z.string(),
-				to: z.string(),
-			}).safeParse(data);
+			const parsed = z
+				.object({
+					from: z.string(),
+					to: z.string()
+				})
+				.safeParse(data);
 
 			if (!parsed.success) {
 				return {
 					success: false,
-					message: 'Invalid data',
-				}
+					message: 'Invalid data'
+				};
 			}
 
 			const res = await copyFromEvent(parsed.data.from, parsed.data.to);
 			if (res.isOk()) {
 				return {
-					success: true,
-				}
+					success: true
+				};
 			} else {
 				terminal.error(res.error);
 				return {
 					success: false,
-					message: 'Failed to copy',
-				}
+					message: 'Failed to copy'
+				};
 			}
 		});
 
 		export const generateBoilerplate = async (eventKey: string) => {
 			return attemptAsync(async () => {
-				const sections = (await Sections.fromProperty('eventKey', eventKey, {
-					type: 'stream',
-				}).await()).unwrap();
+				const sections = (
+					await Sections.fromProperty('eventKey', eventKey, {
+						type: 'stream'
+					}).await()
+				).unwrap();
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
 				const [general, mech, electrical] = await Promise.all([
 					Sections.new({
 						name: 'General',
 						eventKey,
-						order: 0,
+						order: 0
 					}),
 					Sections.new({
 						name: 'Mechanical',
 						eventKey,
-						order: 1,
+						order: 1
 					}),
 					Sections.new({
 						name: 'Electrical',
 						eventKey,
-						order: 2,
-					}),
+						order: 2
+					})
 				]);
 
 				const genSection = general.unwrap();
@@ -285,35 +297,40 @@ export namespace Scouting {
 				const electSection = electrical.unwrap();
 
 				// TODO: Write boilerplate groups/questions
-
 			});
 		};
 
 		export const copyFromEvent = async (fromEventKey: string, toEventKey: string) => {
 			return attemptAsync(async () => {
 				await Sections.fromProperty('eventKey', fromEventKey, {
-					type: 'stream',
-				}).pipe(async s => {
-					const section = (await Sections.new({
-						...s.data,
-						eventKey: toEventKey,
-					})).unwrap();
+					type: 'stream'
+				}).pipe(async (s) => {
+					const section = (
+						await Sections.new({
+							...s.data,
+							eventKey: toEventKey
+						})
+					).unwrap();
 
 					return Groups.fromProperty('sectionId', s.id, {
-						type: 'stream',
-					}).pipe(async g => {
-						const group = (await Groups.new({
-							...g.data,
-							sectionId: section.id,
-						})).unwrap();
+						type: 'stream'
+					}).pipe(async (g) => {
+						const group = (
+							await Groups.new({
+								...g.data,
+								sectionId: section.id
+							})
+						).unwrap();
 
 						return Questions.fromProperty('groupId', g.id, {
-							type: 'stream',
-						}).pipe(async q => {
-							(await Questions.new({
-								...q.data,
-								groupId: group.id,
-							})).unwrap();
+							type: 'stream'
+						}).pipe(async (q) => {
+							(
+								await Questions.new({
+									...q.data,
+									groupId: group.id
+								})
+							).unwrap();
 						});
 					});
 				});
@@ -335,9 +352,7 @@ export namespace Scouting {
 		createEntitlement({
 			name: 'manage-pit-scouting',
 			structs: [Sections, Groups, Questions, Answers],
-			permissions: [
-				'*',
-			],
+			permissions: ['*'],
 			group: 'Scouting'
 		});
 	}

@@ -1,16 +1,18 @@
 <script lang="ts">
 	import EditSection from '$lib/components/pit-scouting/EditSection.svelte';
 	import { Scouting } from '$lib/model/scouting';
-	import { prompt } from '$lib/utils/prompts';
+	import { prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { Account } from '$lib/model/account';
-	import { Form } from '$lib/utils/form';
 	import { page } from '$app/state';
+	import { TBAEvent } from '$lib/utils/tba.js';
+
+	const { data } = $props();
+	const { eventKey, year } = data;
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 	let self = $state(Account.self);
-
 
 	onMount(() => {
 		sections = Scouting.PIT.Sections.fromProperty('eventKey', page.params.eventKey, false);
@@ -24,17 +26,58 @@
 
 		Scouting.PIT.Sections.new({
 			name,
-			accountId: self.get().data.id || '',
 			order: $sections.length,
-			eventKey: page.params.eventKey
+			eventKey
+		});
+	};
+
+	const copy = async () => {
+		try {
+			const events = (await TBAEvent.getEvents(year)).unwrap()
+				.filter(e => e.tba.key !== eventKey);
+
+			const withSections = (await Promise.all(
+				events.map(async e => {
+					const sections = (await Scouting.PIT.Sections.fromProperty('eventKey', e.tba.key, true).await()).unwrap();
+					return { event: e, sections };
+				})
+			)).filter(e => e.sections.length);
+
+			const selected = await select(
+				'Choose an event to copy from',
+				withSections.map(e => e.event.tba.name),
+			);
+
+			if (!selected) return;
+			Scouting.PIT.Sections.call('copy-from-event', { 
+				from: selected,
+				to: eventKey,
+			});
+
+		} catch (err) {
+			console.error(err);
+		}
+	};
+	const generateEventTemplate = () => {
+		Scouting.PIT.Sections.call('generate-event-template', {
+			eventKey: eventKey,
 		});
 	};
 </script>
 
 <div class="container">
 	<h1>Create Pit Scouting</h1>
-	{#each $sections as section}
-		<EditSection {section} />
-	{/each}
+	{#if $sections.length}
+		{#each $sections as section}
+			<EditSection {section} />
+		{/each}
+	{:else}
+		<button type="button" class="btn btn-primary" onclick={generateEventTemplate}>
+			Generate Event Template
+		</button>
+		<button type="button" class="btn btn-primary" onclick={copy}>
+			Copy From Event
+		</button>
+	{/if}
 	<button class="btn btn-primary" onclick={addSection}>Add Section</button>
 </div>

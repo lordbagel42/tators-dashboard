@@ -7,9 +7,10 @@
 
     interface Props {
         section: Scouting.PIT.SectionData;
+        team: number;
     };
 
-    const { section }: Props = $props();
+    const { section, team }: Props = $props();
 
     let groups = new DataArr(Scouting.PIT.Groups, []);
 
@@ -39,7 +40,7 @@
     </div>
     {#each $groups as group}
         <div class="row">
-            <Group {group} />
+            <Group {group} {team} />
         </div>
     {/each}
 </div>

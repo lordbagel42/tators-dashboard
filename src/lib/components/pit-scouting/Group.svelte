@@ -6,9 +6,10 @@
 
     interface Props {
         group: Scouting.PIT.GroupData;
+        team: number;
     };
 
-    const { group }: Props = $props();
+    const { group, team }: Props = $props();
 
     let questions = $state(new DataArr(Scouting.PIT.Questions, []));
     let answers = $state(new DataArr(Scouting.PIT.Answers, []));
@@ -33,7 +34,7 @@
     </div>
     <div class="card-body">
         {#each $questions as question}
-            <Question {question} {questions} />
+            <Question {question} {answers} {team} />
         {/each}
     </div>
 </div>

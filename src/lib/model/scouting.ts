@@ -1,8 +1,9 @@
 import { Struct, type StructData, type DataArr } from 'drizzle-struct/front-end';
 import { sse } from '../utils/sse';
 import { browser } from '$app/environment';
-import { attempt } from 'ts-utils/check';
+import { attempt, attemptAsync } from 'ts-utils/check';
 import { z } from 'zod';
+import { Account } from './account';
 
 
 export namespace Scouting {
@@ -47,7 +48,6 @@ export namespace Scouting {
 			name: 'pit_sections',
 			structure: {
 				name: 'string',
-				accountId: 'string',
 				order: 'number',
 				eventKey: 'string',
 			},
@@ -63,7 +63,6 @@ export namespace Scouting {
 			structure: {
 				sectionId: 'string',
 				name: 'string',
-				accountId: 'string',
 				order: 'number',
 			},
 			socket: sse,
@@ -80,7 +79,6 @@ export namespace Scouting {
 				question: 'string',
 				type: 'string',
 				key: 'string',
-				accountId: 'string',
 				order: 'number',
 				options: 'string',
 			},
@@ -95,9 +93,8 @@ export namespace Scouting {
 			name: 'pit_answers',
 			structure: {
 				questionId: 'string',
-				accountId: 'string',
-				value: 'string',
-				matchId: 'string'
+				answer: 'string',
+				team: 'number',
 			},
 			socket: sse,
 			browser
@@ -108,15 +105,19 @@ export namespace Scouting {
 
 		export type Options = {};
 
-		export const parseOptions = (options: string) => {
+		export const parseOptions = (question: QuestionData) => {
 			return attempt(() => {
+				const options = question.data.options;
+				if (!options) throw new Error('No options key');
 				return z.array(z.string()).parse(JSON.parse(options));
 			});
 		};
 
-		export const parseAnswer = (answer: string) => {
+		export const parseAnswer = (answer: AnswerData) => {
 			return attempt(() => {
-				return z.array(z.string()).parse(JSON.parse(answer));
+				const value = answer.data.answer;
+				if (!value) throw new Error('No answer key')
+				return z.array(z.string()).parse(JSON.parse(value));
 			});
 		}
 
@@ -126,6 +127,21 @@ export namespace Scouting {
 			}, {
 				asStream: false,
 				satisfies: (d) => d.data.questionId ? questionIDs.includes(d.data.questionId) : false,
+			});
+		};
+
+		export const answerQuestion = (question: QuestionData, answer: string[], team: number) => {
+			return attemptAsync(async () => {
+				if (!question.data.id) throw new Error('Question ID not found');
+				const accountId = Account.getSelf().get().data.id;
+				if (!accountId) throw new Error('Account ID not found');
+				const res = (await Answers.new({
+					questionId: question.data.id,
+					answer: JSON.stringify(answer),
+					team,
+				})).unwrap();
+
+				if (!res.success) throw new Error(res.message || 'Failed to answer question');
 			});
 		};
 	}

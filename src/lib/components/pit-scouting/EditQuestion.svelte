@@ -19,7 +19,7 @@
     let order = $state(question.data.order || 0);
 
     {
-        const optionsData = Scouting.PIT.parseOptions(question.data.options || '{}');
+        const optionsData = Scouting.PIT.parseOptions(question);
         if (optionsData.isOk()) options = optionsData.value;
     }
 

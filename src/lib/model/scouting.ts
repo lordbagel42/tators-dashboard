@@ -45,7 +45,8 @@ export namespace Scouting {
 			structure: {
 				name: 'string',
 				multiple: 'boolean',
-				accountId: 'string'
+				accountId: 'string',
+				order: 'number',
 			},
 			socket: sse,
 			browser
@@ -60,7 +61,8 @@ export namespace Scouting {
 				eventKey: 'string',
 				sectionId: 'string',
 				name: 'string',
-				accountId: 'string'
+				accountId: 'string',
+				order: 'number',
 			},
 			socket: sse,
 			browser
@@ -75,7 +77,8 @@ export namespace Scouting {
 				groupId: 'string',
 				question: 'string',
 				type: 'string',
-				accountId: 'string'
+				accountId: 'string',
+				order: 'number',
 			},
 			socket: sse,
 			browser

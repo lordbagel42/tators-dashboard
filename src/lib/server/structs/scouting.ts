@@ -58,7 +58,8 @@ export namespace Scouting {
 			structure: {
 				name: text('name').notNull(),
 				multiple: boolean('multiple').notNull(),
-				accountId: text('account_id').notNull()
+				accountId: text('account_id').notNull(),
+				order: integer('order').notNull(),
 			},
 			versionHistory: {
 				type: 'versions',
@@ -75,7 +76,8 @@ export namespace Scouting {
 				eventKey: text('event_key').notNull(),
 				sectionId: text('section_id').notNull(),
 				name: text('name').notNull(),
-				accountId: text('account_id').notNull()
+				accountId: text('account_id').notNull(),
+				order: integer('order').notNull(),
 			},
 			versionHistory: {
 				type: 'versions',
@@ -95,7 +97,8 @@ export namespace Scouting {
 				description: text('description').notNull(),
 				type: text('type').notNull(), // boolean/number/text/textarea/etc.
 				accountId: text('account_id').notNull(),
-				options: text('options').notNull() // JSON string[] for checkboxes/radios
+				options: text('options').notNull(), // JSON string[] for checkboxes/radios
+				order: integer('order').notNull(),
 			},
 			versionHistory: {
 				type: 'versions',

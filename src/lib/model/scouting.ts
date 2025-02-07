@@ -94,7 +94,7 @@ export namespace Scouting {
 				questionId: 'string',
 				answer: 'string',
 				team: 'number',
-				accountId: 'string',
+				accountId: 'string'
 			},
 			socket: sse,
 			browser
@@ -134,7 +134,12 @@ export namespace Scouting {
 			);
 		};
 
-		export const answerQuestion = (question: QuestionData, answer: string[], team: number, account: Account.AccountData) => {
+		export const answerQuestion = (
+			question: QuestionData,
+			answer: string[],
+			team: number,
+			account: Account.AccountData
+		) => {
 			return attemptAsync(async () => {
 				if (!question.data.id) throw new Error('Question ID not found');
 				const accountId = account.data.id;
@@ -144,7 +149,7 @@ export namespace Scouting {
 						questionId: question.data.id,
 						answer: JSON.stringify(answer),
 						team,
-						accountId,
+						accountId
 					})
 				).unwrap();
 

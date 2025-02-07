@@ -133,7 +133,7 @@ export namespace Scouting {
 				questionId: text('question_id').notNull(),
 				answer: text('answer').notNull(),
 				team: integer('team').notNull(),
-				accountId: text('account_id').notNull(),
+				accountId: text('account_id').notNull()
 			},
 			versionHistory: {
 				type: 'versions',

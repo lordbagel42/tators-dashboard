@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Scouting } from '$lib/model/scouting';
 	import { onMount } from 'svelte';
-    import { Account } from '$lib/model/account';
+	import { Account } from '$lib/model/account';
 
 	interface Props {
 		question: Scouting.PIT.QuestionData;
@@ -15,7 +15,7 @@
 
 	let value: string[] = $state([]);
 	let options: string[] = $state([]);
-    let self = $state(Account.self);
+	let self = $state(Account.self);
 
 	$effect(() => {
 		const res = Scouting.PIT.parseOptions(question);
@@ -28,7 +28,7 @@
 		const res = Scouting.PIT.parseAnswer(answer);
 		if (res.isErr()) return console.error(res.error);
 		value = res.value;
-        self = Account.getSelf();
+		self = Account.getSelf();
 	});
 
 	const updateAnswer = () => {
@@ -39,13 +39,13 @@
 			}));
 		} else {
 			if (!question.data.id) return console.error('question.data.id did not exist');
-            const accountId = self.get().data.id;
-            if (!accountId) return console.error('No account id found');
+			const accountId = self.get().data.id;
+			if (!accountId) return console.error('No account id found');
 			Scouting.PIT.Answers.new({
 				questionId: question.data.id,
 				answer: JSON.stringify(value),
 				team,
-                accountId, // Ideally, this would be done on the backend but it's okay to be a little insecure
+				accountId // Ideally, this would be done on the backend but it's okay to be a little insecure
 			});
 		}
 	};

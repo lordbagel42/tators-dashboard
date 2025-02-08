@@ -348,7 +348,7 @@ export namespace Universes {
 			if (!admin) throw new Error('Account is not an admin');
 			return admin.delete();
 		});
-	}
+	};
 
 	createEntitlement({
 		name: 'manage-universe',

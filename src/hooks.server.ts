@@ -30,7 +30,6 @@ Struct.each((struct) => {
 	}
 });
 
-
 Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
 
 export const handle: Handle = async ({ event, resolve }) => {

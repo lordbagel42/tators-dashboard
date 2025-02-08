@@ -41,38 +41,49 @@
 					<td>
 						<div role="group" class="btn-group">
 							{#if account.account.data.verified}
-								<button class="btn btn-warning"
+								<button
+									class="btn btn-warning"
 									onclick={async () => {
-										if (await confirm(`Are you sure you want to unverify ${account.account.data.username}?`)) {
-											account.account.update(d => ({ ...d, verified: false })).then(refresh);
+										if (
+											await confirm(
+												`Are you sure you want to unverify ${account.account.data.username}?`
+											)
+										) {
+											account.account.update((d) => ({ ...d, verified: false })).then(refresh);
 										}
 									}}
 								>
-									<i class="material-icons">
-										block
-									</i>
+									<i class="material-icons"> block </i>
 								</button>
 							{:else}
-								<button class="btn btn-success"
+								<button
+									class="btn btn-success"
 									onclick={async () => {
-										if (await confirm(`Are you sure you want to verify ${account.account.data.username}?`)) {
-											account.account.update(d => ({ ...d, verified: true })).then(refresh);
+										if (
+											await confirm(
+												`Are you sure you want to verify ${account.account.data.username}?`
+											)
+										) {
+											account.account.update((d) => ({ ...d, verified: true })).then(refresh);
 										}
 									}}
 								>
-									<i class="material-icons">
-										check
-									</i>
+									<i class="material-icons"> check </i>
 								</button>
 							{/if}
-							<button class="btn btn-danger" onclick={async () => {
-								if (await confirm(`Are you sure you want to delete ${account.account.data.username}?`)) {
-									account.account.delete().then(refresh);
-								}
-							}}>
-								<i class="material-icons">
-									delete
-								</i>
+							<button
+								class="btn btn-danger"
+								onclick={async () => {
+									if (
+										await confirm(
+											`Are you sure you want to delete ${account.account.data.username}?`
+										)
+									) {
+										account.account.delete().then(refresh);
+									}
+								}}
+							>
+								<i class="material-icons"> delete </i>
 							</button>
 						</div>
 					</td>

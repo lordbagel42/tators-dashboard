@@ -170,9 +170,9 @@ export namespace Account {
 			const res = await DB.select()
 				.from(Admins.table)
 				.innerJoin(Account.table, eq(Account.table.id, Admins.table.accountId));
-			return res.map(a => Account.Generator(a.account));
+			return res.map((a) => Account.Generator(a.account));
 		});
-	}
+	};
 
 	export const Developers = new Struct({
 		name: 'developers',
@@ -186,9 +186,9 @@ export namespace Account {
 			const res = await DB.select()
 				.from(Developers.table)
 				.innerJoin(Account.table, eq(Account.table.id, Developers.table.accountId));
-			return res.map(a => Account.Generator(a.account));
+			return res.map((a) => Account.Generator(a.account));
 		});
-	}
+	};
 
 	export const isDeveloper = (account: AccountData) => {
 		return attemptAsync(async () => {

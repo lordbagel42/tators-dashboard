@@ -7,8 +7,7 @@ import { and, eq, sql } from 'drizzle-orm';
 import { Permissions } from './permissions';
 import { Session } from './session';
 import { z } from 'zod';
-import { createEntitlement, getEntitlementNames, readEntitlement } from '../utils/entitlements';
-import terminal from '../utils/terminal';
+import { createEntitlement, readEntitlement } from '../utils/entitlements';
 
 export namespace Universes {
 	export const Universe = new Struct({
@@ -18,74 +17,6 @@ export namespace Universes {
 			description: text('description').notNull(),
 			public: boolean('public').notNull()
 		}
-	});
-
-	Universe.on('build', async () => {
-		const exists = (await Universe.fromId('2122')).unwrap();
-		if (!exists) {
-			await Universe.new(
-				{
-					id: '2122',
-					name: 'Team Tators',
-					description: 'Team Tators single universe',
-					public: false,
-					archived: false,
-					canUpdate: false,
-					lifetime: 0,
-					attributes: '[]',
-					universe: '2122',
-					updated: new Date().toISOString(),
-					created: new Date().toISOString()
-				},
-				{
-					overwriteGlobals: true
-				}
-			);
-		}
-
-		Permissions.Role.fromProperty('name', 'Admin', {
-			type: 'single'
-		}).then(async (hasAdmin) => {
-			const res = await getEntitlementNames();
-			if (res.isErr()) return terminal.error(res.error);
-			if (hasAdmin.isErr()) return terminal.error(hasAdmin.error);
-
-			if (hasAdmin.value) {
-				return hasAdmin.value.update({
-					entitlements: JSON.stringify(res.value)
-				});
-			}
-
-			const admin = (
-				await Permissions.Role.new({
-					universe: '2122',
-					name: 'Admin',
-					description: `Team Tators Aministrator`,
-					links: '[]',
-					entitlements: JSON.stringify(res.value)
-				})
-			).unwrap();
-			(await admin.setUniverse('2122')).unwrap();
-			(await admin.setStatic(true)).unwrap();
-		});
-
-		Permissions.Role.fromProperty('name', 'Member', {
-			type: 'single'
-		}).then(async (hasMember) => {
-			if (hasMember.isErr() || hasMember.value) return;
-
-			const member = (
-				await Permissions.Role.new({
-					universe: '2122',
-					name: 'Member',
-					description: `Team Tators Member`,
-					links: '[]',
-					entitlements: '[]'
-				})
-			).unwrap();
-			(await member.setUniverse('2122')).unwrap();
-			(await member.setStatic(true)).unwrap();
-		});
 	});
 
 	Universe.on('delete', (u) => {
@@ -389,20 +320,50 @@ export namespace Universes {
 		});
 	};
 
-	// createEntitlement({
-	// 	name: 'manage-universe',
-	// 	structs: [Universe],
-	// 	permissions: ['*'],
-	// 	group: 'Universe'
-	// });
+	export const addAdmin = async (account: Account.AccountData, universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const roles = (
+				await Permissions.Role.fromProperty('universe', universe.id, {
+					type: 'stream'
+				}).await()
+			).unwrap();
 
-	// createEntitlement({
-	// 	name: 'view-universe',
-	// 	structs: [Universe],
-	// 	// permissions: ['read:name', 'read:description', 'read:public']
-	// 	permissions: ['universe:read:name', 'universe:read:description'],
-	// 	group: 'Universe'
-	// });
+			const admin = roles.find((r) => r.data.name === 'Admin'); // should always succeed because data is static
+
+			if (!admin) throw new Error('Admin role not found');
+
+			return (
+				await Permissions.RoleAccount.new({
+					account: account.id,
+					role: admin.id
+				})
+			).unwrap();
+		});
+	};
+
+	export const removeAdmin = async (account: Account.AccountData, universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const roles = (await memberRoles(account, universe)).unwrap();
+			const admin = roles.find((r) => r.data.name === 'Admin');
+			if (!admin) throw new Error('Account is not an admin');
+			return admin.delete();
+		});
+	}
+
+	createEntitlement({
+		name: 'manage-universe',
+		structs: [Universe],
+		permissions: ['*'],
+		group: 'Universe'
+	});
+
+	createEntitlement({
+		name: 'view-universe',
+		structs: [Universe],
+		// permissions: ['read:name', 'read:description', 'read:public']
+		permissions: ['universe:read:name', 'universe:read:description'],
+		group: 'Universe'
+	});
 }
 
 export const _universeTable = Universes.Universe.table;

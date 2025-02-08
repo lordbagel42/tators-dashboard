@@ -1,3 +1,4 @@
+import '$lib/server/index';
 import { Account } from '$lib/server/structs/account';
 import { Session } from '$lib/server/structs/session';
 import '$lib/server/structs/permissions';

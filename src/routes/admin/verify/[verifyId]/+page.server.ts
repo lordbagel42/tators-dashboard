@@ -6,79 +6,80 @@ import { fail, redirect } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 
 export const load = async (event) => {
+	if (!event.locals.account) {
+		throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
+	}
 
-    if (!event.locals.account) {
-        throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
-    }
+	const isAdmin = await Account.isAdmin(event.locals.account);
+	if (isAdmin.isErr()) {
+		terminal.error(isAdmin.error);
+		throw fail(ServerCode.internalServerError);
+	}
 
-    const isAdmin = await Account.isAdmin(event.locals.account);
-    if (isAdmin.isErr()) {
-        terminal.error(isAdmin.error);
-        throw fail(ServerCode.internalServerError);
-    }
+	if (!isAdmin.value) {
+		throw redirect(ServerCode.permanentRedirect, '/status/403?url=' + event.url.href);
+	}
 
-    if (!isAdmin.value) {
-        throw redirect(ServerCode.permanentRedirect, '/status/403?url=' + event.url.href);
-    }
+	const verifyAccount = await Account.Account.fromProperty('verification', event.params.verifyId, {
+		type: 'single'
+	});
 
-    const verifyAccount = await Account.Account.fromProperty('verification', event.params.verifyId, {
-        type: 'single',
-    });
+	if (verifyAccount.isErr()) {
+		terminal.error(verifyAccount.error);
+		throw fail(ServerCode.internalServerError);
+	}
 
-    if (verifyAccount.isErr()) {
-        terminal.error(verifyAccount.error);
-        throw fail(ServerCode.internalServerError);
-    }
+	if (!verifyAccount.value) {
+		throw redirect(ServerCode.permanentRedirect, '/status/404?url=' + event.url.href);
+	}
 
-    if (!verifyAccount.value) {
-        throw redirect(ServerCode.permanentRedirect, '/status/404?url=' + event.url.href);
-    }
-
-    return {
-        account: verifyAccount.value.safe(),
-    }
+	return {
+		account: verifyAccount.value.safe()
+	};
 };
 
-
 export const actions = {
-    verify: async (event) => {
-        if (!event.locals.account) {
-            throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
-        }
-    
-        const isAdmin = await Account.isAdmin(event.locals.account);
-        if (isAdmin.isErr()) {
-            terminal.error(isAdmin.error);
-            throw fail(ServerCode.internalServerError);
-        }
-    
-        if (!isAdmin.value) {
-            throw redirect(ServerCode.permanentRedirect, '/status/403');
-        }
+	verify: async (event) => {
+		if (!event.locals.account) {
+			throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
+		}
 
-        const verifyAccount = await Account.Account.fromProperty('verification', event.params.verifyId, {
-            type: 'single',
-        });
-    
-        if (verifyAccount.isErr()) {
-            terminal.error(verifyAccount.error);
-            throw fail(ServerCode.internalServerError);
-        }
-    
-        if (!verifyAccount.value) {
-            throw redirect(ServerCode.permanentRedirect, '/status/404?url=' + event.url.href);
-        }
+		const isAdmin = await Account.isAdmin(event.locals.account);
+		if (isAdmin.isErr()) {
+			terminal.error(isAdmin.error);
+			throw fail(ServerCode.internalServerError);
+		}
 
-        const res = await Account.verify(verifyAccount.value);
+		if (!isAdmin.value) {
+			throw redirect(ServerCode.permanentRedirect, '/status/403');
+		}
 
-        if (res.isErr()) {
-            terminal.error(res.error);
-            throw fail(ServerCode.internalServerError);
-        }
+		const verifyAccount = await Account.Account.fromProperty(
+			'verification',
+			event.params.verifyId,
+			{
+				type: 'single'
+			}
+		);
 
+		if (verifyAccount.isErr()) {
+			terminal.error(verifyAccount.error);
+			throw fail(ServerCode.internalServerError);
+		}
 
-        return {
-            success: true,
-        }
-    },
+		if (!verifyAccount.value) {
+			throw redirect(ServerCode.permanentRedirect, '/status/404?url=' + event.url.href);
+		}
+
+		const res = await Account.verify(verifyAccount.value);
+
+		if (res.isErr()) {
+			terminal.error(res.error);
+			throw fail(ServerCode.internalServerError);
+		}
+
+		return {
+			success: true
+		};
+	}
 };

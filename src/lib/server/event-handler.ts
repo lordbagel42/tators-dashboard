@@ -22,7 +22,7 @@ import { Logs } from './structs/log';
 export const handleEvent =
 	(struct: Struct) =>
 	async (event: RequestAction): Promise<Response> => {
-		// console.log('Handling event:', event);
+		console.log('Handling event:', event);
 		const error = (error: Error) => {
 			return new Response(
 				JSON.stringify({

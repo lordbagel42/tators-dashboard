@@ -37,9 +37,7 @@ export namespace Account {
 
 	Account.on('create', async (account) => {
 		const verification = account.data.verification;
-		const link = await Email.createLink(
-			'/admin/verifiy/' + verification,
-		);
+		const link = await Email.createLink('/admin/verifiy/' + verification);
 		if (link.isErr()) return terminal.error(link.error);
 		const admins = await getAdmins();
 		if (admins.isErr()) return terminal.error(admins.error);
@@ -47,10 +45,10 @@ export namespace Account {
 			type: 'new-user',
 			data: {
 				verification: link.value,
-				username: account.data.username,
+				username: account.data.username
 			},
 			subject: `New User Registered ${account.data.username}`,
-			to: admins.value.map(a => a.data.email),
+			to: admins.value.map((a) => a.data.email)
 		});
 
 		if (res.isErr()) return terminal.error(res.error);
@@ -448,9 +446,9 @@ export namespace Account {
 	export const verify = async (account: AccountData) => {
 		return account.update({
 			verified: true,
-			verification: '',
+			verification: ''
 		});
-	}
+	};
 }
 
 // for drizzle

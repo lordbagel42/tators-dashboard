@@ -1,26 +1,17 @@
 import { Account } from '$lib/server/structs/account.js';
 import { Session } from '$lib/server/structs/session.js';
+import { Universes } from '$lib/server/structs/universe.js';
 import terminal from '$lib/server/utils/terminal.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 
 export const load = async (event) => {
-    const session = await Session.getSession(event);
-    if (session.isErr()) {
-        terminal.error(session.error);
-        throw fail(ServerCode.internalServerError);
-    }
-    const account = await Session.getAccount(session.value);
-    if (account.isErr()) {
-        terminal.error(account.error);
-        throw fail(ServerCode.internalServerError);
-    }
 
-    if (!account.value) {
+    if (!event.locals.account) {
         throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
     }
 
-    const isAdmin = await Account.isAdmin(account.value);
+    const isAdmin = await Account.isAdmin(event.locals.account);
     if (isAdmin.isErr()) {
         terminal.error(isAdmin.error);
         throw fail(ServerCode.internalServerError);
@@ -51,22 +42,11 @@ export const load = async (event) => {
 
 export const actions = {
     verify: async (event) => {
-        const session = await Session.getSession(event);
-        if (session.isErr()) {
-            terminal.error(session.error);
-            throw fail(ServerCode.internalServerError);
-        }
-        const account = await Session.getAccount(session.value);
-        if (account.isErr()) {
-            terminal.error(account.error);
-            throw fail(ServerCode.internalServerError);
-        }
-    
-        if (!account.value) {
+        if (!event.locals.account) {
             throw redirect(ServerCode.temporaryRedirect, '/account/log-in');
         }
     
-        const isAdmin = await Account.isAdmin(account.value);
+        const isAdmin = await Account.isAdmin(event.locals.account);
         if (isAdmin.isErr()) {
             terminal.error(isAdmin.error);
             throw fail(ServerCode.internalServerError);
@@ -95,6 +75,7 @@ export const actions = {
             terminal.error(res.error);
             throw fail(ServerCode.internalServerError);
         }
+
 
         return {
             success: true,

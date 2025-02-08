@@ -32,6 +32,7 @@ export namespace Account {
 	});
 
 	export type AccountData = StructData<typeof Account.data.structure>;
+	export type AccountArr = DataArr<typeof Account.data.structure>;
 
 	export const AccountNotification = new Struct({
 		name: 'account_notification',

@@ -6,6 +6,7 @@ export type Entitlement =
   | 'manage-universe'
   | 'view-checklist'
   | 'view-pit-scouting'
+  | 'view-potatoes'
   | 'view-roles'
   | 'view-scouting'
   | 'view-strategy'
@@ -17,5 +18,6 @@ export type Group =
   | 'Roles'
   | 'Universe'
   | 'Checklists'
+  | 'Potatoes'
   | 'Strategy'
   | 'FIRST';

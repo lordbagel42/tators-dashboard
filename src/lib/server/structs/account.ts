@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { Universes } from './universe';
 import { Permissions } from './permissions';
 import { Email } from './email';
+import terminal from '../utils/terminal';
 
 export namespace Account {
 	export const Account = new Struct({
@@ -34,7 +35,26 @@ export namespace Account {
 		safes: ['key', 'salt', 'verification']
 	});
 
-	Account.on('create', async (account) => {});
+	Account.on('create', async (account) => {
+		const verification = account.data.verification;
+		const link = await Email.createLink(
+			'/admin/verifiy/' + verification,
+		);
+		if (link.isErr()) return terminal.error(link.error);
+		const admins = await getAdmins();
+		if (admins.isErr()) return terminal.error(admins.error);
+		const res = await Email.send({
+			type: 'new-user',
+			data: {
+				verification: link.value,
+				username: account.data.username,
+			},
+			subject: `New User Registered ${account.data.username}`,
+			to: admins.value.map(a => a.data.email),
+		});
+
+		if (res.isErr()) return terminal.error(res.error);
+	});
 
 	Account.queryListen('universe-members', async (event, data) => {
 		const session = (await Session.getSession(event)).unwrap();
@@ -424,6 +444,13 @@ export namespace Account {
 			).unwrap();
 		});
 	};
+
+	export const verify = async (account: AccountData) => {
+		return account.update({
+			verified: true,
+			verification: '',
+		});
+	}
 }
 
 // for drizzle

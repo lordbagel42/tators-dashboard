@@ -306,7 +306,6 @@ export namespace Permissions {
 				);
 
 			stream.pipe((d) => {
-				// console.log('Testing:', d);
 				if (bypass.some((b) => b(account, d))) {
 					return newStream.add(d.safe());
 				}

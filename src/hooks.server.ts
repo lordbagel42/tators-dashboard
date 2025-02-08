@@ -1,3 +1,4 @@
+import '$lib/server/index';
 import { Account } from '$lib/server/structs/account';
 import { Session } from '$lib/server/structs/session';
 import '$lib/server/structs/permissions';
@@ -24,12 +25,10 @@ config();
 Struct.each((struct) => {
 	if (!struct.built) {
 		struct.build(DB);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		struct.eventHandler(handleEvent(struct) as any);
+		struct.eventHandler(handleEvent(struct));
 		connectionEmitter(struct);
 	}
 });
-
 
 Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
 

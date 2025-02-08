@@ -44,7 +44,7 @@ export namespace Universes {
 		}
 
 		Permissions.Role.fromProperty('name', 'Admin', {
-			type: 'single',
+			type: 'single'
 		}).then(async (hasAdmin) => {
 			const res = await getEntitlementNames();
 			if (res.isErr()) return terminal.error(res.error);
@@ -62,17 +62,15 @@ export namespace Universes {
 					name: 'Admin',
 					description: `Team Tators Aministrator`,
 					links: '[]',
-					entitlements: JSON.stringify(res.value),
+					entitlements: JSON.stringify(res.value)
 				})
 			).unwrap();
 			(await admin.setUniverse('2122')).unwrap();
 			(await admin.setStatic(true)).unwrap();
 		});
 
-
-
 		Permissions.Role.fromProperty('name', 'Member', {
-			type: 'single',
+			type: 'single'
 		}).then(async (hasMember) => {
 			if (hasMember.isErr() || hasMember.value) return;
 

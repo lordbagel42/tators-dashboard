@@ -50,6 +50,7 @@ export namespace Account {
 	});
 
 	export type AccountNotificationData = StructData<typeof AccountNotification.data.structure>;
+	export type AccountNotificationArr = DataArr<typeof AccountNotification.data.structure>;
 
 	export const self = new SingleWritable(
 		Account.Generator({

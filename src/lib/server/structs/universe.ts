@@ -19,6 +19,30 @@ export namespace Universes {
 		}
 	});
 
+	Universe.on('build', async () => {
+		const exists = (await Universe.fromId('2122')).unwrap();
+		if (!exists) {
+			Universe.new(
+				{
+					id: '2122',
+					name: 'Team Tators',
+					description: 'Team Tators single universe',
+					public: false,
+					archived: false,
+					canUpdate: false,
+					lifetime: 0,
+					attributes: '[]',
+					universe: '2122',
+					updated: new Date().toISOString(),
+					created: new Date().toISOString()
+				},
+				{
+					overwriteGlobals: true
+				}
+			);
+		}
+	});
+
 	Universe.on('delete', (u) => {
 		Struct.each((s) => {
 			s.each((d) => {
@@ -320,20 +344,20 @@ export namespace Universes {
 		});
 	};
 
-	createEntitlement({
-		name: 'manage-universe',
-		structs: [Universe],
-		permissions: ['*'],
-		group: 'Universe'
-	});
+	// createEntitlement({
+	// 	name: 'manage-universe',
+	// 	structs: [Universe],
+	// 	permissions: ['*'],
+	// 	group: 'Universe'
+	// });
 
-	createEntitlement({
-		name: 'view-universe',
-		structs: [Universe],
-		// permissions: ['read:name', 'read:description', 'read:public']
-		permissions: ['universe:read:name', 'universe:read:description'],
-		group: 'Universe'
-	});
+	// createEntitlement({
+	// 	name: 'view-universe',
+	// 	structs: [Universe],
+	// 	// permissions: ['read:name', 'read:description', 'read:public']
+	// 	permissions: ['universe:read:name', 'universe:read:description'],
+	// 	group: 'Universe'
+	// });
 }
 
 export const _universeTable = Universes.Universe.table;

@@ -17,10 +17,18 @@ import { encode } from 'ts-utils/text';
 import { sse } from '$lib/server/utils/sse';
 import { z } from 'zod';
 import terminal from '$lib/server/utils/terminal';
+import { Logs } from './structs/log';
 
 export const handleEvent =
 	(struct: Struct) =>
-	async (event: RequestAction): Promise<Response> => {
+	async (
+		event: RequestAction & {
+			locals: {
+				session: Session.SessionData;
+				account?: Account.AccountData;
+			};
+		}
+	): Promise<Response> => {
 		// console.log('Handling event:', event);
 		const error = (error: Error) => {
 			return new Response(
@@ -31,15 +39,13 @@ export const handleEvent =
 				{ status: 200 }
 			);
 		};
-		const s = (await Session.getSession(event.request)).unwrap();
-		if (!s) return error(new StructError(struct, 'Session not found'));
 
 		let roles: Permissions.RoleData[] = [];
 		let account: Account.AccountData | undefined;
 		let isAdmin = false;
 
 		if (struct.data.name !== 'test') {
-			account = (await Session.getAccount(s)).unwrap();
+			account = event.locals.account;
 			if (!account) return error(new StructError(struct, 'Not logged in'));
 
 			roles = (await Permissions.allAccountRoles(account)).unwrap();
@@ -106,6 +112,16 @@ export const handleEvent =
 
 			(await version.delete()).unwrap();
 
+			(
+				await Logs.Log.new({
+					dataId: String(data.data.id),
+					accountId: account?.id || 'unknown',
+					type: 'delete-version',
+					message: 'Deleted version',
+					struct: struct.data.name
+				})
+			).unwrap();
+
 			return new Response(
 				JSON.stringify({
 					success: true
@@ -129,6 +145,16 @@ export const handleEvent =
 			if (!versions) return error(new DataError(struct, 'Version not found'));
 			const res = await versions.restore();
 			if (res.isErr()) return error(res.error);
+
+			(
+				await Logs.Log.new({
+					dataId: String(data.data.id),
+					accountId: account?.id || 'unknown',
+					type: 'restore-version',
+					message: 'Restored version',
+					struct: struct.data.name
+				})
+			).unwrap();
 
 			return new Response(
 				JSON.stringify({
@@ -302,6 +328,16 @@ export const handleEvent =
 				const universe = event.request.request.headers.get('universe');
 				if (universe) {
 					(await created.setUniverse(universe)).unwrap();
+
+					(
+						await Logs.Log.new({
+							dataId: String(created.data.id),
+							accountId: account?.id || 'unknown',
+							type: 'create',
+							message: 'Created data',
+							struct: struct.data.name
+						})
+					).unwrap();
 				}
 				return new Response(
 					JSON.stringify({
@@ -350,6 +386,16 @@ export const handleEvent =
 			if (runBypass()) {
 				const res = await found.update(data);
 				if (res.isErr()) return error(res.error);
+
+				(
+					await Logs.Log.new({
+						dataId: String(found.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'update',
+						message: 'Updated data',
+						struct: struct.data.name
+					})
+				).unwrap();
 			} else {
 				const [res] = (
 					await Permissions.filterAction(roles, [found as any], PropertyAction.Update)
@@ -359,6 +405,16 @@ export const handleEvent =
 					Object.fromEntries(Object.entries(data).filter(([k]) => res[k])) as any
 				);
 				if (updateRes.isErr()) return error(updateRes.error);
+
+				(
+					await Logs.Log.new({
+						dataId: String(found.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'update',
+						message: 'Updated data',
+						struct: struct.data.name
+					})
+				).unwrap();
 			}
 
 			return new Response(
@@ -383,6 +439,16 @@ export const handleEvent =
 				if (!found) return error(new DataError(struct, 'Data not found'));
 
 				(await found.setArchive(true)).unwrap();
+
+				(
+					await Logs.Log.new({
+						dataId: String(found.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'archive',
+						message: 'Archived data',
+						struct: struct.data.name
+					})
+				).unwrap();
 
 				return new Response(
 					JSON.stringify({
@@ -411,6 +477,17 @@ export const handleEvent =
 				if (!found) return error(new DataError(struct, 'Data not found'));
 
 				(await found.delete()).unwrap();
+
+				(
+					await Logs.Log.new({
+						dataId: String(found.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'delete',
+						message: 'Deleted data',
+						struct: struct.data.name
+					})
+				).unwrap();
+
 				return new Response(
 					JSON.stringify({
 						success: true
@@ -438,7 +515,17 @@ export const handleEvent =
 				const found = (await struct.fromId(safe.data.id)).unwrap();
 				if (!found) return error(new DataError(struct, 'Data not found'));
 
-				await found.setArchive(false);
+				(await found.setArchive(false)).unwrap();
+
+				(
+					await Logs.Log.new({
+						dataId: String(found.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'restore',
+						message: 'Restored data',
+						struct: struct.data.name
+					})
+				).unwrap();
 
 				return new Response(
 					JSON.stringify({

@@ -3,6 +3,8 @@ import * as inquirer from '@inquirer/prompts';
 import FuzzySearch from 'fuzzy-search';
 import Table from 'cli-table';
 import { Colors } from './colors';
+import terminal from '../utils/terminal';
+import chalk from 'chalk';
 
 type GlobalConfig = {
 	message: string;
@@ -54,6 +56,21 @@ export const repeatPrompt = async (
 
 		return run();
 	});
+
+export const alert = async (config: GlobalConfig) => {
+	return new Promise<void>((res) => {
+		if (config.clear) console.clear();
+		console.log(config.message);
+		console.log(chalk.gray('Press any key to continue'));
+		process.stdin.setRawMode(true);
+		process.stdin.resume();
+		process.stdin.on('data', () => {
+			process.stdin.setRawMode(false);
+			process.stdin.pause();
+			res();
+		});
+	});
+};
 
 type Option<T> = {
 	value: T;
@@ -166,7 +183,7 @@ export const selectFromTable = async <T extends Record<string, unknown>>(
 			new Promise<number | undefined>((res) => {
 				if (config.clear) console.clear();
 				if (!config.options.length) {
-					console.log('No options available');
+					terminal.log('No options available');
 					return res(undefined);
 				}
 
@@ -230,6 +247,75 @@ export const selectFromTable = async <T extends Record<string, unknown>>(
 			})
 	);
 
+export const viewTable = async <T extends Record<string, unknown>>(
+	config: GlobalConfig & {
+		options: T[];
+		omit?: (keyof T)[];
+	}
+) =>
+	attemptAsync(
+		async () =>
+			new Promise<void>((res, rej) => {
+				// No selection process, just viewing, press any key (except scrolls) to exit
+				if (!config.options.length) {
+					return alert({
+						message: 'Table is empty',
+						clear: config.clear
+					})
+						.then(res)
+						.catch(rej);
+				}
+
+				if (config.clear) console.clear();
+
+				const headers = Object.keys(config.options[0]).filter(
+					(k) => !config.omit?.includes(k as keyof T)
+				);
+
+				const stdin = process.stdin;
+
+				stdin.setRawMode(true);
+				stdin.resume();
+				stdin.setEncoding('utf8');
+
+				const run = () => {
+					console.clear();
+					console.log(config.message);
+					const t = new Table({
+						head: headers
+					});
+
+					t.push(
+						...config.options.map((o) =>
+							headers.map((h) => {
+								return String(o[h]);
+							})
+						)
+					);
+
+					console.log(t.toString());
+
+					stdin.on('data', handleKey);
+				};
+
+				const handleKey = (key: string) => {
+					switch (key) {
+						case '\u0003':
+							process.exit();
+							break;
+						case '\r':
+							console.clear();
+							res();
+							break;
+					}
+
+					stdin.off('data', handleKey);
+				};
+
+				run();
+			})
+	);
+
 let id = -1;
 export class Folder {
 	public static home?: Folder;
@@ -274,22 +360,22 @@ export class Folder {
 
 			if (selected) {
 				try {
-					(await selected()).unwrap();
+					await selected();
 				} catch (error) {
-					console.error(error);
+					terminal.error('CLI Error:', error);
 				}
 			} else {
-				console.log('Cancelled');
+				terminal.log('Cancelled');
 			}
 
-			return;
+			Folder.home?.action();
 		});
 	}
 
 	get exit() {
 		return new Action('Exit', 'Exit the CLI', '🚪', () => {
-			console.log('Exiting CLI');
-			console.log('Goodbye!');
+			terminal.log('Exiting CLI');
+			terminal.log('Goodbye!');
 			process.exit(0);
 		});
 	}
@@ -308,8 +394,6 @@ export class Action {
 	) {}
 
 	public action() {
-		return attemptAsync(async () => {
-			await this._action();
-		});
+		return this._action();
 	}
 }

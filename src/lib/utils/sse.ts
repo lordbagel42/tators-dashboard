@@ -63,16 +63,22 @@ class SSE {
 
 			const onMessage = (event: MessageEvent) => {
 				try {
-					const e = JSON.parse(decode(event.data));
-					console.log(e);
+					const e = z
+						.object({
+							id: z.number(),
+							event: z.string(),
+							data: z.unknown()
+						})
+						.parse(JSON.parse(decode(event.data)));
+					// console.log(e);
 					// if (e.id < id) return;
 					id = e.id;
 					if (!Object.hasOwn(e, 'event')) {
-						return console.error('Invalid event:', e);
+						return console.error('Invalid event (missing .event)', e);
 					}
 
 					if (!Object.hasOwn(e, 'data')) {
-						return console.error('Invalid data:', e);
+						return console.error('Invalid data (mising .data)', e);
 					}
 
 					if (e.event === 'close') {
@@ -98,7 +104,7 @@ class SSE {
 					}
 
 					if (!['close', 'ping'].includes(e.event)) {
-						console.log('emitting', e.event, e.data);
+						// console.log('emitting', e.event, e.data);
 						this.emit(e.event, e.data);
 					}
 

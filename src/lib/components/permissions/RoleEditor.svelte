@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { type Blank } from 'drizzle-struct/front-end';
-	import { capitalize, fromCamelCase } from 'ts-utils/text';
+	import { capitalize, fromSnakeCase } from 'ts-utils/text';
 	import { Permissions } from '$lib/model/permissions';
 	import { confirm } from '$lib/utils/prompts';
-	import StructTable from './StructTable.svelte';
+	import { onMount } from 'svelte';
+	import { z } from 'zod';
 
 	interface Props {
 		role: Permissions.RoleData;
@@ -11,47 +12,86 @@
 
 	const { role }: Props = $props();
 
-	let structs = $state(Permissions.StructPermissions.getAll(role));
+	type S = {
+		group: string;
+		permission: string[];
+	};
 
-	export const save = async () => {
-		const confirmed = await confirm('Are you sure you want to save these changes?');
-		if (confirmed) {
-			Permissions.StructPermissions.save(structs);
-		}
+	let entitlements: S[] = $state([]);
+
+	let value = $state(new Set<string>());
+
+	export const save = () => {
+		Permissions.saveEntitlements(role, Array.from(value)).then((e) => {
+			console.log(e);
+		});
 	};
 
 	export const reset = () => {
-		for (const s of structs) s.reset();
+		try {
+			value = new Set(z.array(z.string()).parse(JSON.parse(role.data.entitlements ?? '[]')));
+		} catch (error) {
+			console.error(error);
+			value = new Set();
+		}
 	};
+
+	onMount(() => {
+		Permissions.getEntitlements().then((e) => {
+			if (e.isOk()) {
+				entitlements = e.value.reduce((acc, ent) => {
+					const has = acc.find((e) => e.group === ent.group);
+					if (has) {
+						has.permission.push(ent.name);
+					} else {
+						acc.push({
+							group: ent.group,
+							permission: [ent.name]
+						});
+					}
+					return acc;
+				}, [] as S[]);
+			}
+		});
+
+		return role.subscribe((e) => {
+			try {
+				value = new Set(z.array(z.string()).parse(JSON.parse(e.entitlements ?? '[]')));
+			} catch (error) {
+				console.error(error);
+				value = new Set();
+			}
+		});
+	});
 </script>
 
 <div class="container">
 	<div class="row">
-		<div class="accordion">
-			{#each structs as struct, i}
-				<div class="accordion-item">
-					<div class="accordion-header">
-						<button
-							type="button"
-							class="accordion-button collapsed"
-							aria-controls="role-editor-collapse-{i}"
-							data-bs-target="#role-editor-collapse-{i}"
-							data-bs-toggle="collapse"
-						>
-							{capitalize(fromCamelCase(struct.struct.data.name))}
-						</button>
-					</div>
-				</div>
-				<div
-					id="role-editor-collapse-{i}"
-					class="accordion-collapse collapse"
-					data-bs-parent="role-editor"
-				>
-					<div class="accordion-body">
-						<StructTable {struct} />
-					</div>
-				</div>
-			{/each}
-		</div>
+		{#each entitlements as e, i}
+			<h4>
+				{e.group}
+			</h4>
+			<ul class="list-unstyled">
+				{#each e.permission as p}
+					<li>
+						<input
+							type="checkbox"
+							id="permission-{i}-{p}"
+							onchange={(e) => {
+								if (e.currentTarget.checked) {
+									value.add(p);
+								} else {
+									value.delete(p);
+								}
+							}}
+							checked={value.has(p)}
+						/>
+						<label for="permission-{i}-{p}" class="ms-2">
+							{capitalize(fromSnakeCase(p, '-'))}
+						</label>
+					</li>
+				{/each}
+			</ul>
+		{/each}
 	</div>
 </div>

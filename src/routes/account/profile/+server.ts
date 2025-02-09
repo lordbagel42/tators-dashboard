@@ -2,38 +2,27 @@ import { Session } from '$lib/server/structs/session.js';
 import { FileReceiver } from '$lib/server/utils/files';
 import { error } from '@sveltejs/kit';
 
-
 export const POST = async (event) => {
-    const session = await Session.getSession(event);
-    if (session.isErr()) {
-        console.error(session.error);
-        return error(500, 'Failed to get session');
-    }
+	const account = event.locals.account;
+	if (!account) {
+		return error(401, 'Unauthorized');
+	}
 
-    const account = await Session.getAccount(session.value);
+	const fr = new FileReceiver({
+		maxFileSize: 1024 * 1024 * 10, // 10MB
+		maxFiles: 1
+	});
 
-    if (account.isErr()) {
-        console.error(account.error);
-        return error(500, 'Failed to get account');
-    }
+	const res = await fr.receive(event);
 
-    if (!account.value) {
-        return error(401, 'Unauthorized');
-    }
+	if (res.isErr()) {
+		console.error(res.error);
+		return error(500, 'Failed to receive file');
+	}
 
-    const fr = new FileReceiver({
-        maxFileSize: 1024 * 1024 * 10, // 10MB
-        maxFiles: 1,
-    });
+	account.update({
+		picture: res.value.files[0].filePath
+	});
 
-    const res = await fr.receive(event);
-
-    if (res.isErr()) {
-        console.error(res.error);
-        return error(500, 'Failed to receive file');
-    }
-
-    account.value.update({
-        picture: res.value.files[0].filePath,
-    })
+	return new Response('OK');
 };

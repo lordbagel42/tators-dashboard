@@ -9,7 +9,8 @@
 		PaginationModule,
 		type GridApi,
 		QuickFilterModule,
-		ValidationModule
+		ValidationModule,
+		RowAutoHeightModule
 	} from 'ag-grid-community';
 
 	// Register AG Grid Modules
@@ -17,7 +18,8 @@
 		ClientSideRowModelModule,
 		PaginationModule,
 		QuickFilterModule,
-		ValidationModule
+		ValidationModule,
+		RowAutoHeightModule
 	]);
 
 	interface Props<T extends Record<string, unknown> = Record<string, unknown>> {
@@ -26,10 +28,12 @@
 			field: keyof T;
 		}[];
 		rowData: T[];
-		classes: string;
+		gridClasses: string;
+		filterEnable: boolean;
+		filterClasses: string;
 	}
 
-	let { columnDefs, rowData, classes }: Props = $props();
+	let { columnDefs, rowData, gridClasses, filterEnable, filterClasses }: Props = $props();
 
 	// Create a custom dark theme using Theming API
 	const darkTheme = themeQuartz.withParams({
@@ -46,11 +50,11 @@
 
 	let gridDiv: HTMLDivElement;
 	let grid: GridApi;
-	let filterText = '';
+	let filterText: string = $state('');
 
 	const onFilterTextBoxChanged = () => {
 		grid.setGridOption('quickFilterText', filterText);
-		console.log('filtering');
+		console.log(filterText);
 	};
 
 	onMount(() => {
@@ -63,7 +67,9 @@
 				filter: true
 			},
 			pagination: true,
-			paginationAutoPageSize: true
+			paginationPageSize: 10,
+			paginationPageSizeSelector: [10, 20, 50]
+			// paginationAutoPageSize: true
 		};
 
 		if (gridDiv) {
@@ -73,14 +79,36 @@
 </script>
 
 <!-- Grid Container -->
-<div class="example-header">
-	<span>Quick Filter:</span>
-	<input
-		type="text"
-		id="filter-text-box"
-		placeholder="Filter..."
-		oninput={onFilterTextBoxChanged}
-		value={filterText}
-	/>
-</div>
-<div bind:this={gridDiv} class={classes}></div>
+{#if filterEnable}
+	<div class="filter-container">
+		<span class="text-light">Quick Filter:</span>
+		<input
+			type="text"
+			id="filter-text-box"
+			class="form-control"
+			placeholder="Filter..."
+			oninput={onFilterTextBoxChanged}
+			bind:value={filterText}
+		/>
+	</div>
+{/if}
+<div bind:this={gridDiv} class="ag-theme-quartz w-auto"></div>
+
+<style>
+	/* Ensure the grid container respects Bootstrap sizing */
+	.ag-theme-quartz {
+		height: 400px;
+	}
+
+	/* Fix input spacing for filter */
+	.filter-container {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	.filter-container input {
+		max-width: 300px;
+	}
+</style>

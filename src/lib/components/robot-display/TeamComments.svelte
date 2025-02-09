@@ -40,7 +40,7 @@
 	const columns = [
 		{ headerName: 'Account', field: 'account' },
 		{ headerName: 'type', field: 'type' },
-		{ headerName: 'comment', field: 'comment' },
+		{ headerName: 'comment', field: 'comment', wrapText: true, autoHeight: true },
 		{ headerName: 'match', field: 'match' }
 	];
 
@@ -55,11 +55,19 @@
 	const rows = Array.from({ length: 5000 }, (_, index) => ({
 		account: faker.person.fullName(),
 		type: faker.helpers.arrayElement(['positive', 'constructive', 'neutral']),
-		comment: faker.lorem.sentence(),
+		comment: faker.lorem.paragraph(),
 		match: `Match ${index + 1}`
 	}));
 
 	console.log(rows);
 </script>
 
-<div style="height: 400px;"><Grid columnDefs={columns} rowData={rows} classes="w-50 h-100" /></div>
+<div>
+	<Grid
+		columnDefs={columns}
+		rowData={rows}
+		gridClasses="table table-striped"
+		filterEnable={true}
+		filterClasses=""
+	/>
+</div>

@@ -16,6 +16,15 @@
 		icon: 'home',
 		id: 'card2'
 	});
+
+	const comments = [
+		{
+			account: 'user1',
+			type: 'positive',
+			comment: 'Great performance in the last match!',
+			match: 'Match 1'
+		}
+	];
 </script>
 
 <div class="container-fluid">
@@ -29,7 +38,7 @@
 			</Card>
 			<Card card={card2}>
 				{#snippet body()}
-					<TeamComments />
+					<TeamComments {comments} />
 				{/snippet}
 			</Card>
 		</div>

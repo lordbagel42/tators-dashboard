@@ -2,7 +2,7 @@ import { Struct } from 'drizzle-struct/back-end';
 import { boolean, text } from 'drizzle-orm/pg-core';
 import { type Email as E } from '../../types/email';
 import { attemptAsync } from 'ts-utils/check';
-import { render } from 'html-constructor';
+// import { render } from 'html-constructor';
 import fs from 'fs';
 import path from 'path';
 import nodemailer from 'nodemailer';
@@ -87,7 +87,8 @@ export namespace Email {
 				'utf-8'
 			);
 
-			const html = render(file, config.data);
+			// const html = render(file, config.data);
+			const html = file;
 
 			await transporter.sendMail({
 				from: SENDGRID_EMAIL,

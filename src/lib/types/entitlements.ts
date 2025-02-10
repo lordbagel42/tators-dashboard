@@ -1,6 +1,5 @@
 export type Entitlement = 
     'create-custom-tba-responses'
-  | 'manage-pit-scouting'
   | 'manage-roles'
   | 'manage-tba'
   | 'manage-universe'
@@ -14,10 +13,10 @@ export type Entitlement =
   | 'view-universe';
 export type Group = 
     'TBA'
-  | 'Scouting'
   | 'Roles'
   | 'Universe'
   | 'Checklists'
+  | 'Scouting'
   | 'Potatoes'
   | 'Strategy'
   | 'FIRST';

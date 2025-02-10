@@ -35,6 +35,7 @@ Struct.setupLogger(path.join(process.cwd(), 'logs', 'structs'));
 export const handle: Handle = async ({ event, resolve }) => {
 	const session = await Session.getSession(event);
 	if (session.isErr()) {
+		terminal.error(session.error);
 		return new Response('Internal Server Error', { status: ServerCode.internalServerError });
 	}
 

@@ -12,7 +12,7 @@
 </script>
 
 {#if $card.show}
-	<div class="card" class:maximized={$card.maximized}>
+	<div class="card col-xl-4 col-md-6" class:maximized={$card.maximized}>
 		<div class="card-header">
 			<div class="d-flex h-100 align-items-center">
 				<h5 class="card-title h-100 m-0">
@@ -72,6 +72,7 @@
 <style>
 	.card {
 		transition: all 0.3s ease;
+		height: 425px;
 	}
 
 	.maximized {

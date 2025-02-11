@@ -11,10 +11,10 @@
 	});
 
 	const card2 = new Dashboard.Card({
-		name: 'Card 2',
+		name: 'Comments',
 		iconType: 'material-icons',
 		icon: 'home',
-		id: 'card2'
+		id: 'comments'
 	});
 
 	const comments = [
@@ -29,18 +29,16 @@
 
 <div class="container-fluid">
 	<div class="row">
-		<div class="col">
-			<Card card={card1}>
-				{#snippet body()}
-					<h1>Card 1</h1>
-					<p>This is the body of card 1</p>
-				{/snippet}
-			</Card>
-			<Card card={card2}>
-				{#snippet body()}
-					<TeamComments {comments} />
-				{/snippet}
-			</Card>
-		</div>
+		<Card card={card1}>
+			{#snippet body()}
+				<h1>Card 1</h1>
+				<p>This is the body of card 1</p>
+			{/snippet}
+		</Card>
+		<Card card={card2}>
+			{#snippet body()}
+				<TeamComments {comments} />
+			{/snippet}
+		</Card>
 	</div>
 </div>

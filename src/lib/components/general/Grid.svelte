@@ -10,7 +10,10 @@
 		type GridApi,
 		QuickFilterModule,
 		ValidationModule,
-		RowAutoHeightModule
+		RowAutoHeightModule,
+		ColumnAutoSizeModule,
+		TextFilterModule,
+		NumberFilterModule
 	} from 'ag-grid-community';
 
 	// Register AG Grid Modules
@@ -19,7 +22,10 @@
 		PaginationModule,
 		QuickFilterModule,
 		ValidationModule,
-		RowAutoHeightModule
+		RowAutoHeightModule,
+		ColumnAutoSizeModule,
+		TextFilterModule,
+		NumberFilterModule
 	]);
 
 	interface Props<T extends Record<string, unknown> = Record<string, unknown>> {
@@ -64,11 +70,18 @@
 			rowData,
 			defaultColDef: {
 				sortable: true,
-				filter: true
+				flex: 1,
+				filter: true,
+				autoHeight: true,
+				wrapText: true
 			},
 			pagination: true,
 			paginationPageSize: 10,
 			paginationPageSizeSelector: [10, 20, 50]
+
+			// autoSizeStrategy: {
+			// 	type: 'fitGridWidth'
+			// }
 			// paginationAutoPageSize: true
 		};
 
@@ -79,36 +92,14 @@
 </script>
 
 <!-- Grid Container -->
-{#if filterEnable}
-	<div class="filter-container">
-		<span class="text-light">Quick Filter:</span>
-		<input
-			type="text"
-			id="filter-text-box"
-			class="form-control"
-			placeholder="Filter..."
-			oninput={onFilterTextBoxChanged}
-			bind:value={filterText}
-		/>
-	</div>
-{/if}
-<div bind:this={gridDiv} class="ag-theme-quartz w-auto"></div>
-
-<style>
-	/* Ensure the grid container respects Bootstrap sizing */
-	.ag-theme-quartz {
-		height: 400px;
-	}
-
-	/* Fix input spacing for filter */
-	.filter-container {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-bottom: 1rem;
-	}
-
-	.filter-container input {
-		max-width: 300px;
-	}
-</style>
+<div class="filter-container">
+	<input
+		type="text"
+		id="filter-text-box"
+		class="form-control me-2"
+		placeholder="Filter..."
+		oninput={onFilterTextBoxChanged}
+		bind:value={filterText}
+	/>
+</div>
+<div bind:this={gridDiv} class="w-100 h-100"></div>

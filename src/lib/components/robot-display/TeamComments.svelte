@@ -3,6 +3,7 @@
 	import { Scouting } from '$lib/model/scouting';
 	import Grid from '$lib/components/general/Grid.svelte';
 	import { faker } from '@faker-js/faker';
+	import type { INumberFilterParams, ITextFilterParams } from 'ag-grid-community';
 
 	interface Props {
 		comments: {
@@ -15,54 +16,77 @@
 
 	let { comments }: Props = $props();
 
-	// example comments
-	// comments = [
-	// 	{
-	// 		account: 'user1',
-	// 		type: 'positive',
-	// 		comment: 'Great performance in the last match!',
-	// 		match: 'Match 1'
-	// 	},
-	// 	{
-	// 		account: 'user2',
-	// 		type: 'constructive',
-	// 		comment: 'Needs improvement in defense.',
-	// 		match: 'Match 2'
-	// 	},
-	// 	{
-	// 		account: 'user3',
-	// 		type: 'neutral',
-	// 		comment: 'Average performance overall.',
-	// 		match: 'Match 3'
-	// 	}
-	// ];
+	const accountFilterParams: ITextFilterParams = {
+		filterOptions: ['contains', 'notContains'],
+		textFormatter: (r) => {
+			if (r == null) return null;
+
+			return r.toLowerCase();
+		},
+		debounceMs: 200,
+		maxNumConditions: 1
+	};
+
+	const typeFilterparams: ITextFilterParams = {
+		textFormatter: (r) => {
+			if (r == null) return null;
+
+			return r.toLowerCase();
+		},
+		debounceMs: 200,
+		maxNumConditions: 1
+	};
+
+	const commentFilterParams: ITextFilterParams = {
+		textFormatter: (r) => {
+			if (r == null) return null;
+
+			return r.toLowerCase();
+		},
+		debounceMs: 200,
+		maxNumConditions: 1
+	};
 
 	const columns = [
-		{ headerName: 'Account', field: 'account' },
-		{ headerName: 'type', field: 'type' },
-		{ headerName: 'comment', field: 'comment', wrapText: true, autoHeight: true },
-		{ headerName: 'match', field: 'match' }
+		{
+			headerName: 'Account',
+			field: 'account',
+			filter: 'agTextColumnFilter',
+			filterParams: accountFilterParams
+		},
+		{
+			headerName: 'Type',
+			field: 'type',
+			filter: 'agTextColumnFilter',
+			filterParams: typeFilterparams
+		},
+		{
+			headerName: 'Comment',
+			field: 'comment',
+			filter: 'agTextColumnFilter',
+			filterParams: commentFilterParams
+		},
+		{
+			headerName: 'Match',
+			field: 'match',
+			filter: 'agNumberColumnFilter'
+		}
 	];
 
-	// const rows = [
-	// 	{
-	// 		name: 'John Doe',
-	// 		age: 25,
-	// 		location: 'New York'
-	// 	}
-	// ];
+	// DEV ONLY
+	// const rows = Array.from({ length: 5000 }, (_, index) => ({
+	// 	account: faker.person.fullName(),
+	// 	type: faker.helpers.arrayElement(['positive', 'constructive', 'neutral']),
+	// 	comment: faker.lorem.paragraph(),
+	// 	match: index + 1
+	// }));
 
-	const rows = Array.from({ length: 5000 }, (_, index) => ({
-		account: faker.person.fullName(),
-		type: faker.helpers.arrayElement(['positive', 'constructive', 'neutral']),
-		comment: faker.lorem.paragraph(),
-		match: `Match ${index + 1}`
-	}));
+	const rows = comments;
 
 	console.log(rows);
 </script>
 
-<div>
+<div class="h-85 w-100">
 	<Grid
 		columnDefs={columns}
 		rowData={rows}
@@ -71,3 +95,9 @@
 		filterClasses=""
 	/>
 </div>
+
+<style>
+	.h-85 {
+		height: 85%;
+	}
+</style>

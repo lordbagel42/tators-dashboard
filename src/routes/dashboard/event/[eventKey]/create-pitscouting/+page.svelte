@@ -1,5 +1,4 @@
 <script lang="ts">
-	import EditSection from '$lib/components/pit-scouting/EditSection.svelte';
 	import { Scouting } from '$lib/model/scouting';
 	import { prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
@@ -11,13 +10,10 @@
 	const { eventKey, year } = data;
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
-	let selectedSection: Scouting.PIT.SectionData | undefined = $state(undefined);
 
 	onMount(() => {
 		sections = Scouting.PIT.Sections.fromProperty('eventKey', page.params.eventKey, false);
 		sections.sort((a, b) => Number(a.data.order) - Number(b.data.order));
-
-		selectedSection = $sections[0];
 	});
 
 	const addSection = async () => {
@@ -71,33 +67,19 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-md-6">
-			<h2>Pitscouting</h2>
-		</div>
-		<div class="col-md-6">
-			{#if $sections.length}
-				<select
-					onchange={(event) => {
-						selectedSection = $sections.find((s) => s.data.id === event.currentTarget.value);
-					}}
-				>
-					<option disabled>Select a Section</option>
-					{#each $sections as section}
-						<option value={section.data.id}>{section.data.name}</option>
-					{/each}
-				</select>
-			{:else}
-				<p>No Sections Found</p>
-			{/if}
-		</div>
-	</div>
-	{#if selectedSection}
-		<EditSection section={selectedSection} />
-	{:else}
 		<button type="button" class="btn btn-primary" onclick={generateEventTemplate}>
 			Generate Event Template
 		</button>
 		<button type="button" class="btn btn-primary" onclick={copy}> Copy From Event </button>
-	{/if}
-	<button class="btn btn-primary" onclick={addSection}>Add Section</button>
+		<button class="btn btn-primary" onclick={addSection}>Add Section</button>
+	</div>
+	<div class="row">
+		{#each $sections as section, i}
+			<a href="/dashboard/event/{eventKey}/create-pitscouting/{i}">
+				<div class="card">
+					{section.data.name}
+				</div>
+			</a>
+		{/each}
+	</div>
 </div>

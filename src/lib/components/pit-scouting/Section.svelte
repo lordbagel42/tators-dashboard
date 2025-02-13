@@ -18,20 +18,6 @@
 		groups = Scouting.PIT.Groups.fromProperty('sectionId', $section.id || '', false);
 		groups.sort((a, b) => Number(a.data.order) - Number(b.data.order));
 	});
-
-	const addGroup = async () => {
-		const name = await prompt('Group Name');
-		if (!name) return;
-	};
-
-	const changeName = async () => {
-		const name = await prompt(`Change ${$section.name} to:`);
-		if (!name) return;
-		section.update((s) => ({
-			...s,
-			name
-		}));
-	};
 </script>
 
 <div class="container-fluid">

@@ -115,25 +115,25 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-		Events: new Table(
-			'events',
-			z.object({
-				event_key: z.string(),
-				flip_x: z.number().int(),
-				flip_y: z.number().int()
-			}),
-			DB
-		),
+		// Events: new Table(
+		// 	'events',
+		// 	z.object({
+		// 		event_key: z.string(),
+		// 		flip_x: z.number().int(),
+		// 		flip_y: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
-		Teams: new Table(
-			'teams',
-			z.object({
-				number: z.number().int(),
-				event_key: z.string(),
-				watch_priority: z.number().int()
-			}),
-			DB
-		),
+		// Teams: new Table(
+		// 	'teams',
+		// 	z.object({
+		// 		number: z.number().int(),
+		// 		event_key: z.string(),
+		// 		watch_priority: z.number().int()
+		// 	}),
+		// 	DB
+		// ),
 
 		// Matches: new Table(
 		// 	'matches',
@@ -354,17 +354,17 @@ export const getOldTables = (DB: Client) => {
 			DB
 		),
 
-		TeamPictures: new Table(
-			'team_pictures',
-			z.object({
-				team_number: z.number().int(),
-				event_key: z.string(),
-				picture: z.string(),
-				time: z.number().int(),
-				account_id: z.string()
-			}),
-			DB
-		),
+		// TeamPictures: new Table(
+		// 	'team_pictures',
+		// 	z.object({
+		// 		team_number: z.number().int(),
+		// 		event_key: z.string(),
+		// 		picture: z.string(),
+		// 		time: z.number().int(),
+		// 		account_id: z.string()
+		// 	}),
+		// 	DB
+		// ),
 
 		// Blacklist: new Table(
 		// 	'blacklist',

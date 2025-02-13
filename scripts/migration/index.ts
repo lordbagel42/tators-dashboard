@@ -68,25 +68,25 @@ export const main = async () => {
         })).unwrap();
     });
 
-    const teamStream = old.Teams.all();
-    streams.push(teamStream.await());
-    teamStream.pipe(async t => {
-        (await FIRST.Teams.new({
-            number: t.number,
-            watchPriority: t.watch_priority,
-            eventKey: t.event_key
-        })).unwrap();
-    });
+    // const teamStream = old.Teams.all();
+    // streams.push(teamStream.await());
+    // teamStream.pipe(async t => {
+    //     (await FIRST.Teams.new({
+    //         number: t.number,
+    //         watchPriority: t.watch_priority,
+    //         eventKey: t.event_key
+    //     })).unwrap();
+    // });
 
-    const eventStream = old.Events.all();
-    streams.push(eventStream.await());
-    eventStream.pipe(async e => {
-        (await FIRST.Events.new({
-            eventKey: e.event_key,
-            flipX: !!e.flip_x,
-            flipY: !!e.flip_y,
-        })).unwrap();
-    });
+    // const eventStream = old.Events.all();
+    // streams.push(eventStream.await());
+    // eventStream.pipe(async e => {
+    //     (await FIRST.Events.new({
+    //         eventKey: e.event_key,
+    //         flipX: !!e.flip_x,
+    //         flipY: !!e.flip_y,
+    //     })).unwrap();
+    // });
 
     const msStream = old.MatchScouting.all();
     streams.push(msStream.await());
@@ -162,7 +162,6 @@ export const main = async () => {
             name: wb.name,
         })).unwrap();
     });
-
 
     await Promise.all(streams);
 

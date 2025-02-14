@@ -60,18 +60,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (
 		!['/account/sign-in', '/account/sign-up'].includes(event.url.pathname) &&
-		!event.url.pathname.includes('/account/password-reset') &&
-		!event.url.pathname.includes('/status') &&
-		!event.url.pathname.includes('/sse') &&
-		!event.url.pathname.includes('/struct')
+		!event.url.href.startsWith('/account/password-reset') &&
+		!event.url.href.startsWith('/status') &&
+		!event.url.href.startsWith('/sse') &&
+		!event.url.href.startsWith('/struct') &&
+		!event.url.href.startsWith('/test')
 	) {
 		session.value.update({
 			prevUrl: event.url.pathname,
-			requests: session.value.data.requests + 1
-		});
-	} else {
-		session.value.update({
-			requests: session.value.data.requests + 1
 		});
 	}
 

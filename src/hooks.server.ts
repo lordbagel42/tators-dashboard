@@ -67,7 +67,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!event.url.href.startsWith('/test')
 	) {
 		session.value.update({
-			prevUrl: event.url.pathname,
+			prevUrl: event.url.pathname
 		});
 	}
 

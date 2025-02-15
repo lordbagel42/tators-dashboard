@@ -123,5 +123,20 @@
 		"vite-node": "^3.0.4",
 		"yaml": "^2.7.0",
 		"zod": "^3.24.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"@sveltejs/kit",
+			"colors",
+			"drizzle-struct",
+			"esbuild",
+			"html-constructor",
+			"math",
+			"svelte-preprocess",
+			"ts-utils",
+			"html-constructor",
+			"tatorscout",
+			"canvas"
+		]
 	}
 }

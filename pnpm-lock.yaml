@@ -109,7 +109,7 @@ importers:
         version: 144.0.0
       html-constructor:
         specifier: github:tsaxking/html-constructor
-        version: https://codeload.github.com/tsaxking/html-constructor/tar.gz/fe3d793db1d0a5301cac4756ff4e6249b12ba66c(@types/node@22.13.4)(eslint@9.20.1)(sass-embedded@1.85.0)
+        version: https://codeload.github.com/tsaxking/html-constructor/tar.gz/ce4f30a0694c66abd3bb4fe06640c44d5d6974e6(@types/node@22.13.4)(eslint@9.20.1)(sass-embedded@1.85.0)
       http-status-codes:
         specifier: ^2.3.0
         version: 2.3.0
@@ -2937,8 +2937,8 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
-  html-constructor@https://codeload.github.com/tsaxking/html-constructor/tar.gz/fe3d793db1d0a5301cac4756ff4e6249b12ba66c:
-    resolution: {tarball: https://codeload.github.com/tsaxking/html-constructor/tar.gz/fe3d793db1d0a5301cac4756ff4e6249b12ba66c}
+  html-constructor@https://codeload.github.com/tsaxking/html-constructor/tar.gz/ce4f30a0694c66abd3bb4fe06640c44d5d6974e6:
+    resolution: {tarball: https://codeload.github.com/tsaxking/html-constructor/tar.gz/ce4f30a0694c66abd3bb4fe06640c44d5d6974e6}
     version: 1.0.0
 
   html-minifier@4.0.0:
@@ -7241,12 +7241,13 @@ snapshots:
 
   he@1.2.0: {}
 
-  html-constructor@https://codeload.github.com/tsaxking/html-constructor/tar.gz/fe3d793db1d0a5301cac4756ff4e6249b12ba66c(@types/node@22.13.4)(eslint@9.20.1)(sass-embedded@1.85.0):
+  html-constructor@https://codeload.github.com/tsaxking/html-constructor/tar.gz/ce4f30a0694c66abd3bb4fe06640c44d5d6974e6(@types/node@22.13.4)(eslint@9.20.1)(sass-embedded@1.85.0):
     dependencies:
       '@eslint/compat': 1.2.6(eslint@9.20.1)
       node-html-parser: 7.0.1
       prettier: 3.5.1
       ts-utils: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032
+      typescript: 5.7.3
       vite-node: 3.0.5(@types/node@22.13.4)(sass-embedded@1.85.0)
       vitest: 2.1.9(@types/node@22.13.4)(sass-embedded@1.85.0)
       zod: 3.24.2

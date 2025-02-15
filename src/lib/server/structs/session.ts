@@ -7,8 +7,6 @@ import { Universes } from './universe';
 
 const { PUBLIC_DOMAIN, SESSION_DURATION } = process.env;
 
-console.log({ PUBLIC_DOMAIN });
-
 interface RequestEvent {
 	cookies: {
 		get: (name: string) => string | undefined;
@@ -57,7 +55,7 @@ export namespace Session {
 				).unwrap();
 
 				event.cookies.set('ssid', session.id, {
-					httpOnly: true,
+					httpOnly: false,
 					domain: PUBLIC_DOMAIN ?? '',
 					path: '/',
 					expires: new Date(Date.now() + parseInt(SESSION_DURATION ?? '0'))

@@ -1,6 +1,7 @@
 import * as TBA from '$lib/server/utils/tba';
 import { redirect, fail } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
+import { Scouting } from '$lib/server/structs/scouting.js';
 
 export const load = async (event) => {
 	const e = await TBA.Event.getEvent(event.params.eventKey);
@@ -15,7 +16,6 @@ export const load = async (event) => {
 
 	return {
 		event: e.value.tba,
-		teams: teams.value.map((t) => t.tba),
 		matches: matches.value.map((m) => m.tba)
 	};
 };

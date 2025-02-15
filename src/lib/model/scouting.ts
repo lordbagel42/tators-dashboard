@@ -6,7 +6,10 @@ export namespace Scouting {
 	export const MatchScouting = new Struct({
 		name: 'match_scouting',
 		structure: {
-			matchId: 'string',
+			eventKey: 'string',
+			matchNumber: 'number',
+			compLevel: 'string',
+			// matchId: 'string',
 			team: 'number',
 			scoutId: 'string',
 			scoutGroup: 'string',

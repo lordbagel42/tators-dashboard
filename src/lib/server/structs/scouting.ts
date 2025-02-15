@@ -15,7 +15,10 @@ export namespace Scouting {
 	export const MatchScouting = new Struct({
 		name: 'match_scouting',
 		structure: {
-			matchId: text('match_id').notNull(),
+			// matchId: text('match_id').notNull(),
+			eventKey: text('event_key').notNull(),
+			matchNumber: integer('match_number').notNull(),
+			compLevel: text('comp_level').notNull(),
 			team: integer('team').notNull(),
 			scoutId: text('scout_id').notNull(),
 			scoutGroup: text('scout_group').notNull(),

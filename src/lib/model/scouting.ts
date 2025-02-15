@@ -79,6 +79,7 @@ export namespace Scouting {
 			structure: {
 				groupId: 'string',
 				question: 'string',
+				description: 'string',
 				type: 'string',
 				key: 'string',
 				order: 'number',

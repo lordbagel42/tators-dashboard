@@ -2,6 +2,7 @@
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
+    import { type FilterState } from '$lib/types/robot-display.js';
 
     const { data } = $props();
     const team = data.team;
@@ -89,10 +90,30 @@
         cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
         id: 'robot-display',
     });
+
+    let filter: FilterState = $state({
+        auto: true,
+        teleop: true,
+        endgame: true,
+    });
 </script>
 
 <DB {dashboard}>
 	{#snippet body()}
+    <div
+        style="grid-column: span var(--grid-size);"
+    >
+        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+            <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" bind:checked={filter.auto}>
+            <label class="btn btn-outline-primary" for="btncheck1">Auto</label>
+        
+            <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" bind:checked={filter.teleop}>
+            <label class="btn btn-outline-primary" for="btncheck2">Teleop</label>
+        
+            <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" bind:checked={filter.endgame}>
+            <label class="btn btn-outline-primary" for="btncheck3">Endgame</label>
+        </div>
+    </div>
 		<Card card={summary}>
 			{#snippet body()}
 				<p>This will be the team summary card</p>

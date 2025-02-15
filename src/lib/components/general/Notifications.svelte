@@ -40,12 +40,12 @@
 		notifications = Account.getNotifs(limit, page);
 	});
 
-	$effect(() => {
-		if (browser) {
-			notifications = Account.getNotifs(limit, page);
-			notifs = $notifications.filter((n) => !n.data.read).length;
-		}
-	});
+	// $effect(() => {
+	// 	if (browser) {
+	// 		notifications = Account.getNotifs(limit, page);
+	// 		notifs = $notifications.filter((n) => !n.data.read).length;
+	// 	}
+	// });
 </script>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" {id} aria-labelledby="{id}Label">

@@ -6,7 +6,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import { ServerCode } from 'ts-utils/status';
 
-const log = (...args: unknown[]) => console.log('[oauth/sign-up]', ...args);
+// const log = (...args: unknown[]) => console.log('[oauth/sign-up]', ...args);
 
 export const GET = async (event) => {
 	const code = event.url.searchParams.get('code');
@@ -63,9 +63,6 @@ export const GET = async (event) => {
 	} catch (err) {
 		// log(err);
 	}
-
-	const session = await Session.getSession(event);
-	if (session.isErr()) return new Response('Error creating session', { status: 500 });
 
 	throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
 };

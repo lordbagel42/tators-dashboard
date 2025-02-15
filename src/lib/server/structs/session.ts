@@ -5,7 +5,7 @@ import { Account } from './account';
 import { Permissions } from './permissions';
 import { Universes } from './universe';
 
-const { DOMAIN, SESSION_DURATION } = process.env;
+const { PUBLIC_DOMAIN, SESSION_DURATION } = process.env;
 
 interface RequestEvent {
 	cookies: {
@@ -34,7 +34,7 @@ export namespace Session {
 			requests: integer('requests').notNull(),
 			prevUrl: text('prev_url').notNull()
 		},
-		universeLimit: 1
+		frontend: false
 	});
 
 	export type SessionData = typeof Session.sample;
@@ -55,10 +55,10 @@ export namespace Session {
 				).unwrap();
 
 				event.cookies.set('ssid', session.id, {
-					httpOnly: true,
-					domain: DOMAIN ?? '',
-					path: '/'
-					// expires: new Date(Date.now() + parseInt(SESSION_DURATION ?? '0'))
+					httpOnly: false,
+					domain: PUBLIC_DOMAIN ?? '',
+					path: '/',
+					expires: new Date(Date.now() + parseInt(SESSION_DURATION ?? '0'))
 				});
 
 				return session;

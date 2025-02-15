@@ -88,11 +88,13 @@
 		}
 	});
 
-	const dashboard = $derived(new Dashboard.Dashboard({
-		name: `Robot Display: ${team.team_number} - ${team.nickname}`,
-		cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
-		id: 'robot-display'
-	}));
+	const dashboard = $derived(
+		new Dashboard.Dashboard({
+			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
+			id: 'robot-display'
+		})
+	);
 
 	let filter: FilterState = $state({
 		auto: true,
@@ -105,11 +107,13 @@
 	afterNavigate(() => {
 		const btn = scroller.querySelector(`[data-team="${team.team_number}"]`);
 		if (btn) {
-			sleep(500).then(() => btn.scrollIntoView({ 
-				behavior: 'smooth',
-				block: 'nearest', 
-				inline: 'center',
-			}));
+			sleep(500).then(() =>
+				btn.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+					inline: 'center'
+				})
+			);
 		}
 	});
 </script>
@@ -119,9 +123,9 @@
 		<div style="grid-column: span var(--grid-size);">
 			<div class="ws-nowrap scroll-x p-3 mb-3" bind:this={scroller}>
 				{#each teams as t}
-					<a 
+					<a
 						type="button"
-						href="/dashboard/event/{event.key}/team/{t.team_number}" 
+						href="/dashboard/event/{event.key}/team/{t.team_number}"
 						class="btn mx-2"
 						class:btn-primary={t.team_number !== team.team_number}
 						class:btn-outline-secondary={t.team_number === team.team_number}

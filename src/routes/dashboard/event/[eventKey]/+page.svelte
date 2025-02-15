@@ -7,11 +7,13 @@
 	const teams = $derived(data.teams);
 	const matches = $derived(data.matches);
 
-	const dashboard = $derived(new Dashboard.Dashboard({
-		name: event.name,
-		cards: [],
-		id: 'event-dashboard',
-	}));
+	const dashboard = $derived(
+		new Dashboard.Dashboard({
+			name: event.name,
+			cards: [],
+			id: 'event-dashboard'
+		})
+	);
 </script>
 
 <DB {dashboard}>
@@ -19,7 +21,11 @@
 		<div style="grid-column: span var(--grid-size);">
 			<div class="ws-nowrap scroll-x p-3">
 				{#each teams as team}
-					<a href="/dashboard/event/{event.key}/team/{team.team_number}" type="button" class="btn btn-primary mx-2">
+					<a
+						href="/dashboard/event/{event.key}/team/{team.team_number}"
+						type="button"
+						class="btn btn-primary mx-2"
+					>
 						{team.team_number}
 					</a>
 				{/each}
@@ -27,4 +33,3 @@
 		</div>
 	{/snippet}
 </DB>
-

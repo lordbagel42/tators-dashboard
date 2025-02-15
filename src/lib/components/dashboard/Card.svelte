@@ -87,12 +87,7 @@
 							<i class="material-icons text-sm">open_in_full</i>
 						{/if}
 					</button>
-					<button
-						class="btn btn-sm px-1"
-						onclick={() =>
-							card.hide()}
-						aria-label="Close"
-					>
+					<button class="btn btn-sm px-1" onclick={() => card.hide()} aria-label="Close">
 						{#if $card.show}
 							<i class="material-icons text-sm">close</i>
 						{:else}

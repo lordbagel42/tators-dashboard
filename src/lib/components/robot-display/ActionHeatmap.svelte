@@ -1,96 +1,90 @@
 <script lang="ts">
-    import { Scouting } from '$lib/model/scouting';
-    import { onMount } from 'svelte';
-    import { type TraceArray } from 'tatorscout/trace';
-    import { MatchCanvas } from '$lib/model/match-canvas';
-    import { type Focus } from '$lib/types/robot-display';
+	import { Scouting } from '$lib/model/scouting';
+	import { onMount } from 'svelte';
+	import { type TraceArray } from 'tatorscout/trace';
+	import { MatchCanvas } from '$lib/model/match-canvas';
+	import { type Focus } from '$lib/types/robot-display';
 	import type { TBAEvent, TBATeam } from '$lib/utils/tba';
 	import { DataArr } from 'drizzle-struct/front-end';
 
-    interface Props {
-        team: TBATeam;
-        focus: Focus;
-        event: TBAEvent;
-    }
+	interface Props {
+		team: TBATeam;
+		focus: Focus;
+		event: TBAEvent;
+	}
 
-    let actions: string[] = $state([]);
-    
-    export const getActions = () => actions;
+	let actions: string[] = $state([]);
 
-    const { team, focus, event }: Props = $props();
+	export const getActions = () => actions;
 
-    let matches = $state(new DataArr(Scouting.MatchScouting, []));
-    let canvas: HTMLCanvasElement;
+	const { team, focus, event }: Props = $props();
 
-    let c: MatchCanvas;
-    let array: TraceArray = $state([]);
+	let matches = $state(new DataArr(Scouting.MatchScouting, []));
+	let canvas: HTMLCanvasElement;
 
-    $effect(() => {});
+	let c: MatchCanvas;
+	let array: TraceArray = $state([]);
 
-    $effect(() => {
-        if (!c) return;
-        c.between(0, array.length);
-    });
+	$effect(() => {});
 
-    $effect(() => {
-        array = matches
-            .data
-            .map(m => m.data.trace)
-            .filter(Boolean)
-            // casted as string because sveltekit doesn't recognize filter(Boolean) as a type guard
-            .map(t => {
-                const arr = JSON.parse(t as string) as TraceArray;
-                return arr.filter((p) => {
-                    const [i,,, a] = p;
-                    if (!a) return false;
-                    if (!actions.includes(a)) {
-                        actions.push(a);
-                    }
-                    if (focus.auto) return i < 20 * 4;
-                    if (focus.teleop) return i >= 20 * 4 && i < 20 * 4 + 135 * 4;
-                    if (focus.endgame) return i >= 20 * 4 + 135 * 4;
-                    return false;
-                });
-            })
-            .flat();
-    });
+	$effect(() => {
+		if (!c) return;
+		c.between(0, array.length);
+	});
 
-    onMount(() => {
-        const ctx = canvas.getContext('2d');
-        if (!ctx) throw new Error('Could not get 2d context');
+	$effect(() => {
+		array = matches.data
+			.map((m) => m.data.trace)
+			.filter(Boolean)
+			// casted as string because sveltekit doesn't recognize filter(Boolean) as a type guard
+			.map((t) => {
+				const arr = JSON.parse(t as string) as TraceArray;
+				return arr.filter((p) => {
+					const [i, , , a] = p;
+					if (!a) return false;
+					if (!actions.includes(a)) {
+						actions.push(a);
+					}
+					if (focus.auto) return i < 20 * 4;
+					if (focus.teleop) return i >= 20 * 4 && i < 20 * 4 + 135 * 4;
+					if (focus.endgame) return i >= 20 * 4 + 135 * 4;
+					return false;
+				});
+			})
+			.flat();
+	});
 
-        matches = Scouting.getMatchScouting({
-            eventKey: event.tba.key,
-            team: team.tba.team_number
-        });
+	onMount(() => {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) throw new Error('Could not get 2d context');
 
-        c = new MatchCanvas(
-            array,
-            event.tba.year,
-            ctx,
-            {
-                'amp': 'red',
-                'bal': 'blue',
-                'cbe': 'green',
-                'clb': 'yellow',
-                'cne': 'purble',
-                'lob': 'orange',
-                'nte': 'black',
-                'pck': 'white',
-                'spk': 'pink',
-                'src': 'brown',
-                'trp': 'cyan',
-            }
-        );
+		matches = Scouting.getMatchScouting({
+			eventKey: event.tba.key,
+			team: team.tba.team_number
+		});
 
-        c.hidePath();
+		c = new MatchCanvas(array, event.tba.year, ctx, {
+			amp: 'red',
+			bal: 'blue',
+			cbe: 'green',
+			clb: 'yellow',
+			cne: 'purble',
+			lob: 'orange',
+			nte: 'black',
+			pck: 'white',
+			spk: 'pink',
+			src: 'brown',
+			trp: 'cyan'
+		});
 
-        actions = [];
+		c.hidePath();
 
-        return c.animate();
-    });
+		actions = [];
+
+		return c.animate();
+	});
 </script>
 
 <div style="height: 100%; width: 100%; object-fit: cover;" class="p-2">
-    <canvas bind:this={canvas} style="height: 100%; width: 100%; object-fit: cover;"></canvas>
+	<canvas bind:this={canvas} style="height: 100%; width: 100%; object-fit: cover;"></canvas>
 </div>

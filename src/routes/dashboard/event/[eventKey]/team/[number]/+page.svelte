@@ -7,6 +7,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import ActionHeatmap from '$lib/components/robot-display/ActionHeatmap.svelte';
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
+	import { Navbar } from '$lib/model/navbar.js';
 
 	const { data = $bindable() } = $props();
 	const teams = $derived(data.teams);
@@ -57,17 +58,6 @@
 		}
 	});
 
-	const matches = new Dashboard.Card({
-		name: 'Matches',
-		iconType: 'material-icons',
-		icon: 'sports_esports',
-		id: 'card5',
-		size: {
-			width: 1,
-			height: 2
-		}
-	});
-
 	const pitScouting = new Dashboard.Card({
 		name: 'Pit Scouting',
 		iconType: 'material-icons',
@@ -80,12 +70,12 @@
 	});
 
 	const matchViewer = new Dashboard.Card({
-		name: 'Match Viewer',
+		name: 'Matches',
 		iconType: 'material-icons',
 		icon: 'preview',
 		id: 'card7',
 		size: {
-			width: 1,
+			width: 2,
 			height: 1
 		}
 	});
@@ -93,10 +83,31 @@
 	const dashboard = $derived(
 		new Dashboard.Dashboard({
 			name: `Robot Display: ${team.tba.team_number} - ${team.tba.nickname}`,
-			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
+			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
 			id: 'robot-display'
 		})
 	);
+
+	$effect(() => {
+		Navbar.addSection({
+			name: `${event.tba.name} Dashboard`,
+			links: [
+				{
+					name: `${event.tba.key} Dashboard`,
+					href: `/dashboard/event/${event.tba.key}`,
+					icon: 'event',
+					type: 'material-icons'
+				},
+				{
+					name: `${event.tba.key} Matches`,
+					href: `/dashboard/event/${event.tba.key}/matches`,
+					icon: 'view_list',
+					type: 'material-icons'
+				}
+			],
+			priority: 1
+		});
+	});
 
 	let focus: Focus = $state({
 		auto: true,
@@ -191,11 +202,6 @@
 		<Card card={actionHeatmap}>
 			{#snippet body()}
 				<ActionHeatmap {team} {focus} {event} />
-			{/snippet}
-		</Card>
-		<Card card={matches}>
-			{#snippet body()}
-				<p>This will be the matches card</p>
 			{/snippet}
 		</Card>
 		<Card card={pitScouting}>

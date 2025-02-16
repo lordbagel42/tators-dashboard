@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { FIRST } from "$lib/model/FIRST";
-    import { type TBAMatch } from "tatorscout-utils/tba";
+    import { type TBAMatch } from "tatorscout/tba";
     import { dateTime } from "ts-utils/clock";
     import { Scouting } from "$lib/model/scouting";
 	import { onMount } from "svelte";

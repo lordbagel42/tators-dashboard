@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Scouting } from '$lib/model/scouting';
     import { onMount } from 'svelte';
-    import { type TraceArray } from 'tatorscout-utils/trace';
+    import { type TraceArray } from 'tatorscout/trace';
     import { MatchCanvas } from '$lib/model/match-canvas';
 
     interface Props {

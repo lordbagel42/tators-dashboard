@@ -22,7 +22,12 @@
 			>
 				<i class="material-icons"> menu </i>
 			</button>
-			<a class="navbar-brand" href="/home">{title}</a>
+			<a
+				class="
+					navbar-brand
+				"
+				href="/home">{title}</a
+			>
 		</div>
 		<div class="end">
 			<button

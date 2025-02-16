@@ -18,10 +18,10 @@
 	<MinimizedCards {dashboard} />
 	<div
 		style="
-			display: grid; 
-			grid-template-columns: repeat(var(--grid-size), 1fr);
-			gap: 10px;
-		"
+		display: grid; 
+		grid-template-columns: repeat(var(--grid-size), 1fr) !important;
+		gap: 10px;
+	"
 		class="p-3"
 	>
 		{@render body()}
@@ -53,7 +53,7 @@
 
 	@media (max-width: 576px) {
 		:root {
-			--grid-size: 1; /* Extra small screens */
+			--grid-size: 1 !important; /* Extra small screens */
 		}
 	}
 </style>

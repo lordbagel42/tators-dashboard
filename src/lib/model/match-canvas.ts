@@ -1,5 +1,11 @@
-import { Canvas, Container, Path, Circle, Img, SVG } from "canvas";
-import type { TraceArray, Action } from "tatorscout-utils/trace";
+// import { Canvas, Container, Path, Circle, Img, SVG } from "canvas";
+import { Canvas } from 'canvas/canvas';
+import { Container } from 'canvas/container';
+import { Path } from 'canvas/path';
+import { Circle } from 'canvas/circle';
+import { Img } from 'canvas/image';
+import { SVG } from 'canvas/svg';
+import type { TraceArray, Action } from "tatorscout/trace";
 
 const generateAction = (x: number, y: number, action: Action, color: string) => {
     const c = new Circle([x, y], 5);
@@ -29,6 +35,8 @@ export class MatchCanvas {
         public readonly actionColors: Record<Action, string>,
     ) {
         this.canvas = new Canvas(ctx);
+        this.canvas.ratio = 2;
+        this.canvas.adaptable = true;
         this.background = new Img(`/${year}field.png`);
 
         this.init();

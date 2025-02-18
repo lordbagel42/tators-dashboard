@@ -5,19 +5,8 @@ import { Session } from '$lib/server/structs/session.js';
 import { Permissions } from '$lib/server/structs/permissions.js';
 
 export const load = async (event) => {
-	const session = await Session.getSession(event);
-	if (session.isErr()) {
-		console.error(session.error);
-		throw fail(ServerCode.internalServerError);
-	}
-
-	const account = await Session.getAccount(session.value);
-	if (account.isErr()) {
-		console.error(account.error);
-		throw fail(ServerCode.internalServerError);
-	}
-
-	if (!account.value) throw redirect(ServerCode.permanentRedirect, '/404');
+	if (!event.locals.account)
+		throw redirect(ServerCode.permanentRedirect, `/status/404?${event.request.url}`);
 
 	const { universeId } = event.params;
 
@@ -27,16 +16,17 @@ export const load = async (event) => {
 		throw fail(ServerCode.internalServerError);
 	}
 
-	if (!universe.value) throw redirect(ServerCode.permanentRedirect, '/404');
+	if (!universe.value)
+		throw redirect(ServerCode.permanentRedirect, `/status/404?${event.request.url}`);
 
-	const roles = await Universes.memberRoles(account.value, universe.value);
+	const roles = await Universes.memberRoles(event.locals.account, universe.value);
 	if (roles.isErr()) {
 		console.error(roles.error);
 		throw fail(ServerCode.internalServerError);
 	}
 
 	if (!(await Permissions.canAccess(roles.value, 'roles', universe.value)).unwrap()) {
-		throw redirect(ServerCode.permanentRedirect, '/404');
+		throw redirect(ServerCode.permanentRedirect, `/status/404?${event.request.url}`);
 	}
 
 	return {

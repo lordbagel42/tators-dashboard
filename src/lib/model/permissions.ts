@@ -2,12 +2,13 @@ import { type Writable, writable } from 'svelte/store';
 import { attempt, attemptAsync } from 'ts-utils/check';
 // import { Requests } from '../utils/requests';
 import { Account } from './account';
-import { Struct, StructData } from 'drizzle-struct/front-end';
+import { Struct, StructData, DataArr } from 'drizzle-struct/front-end';
 import { type Blank } from 'drizzle-struct/front-end';
 import { sse } from '$lib/utils/sse';
 import type { DataAction, PropertyAction } from 'drizzle-struct/types';
 import { browser } from '$app/environment';
 import { Requests } from '$lib/utils/requests';
+import { z } from 'zod';
 
 export namespace Permissions {
 	export const Role = new Struct({
@@ -27,16 +28,25 @@ export namespace Permissions {
 	if (browser) Object.assign(window, { Role });
 
 	export type RoleData = StructData<typeof Role.data.structure>;
+	export type RoleArr = DataArr<typeof Role.data.structure>[];
 
 	export const getEntitlements = () => {
 		return Requests.get<
 			{
 				name: string;
-				struct: string;
+				structs: string[];
+				group: string;
 			}[]
 		>('/struct/entitlements', {
 			expectStream: false,
-			cache: true
+			cache: true,
+			parser: z.array(
+				z.object({
+					name: z.string(),
+					structs: z.array(z.string()),
+					group: z.string()
+				})
+			)
 		});
 	};
 

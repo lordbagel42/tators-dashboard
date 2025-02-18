@@ -4,21 +4,18 @@ import { Universes } from '$lib/server/structs/universe.js';
 import { fail, redirect } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 import { z } from 'zod';
+import terminal from '$lib/server/utils/terminal';
 
 export const load = async (event) => {
 	const error = (error: Error) => {
-		console.error(error);
+		terminal.error(error);
 		return fail(ServerCode.internalServerError);
 	};
 
-	const session = await Session.getSession(event);
-	if (session.isErr()) throw error(session.error);
+	const account = event.locals.account;
+	if (!account) throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
 
-	const account = await Session.getAccount(session.value);
-	if (account.isErr()) throw error(account.error);
-	if (!account.value) throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
-
-	const universes = await Universes.getUniverses(account.value.id);
+	const universes = await Universes.getUniverses(account.id);
 	if (universes.isErr()) throw error(universes.error);
 
 	const invitePage = parseInt(event.url.searchParams.get('invitePage') || '0');
@@ -28,7 +25,7 @@ export const load = async (event) => {
 	const universeNumber = parseInt(event.url.searchParams.get('universeNumber') || '0');
 	const universeOffset = universePage * universeNumber;
 
-	const invites = await Universes.getInvites(account.value, {
+	const invites = await Universes.getInvites(account, {
 		type: 'array',
 		limit: inviteNumber,
 		offset: inviteOffset
@@ -44,7 +41,7 @@ export const load = async (event) => {
 
 	if (publicUniverses.isErr()) throw error(publicUniverses.error);
 
-	const inviteCount = await Universes.UniverseInvite.fromProperty('account', account.value.id, {
+	const inviteCount = await Universes.UniverseInvite.fromProperty('account', account.id, {
 		type: 'count'
 	});
 
@@ -86,8 +83,8 @@ export const actions = {
 			.safeParse(Object.fromEntries(body.entries()));
 
 		if (!res.success) {
-			console.log('Zod failed:', body);
-			console.error(res.error);
+			terminal.log('Zod failed:', body);
+			terminal.error(res.error);
 			throw fail(ServerCode.badRequest, {
 				message: 'Invalid form data'
 			});
@@ -102,7 +99,7 @@ export const actions = {
 		const session = await Session.getSession(event);
 
 		if (session.isErr()) {
-			console.error(session.error);
+			terminal.error(session.error);
 			throw fail(ServerCode.internalServerError, {
 				message: 'Failed to get session'
 			});
@@ -111,7 +108,7 @@ export const actions = {
 		const account = await Session.getAccount(session.value);
 
 		if (account.isErr()) {
-			console.error(account.error);
+			terminal.error(account.error);
 			throw fail(ServerCode.internalServerError, {
 				message: 'Failed to get account'
 			});
@@ -145,7 +142,7 @@ export const actions = {
 		);
 
 		if (universe.isErr()) {
-			console.error(universe.error);
+			terminal.error(universe.error);
 			throw fail(ServerCode.internalServerError, {
 				message: 'Failed to create universe'
 			});

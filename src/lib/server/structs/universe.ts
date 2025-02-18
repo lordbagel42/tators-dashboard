@@ -65,7 +65,7 @@ export namespace Universes {
 	export const UniverseInvite = new Struct({
 		name: 'universe_invite',
 		structure: {
-			universe: text('universe').notNull(),
+			universeId: text('universe_id').notNull(),
 			account: text('account').notNull(),
 			inviter: text('inviter').notNull()
 		}
@@ -134,27 +134,39 @@ export namespace Universes {
 					entitlements: JSON.stringify(['manage-roles', 'manage-universe'])
 				})
 			).unwrap();
-			(await admin.setUniverse(u.id)).unwrap();
-			(await admin.setStatic(true)).unwrap();
-			await Permissions.RoleAccount.new({
-				role: admin.id,
-				account: account.id
-			});
-			(
-				await Permissions.RoleAccount.new({
-					role: member.id,
-					account: account.id
-				})
+
+			resolveAll<unknown>(
+				await Promise.all([
+					admin.setUniverse(u.id),
+					admin.setStatic(true),
+					grantRole(account, admin),
+					grantRole(account, member),
+					member.setUniverse(u.id),
+					member.setStatic(true)
+				])
 			).unwrap();
-			(
-				await member.update({
-					entitlements: JSON.stringify(['view-roles', 'view-universe'])
-				})
-			).unwrap();
-			(await member.setUniverse(u.id)).unwrap();
-			(await member.setStatic(true)).unwrap();
 
 			return u;
+		});
+	};
+
+	export const grantRole = async (account: Account.AccountData, role: Permissions.RoleData) => {
+		return attemptAsync(async () => {
+			const exists = !!(
+				await Permissions.RoleAccount.fromProperty('account', account.id, {
+					type: 'stream'
+				}).await()
+			)
+				.unwrap()
+				.find((r) => r.data.role === role.id);
+			if (exists) throw new Error('Account already has this role');
+
+			return (
+				await Permissions.RoleAccount.new({
+					account: account.id,
+					role: role.id
+				})
+			).unwrap();
 		});
 	};
 
@@ -166,7 +178,7 @@ export namespace Universes {
 		return attemptAsync(async () => {
 			const invite = (
 				await UniverseInvite.new({
-					universe: universe.id,
+					universeId: universe.id,
 					account: account.id,
 					inviter: inviter.id
 				})
@@ -226,14 +238,38 @@ export namespace Universes {
 
 			if (!member) throw new Error('Member role not found');
 
-			(
-				await Permissions.RoleAccount.new({
-					account: a.id,
-					role: member.id
-				})
-			).unwrap();
+			(await grantRole(a, member)).unwrap();
 
 			(await invite.delete()).unwrap();
+		});
+	};
+
+	export const addToUniverse = async (account: Account.AccountData, universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const members = (await getMembers(universe)).unwrap();
+			if (members.find((m) => m.id === account.id)) throw new Error('Account already in universe');
+
+			const roles = (
+				await Permissions.Role.fromProperty('universe', universe.id, {
+					type: 'stream'
+				}).await()
+			).unwrap();
+
+			const member = roles.find((r) => r.data.name === 'Member'); // should always succeed because data is static
+
+			if (!member) throw new Error('Member role not found');
+
+			return (await grantRole(account, member)).unwrap();
+		});
+	};
+
+	export const removeFromUniverse = async (
+		account: Account.AccountData,
+		universe: UniverseData
+	) => {
+		return attemptAsync(async () => {
+			const roles = (await memberRoles(account, universe)).unwrap();
+			return resolveAll(await Promise.all(roles.map((r) => r.delete())));
 		});
 	};
 
@@ -245,7 +281,9 @@ export namespace Universes {
 		account: Account.AccountData,
 		universe: Universes.UniverseData
 	) => {
-		return attemptAsync(async () => {});
+		return attemptAsync(async () => {
+			return !!(await memberRoles(account, universe)).unwrap().length;
+		});
 	};
 
 	export const getMembers = async (universe: UniverseData) => {
@@ -286,16 +324,67 @@ export namespace Universes {
 		});
 	};
 
+	export const addAdmin = async (account: Account.AccountData, universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const roles = (
+				await Permissions.Role.fromProperty('universe', universe.id, {
+					type: 'stream'
+				}).await()
+			).unwrap();
+
+			const admin = roles.find((r) => r.data.name === 'Admin'); // should always succeed because data is static
+
+			if (!admin) throw new Error('Admin role not found');
+
+			return await grantRole(account, admin);
+		});
+	};
+
+	export const removeAdmin = async (account: Account.AccountData, universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const roles = (await memberRoles(account, universe)).unwrap();
+			const admin = roles.find((r) => r.data.name === 'Admin');
+			if (!admin) throw new Error('Account is not an admin');
+			return admin.delete();
+		});
+	};
+
+	export const getAdmins = async (universe: UniverseData) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(Account.Account.table)
+				.innerJoin(
+					Permissions.RoleAccount.table,
+					eq(Account.Account.table.id, Permissions.RoleAccount.table.account)
+				)
+				.innerJoin(
+					Permissions.Role.table,
+					eq(Permissions.RoleAccount.table.role, Permissions.Role.table.id)
+				)
+				.where(
+					and(
+						eq(Permissions.Role.table.universe, universe.id),
+						eq(Permissions.Role.table.name, 'Admin')
+					)
+				);
+
+			return res.map((r) => Account.Account.Generator(r.account));
+		});
+	};
+
 	createEntitlement({
 		name: 'manage-universe',
-		struct: Universe,
-		permissions: ['*']
+		structs: [Universe],
+		permissions: ['*'],
+		group: 'Universe'
 	});
 
 	createEntitlement({
 		name: 'view-universe',
-		struct: Universe,
-		permissions: ['read:name', 'read:description', 'read:public']
+		structs: [Universe],
+		// permissions: ['read:name', 'read:description', 'read:public']
+		permissions: ['universe:read:name', 'universe:read:description'],
+		group: 'Universe'
 	});
 }
 

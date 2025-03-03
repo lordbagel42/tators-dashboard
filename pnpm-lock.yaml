@@ -15,7 +15,7 @@ importers:
         specifier: ^9.19.0
         version: 9.19.0
       '@inquirer/prompts':
-        specifier: ^7.2.1
+        specifier: ^7.3.1
         version: 7.3.1(@types/node@22.13.1)
       '@neoxia-js/nodemailer-sendgrid-transport':
         specifier: ^0.1.1
@@ -69,7 +69,7 @@ importers:
         specifier: ^16.4.7
         version: 16.4.7
       drizzle-orm:
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4(@types/pg@8.11.11)(@types/react@19.0.8)(pg@8.13.1)(postgres@3.4.5)(react@18.3.1)
       drizzle-struct:
         specifier: github:tsaxking/drizzle-struct
@@ -99,7 +99,7 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1
       google-auth-library:
-        specifier: ^9.15.0
+        specifier: ^9.15.1
         version: 9.15.1
       googleapis:
         specifier: ^144.0.0
@@ -136,15 +136,15 @@ importers:
         version: 0.2.2(filepond@4.32.7)
       tatorscout:
         specifier: github:TeamTators/tatorscout-utils
-        version: utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/e6145ddffa951fdccf6d0290b34efbad813a133c(@types/node@22.13.1)
+        version: utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833(@types/node@22.13.1)
       ts-utils:
         specifier: github:tsaxking/global-ts-utilities
         version: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032
       uuid:
-        specifier: ^11.0.4
+        specifier: ^11.0.5
         version: 11.0.5
       vite-node:
-        specifier: ^3.0.4
+        specifier: ^3.0.5
         version: 3.0.5(@types/node@22.13.1)(sass-embedded@1.83.4)
       yaml:
         specifier: ^2.7.0
@@ -154,40 +154,40 @@ importers:
         version: 3.24.1
     devDependencies:
       '@chromatic-com/storybook':
-        specifier: ^3.2.3
+        specifier: ^3.2.4
         version: 3.2.4(react@18.3.1)(storybook@8.5.3(prettier@3.4.2))
       '@eslint/compat':
-        specifier: ^1.2.4
+        specifier: ^1.2.6
         version: 1.2.6(eslint@9.19.0)
       '@playwright/test':
-        specifier: ^1.49.1
+        specifier: ^1.50.1
         version: 1.50.1
       '@storybook/addon-essentials':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(@types/react@19.0.8)(storybook@8.5.3(prettier@3.4.2))
       '@storybook/addon-interactions':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(storybook@8.5.3(prettier@3.4.2))
       '@storybook/addon-svelte-csf':
         specifier: 5.0.0-next.21
         version: 5.0.0-next.21(@storybook/svelte@8.5.3(storybook@8.5.3(prettier@3.4.2))(svelte@5.19.9))(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)))(storybook@8.5.3(prettier@3.4.2))(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4))
       '@storybook/blocks':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(storybook@8.5.3(prettier@3.4.2))
       '@storybook/svelte':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(storybook@8.5.3(prettier@3.4.2))(svelte@5.19.9)
       '@storybook/sveltekit':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)))(postcss-load-config@3.1.4(postcss@8.5.1)(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3)))(postcss@8.5.1)(storybook@8.5.3(prettier@3.4.2))(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4))
       '@storybook/test':
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(storybook@8.5.3(prettier@3.4.2))
       '@sveltejs/adapter-node':
-        specifier: ^5.2.11
+        specifier: ^5.2.12
         version: 5.2.12(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)))(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)))
       '@sveltejs/kit':
-        specifier: ^2.15.1
+        specifier: ^2.17.1
         version: 2.17.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)))(svelte@5.19.9)(vite@5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^4.0.4
@@ -214,7 +214,7 @@ importers:
         specifier: ^4.2.1
         version: 4.2.1
       '@types/node':
-        specifier: ^22.10.4
+        specifier: ^22.13.1
         version: 22.13.1
       '@types/nodemailer':
         specifier: ^6.4.17
@@ -229,10 +229,10 @@ importers:
         specifier: ^9.1.2
         version: 9.1.2
       drizzle-kit:
-        specifier: ^0.30.1
+        specifier: ^0.30.4
         version: 0.30.4
       eslint:
-        specifier: ^9.17.0
+        specifier: ^9.19.0
         version: 9.19.0
       eslint-config-prettier:
         specifier: ^9.1.0
@@ -250,34 +250,34 @@ importers:
         specifier: ^3.4.2
         version: 3.4.2
       prettier-plugin-svelte:
-        specifier: ^3.3.2
+        specifier: ^3.3.3
         version: 3.3.3(prettier@3.4.2)(svelte@5.19.9)
       sass-embedded:
-        specifier: ^1.83.0
+        specifier: ^1.83.4
         version: 1.83.4
       storybook:
-        specifier: ^8.4.7
+        specifier: ^8.5.3
         version: 8.5.3(prettier@3.4.2)
       svelte:
-        specifier: ^5.16.1
+        specifier: ^5.19.9
         version: 5.19.9
       svelte-check:
-        specifier: ^4.1.1
+        specifier: ^4.1.4
         version: 4.1.4(picomatch@4.0.2)(svelte@5.19.9)(typescript@5.7.3)
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@22.13.1)(typescript@5.7.3)
       typescript:
-        specifier: ^5.7.2
+        specifier: ^5.7.3
         version: 5.7.3
       typescript-eslint:
-        specifier: ^8.19.0
+        specifier: ^8.23.0
         version: 8.23.0(eslint@9.19.0)(typescript@5.7.3)
       vite:
-        specifier: ^5.4.11
+        specifier: ^5.4.14
         version: 5.4.14(@types/node@22.13.1)(sass-embedded@1.83.4)
       vitest:
-        specifier: ^2.1.8
+        specifier: ^2.1.9
         version: 2.1.9(@types/node@22.13.1)(sass-embedded@1.83.4)
 
 packages:
@@ -2549,8 +2549,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-prettier@10.0.1:
-    resolution: {integrity: sha512-lZBts941cyJyeaooiKxAtzoPHTN+GbQTJFAIdQbRhA4/8whaAraEh47Whw/ZFfrjNSnlAxqfm9i0XVAEkULjCw==}
+  eslint-config-prettier@10.0.2:
+    resolution: {integrity: sha512-1105/17ZIMjmCOJOPNfVdbXafLCLj3hPmkmB7dLgt7XsQ/zkxSuDerE/xgO3RxoHysR1N1whmquY0lSn2O0VLg==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -4365,8 +4365,8 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/e6145ddffa951fdccf6d0290b34efbad813a133c:
-    resolution: {tarball: https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/e6145ddffa951fdccf6d0290b34efbad813a133c}
+  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833:
+    resolution: {tarball: https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833}
     version: 1.0.0
 
   uuid@11.0.5:
@@ -6713,7 +6713,7 @@ snapshots:
       eslint: 9.19.0
       semver: 7.7.1
 
-  eslint-config-prettier@10.0.1(eslint@9.19.0):
+  eslint-config-prettier@10.0.2(eslint@9.19.0):
     dependencies:
       eslint: 9.19.0
 
@@ -8774,11 +8774,11 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/e6145ddffa951fdccf6d0290b34efbad813a133c(@types/node@22.13.1):
+  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833(@types/node@22.13.1):
     dependencies:
       '@eslint/compat': 1.2.6(eslint@9.19.0)
       eslint: 9.19.0
-      eslint-config-prettier: 10.0.1(eslint@9.19.0)
+      eslint-config-prettier: 10.0.2(eslint@9.19.0)
       eslint-plugin-svelte: 2.46.1(eslint@9.19.0)(svelte@5.19.9)(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
       math: https://codeload.github.com/tsaxking/calculations/tar.gz/6f735b3ade72c81393ee5f07db93647c3d4fff91
       prettier: 3.4.2

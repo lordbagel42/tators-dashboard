@@ -4,6 +4,7 @@ import terminal from '$lib/server/utils/terminal';
 import { TraceSchema } from 'tatorscout/trace';
 import { ServerCode } from 'ts-utils/status';
 import { Account } from '$lib/server/structs/account';
+import { resolveAll } from 'ts-utils/check';
 
 export const POST = async (event) => {
 	terminal.log('Event server request', event.request.url);
@@ -32,7 +33,7 @@ export const POST = async (event) => {
 		.safeParse(await event.request.json());
 
 	if (!parsed.success) {
-		terminal.log('Invalid request body', parsed.error.message);
+		terminal.warn('Invalid request body', parsed.error.message);
 		return res('Invalid request body: ' + parsed.error.message, 400);
 	}
 
@@ -50,7 +51,14 @@ export const POST = async (event) => {
 		remote
 	} = parsed.data;
 
-	const account = await Account.Account.fromProperty('username', scout);
+	let accountId = '';
+
+	const account = await Account.Account.fromProperty('username', scout, {
+		type: 'single',
+	});
+	if (account.isOk() && account.value) {
+		accountId = account.value.id;
+	}
 
 
 	const exists = await Scouting.getMatchScouting({
@@ -62,7 +70,10 @@ export const POST = async (event) => {
 
 	let matchScoutingId: string;
 
-	if (exists.isErr()) return res('Internal server error', 500);
+	if (exists.isErr()) {
+		terminal.error('Error getting match scouting', exists.error);
+		return res('Internal server error', 500);
+	}
 	if (exists.value) {
 		matchScoutingId = exists.value.id;
 		const update = await exists.value.update({
@@ -74,6 +85,7 @@ export const POST = async (event) => {
 			checks: JSON.stringify(checks)
 		});
 		if (update.isErr()) {
+			terminal.error('Error updating match scouting', update.error);
 			return res('Internal server error', 500);
 		}
 	} else {
@@ -82,14 +94,16 @@ export const POST = async (event) => {
 			matchNumber,
 			compLevel,
 			team: teamNumber,
-			scoutId: scout,
+			scoutId: accountId,
 			prescouting,
 			remote,
 			scoutGroup: group,
 			trace: JSON.stringify(trace),
-			checks: JSON.stringify(checks)
+			checks: JSON.stringify(checks),
+			scoutUsername: scout,
 		});
 		if (create.isErr()) {
+			terminal.error('Error creating match scouting', create.error);
 			return res('Internal server error', 500);
 		}
 		matchScoutingId = create.value.id
@@ -97,14 +111,20 @@ export const POST = async (event) => {
 
 	const commentRes = resolveAll(await Promise.all(
 		Object.entries(comments).map(([key, value]) => Scouting.TeamComments.new({
-			accountId: '',
+			accountId,
 			team: teamNumber,
 			comment: value,
 			type: key,
 			eventKey,
 			matchScoutingId,
+			scoutUsername: scout,
 		})),
 	));
+
+	if (commentRes.isErr()) {
+		terminal.error('Error creating comments', commentRes.error);
+		return res('Internal server error', 500);
+	}
 
 	return res('Success', 200);
 };

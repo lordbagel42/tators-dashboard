@@ -1,6 +1,4 @@
-import { boolean } from 'drizzle-orm/pg-core';
-import { integer } from 'drizzle-orm/pg-core';
-import { text } from 'drizzle-orm/pg-core';
+import { boolean, integer, text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
 import { createEntitlement } from '../utils/entitlements';
 import { attemptAsync } from 'ts-utils/check';
@@ -22,7 +20,8 @@ export namespace Scouting {
 			prescouting: boolean('prescouting').notNull(),
 			remote: boolean('remote').notNull(),
 			trace: text('trace').notNull(),
-			checks: text('checks').notNull()
+			checks: text('checks').notNull(),
+			scoutUsername: text('scout_username').notNull(),
 		},
 		versionHistory: {
 			type: 'versions',
@@ -73,7 +72,8 @@ export namespace Scouting {
 			team: integer('team').notNull(),
 			comment: text('comment').notNull(),
 			type: text('type').notNull(),
-			eventKey: text('event_key').notNull()
+			eventKey: text('event_key').notNull(),
+			scoutUsername: text('scout_username').notNull()
 		},
 		versionHistory: {
 			type: 'versions',

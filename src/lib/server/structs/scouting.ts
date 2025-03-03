@@ -6,7 +6,7 @@ import { createEntitlement } from '../utils/entitlements';
 import { z } from 'zod';
 import { attemptAsync } from 'ts-utils/check';
 import { DB } from '../db';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { Session } from './session';
 import { Permissions } from './permissions';
 import terminal from '../utils/terminal';
@@ -21,11 +21,12 @@ export namespace Scouting {
 			compLevel: text('comp_level').notNull(),
 			team: integer('team').notNull(),
 			scoutId: text('scout_id').notNull(),
-			scoutGroup: text('scout_group').notNull(),
+			scoutGroup: integer('scout_group').notNull(),
 			prescouting: boolean('prescouting').notNull(),
 			remote: boolean('remote').notNull(),
 			trace: text('trace').notNull(),
-			checks: text('checks').notNull()
+			checks: text('checks').notNull(),
+			scoutUsername: text('scout_username').notNull()
 		},
 		versionHistory: {
 			type: 'versions',
@@ -33,8 +34,40 @@ export namespace Scouting {
 		},
 		generators: {
 			universe: () => '2122'
+		},
+		validators: {
+			trace: (trace) =>
+				typeof trace === 'string' &&
+				z
+					.array(z.tuple([z.number(), z.number(), z.number(), z.string()]))
+					.safeParse(JSON.parse(trace)).success,
+			checks: (checks) =>
+				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
 	});
+
+	export const getMatchScouting = (data: {
+		eventKey: string;
+		match: number;
+		team: number;
+		compLevel: string;
+	}) => {
+		return attemptAsync(async () => {
+			const [res] = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.eventKey, data.eventKey),
+						eq(MatchScouting.table.matchNumber, data.match),
+						eq(MatchScouting.table.team, data.team),
+						eq(MatchScouting.table.compLevel, data.compLevel)
+					)
+				);
+
+			if (!res) return undefined;
+			return MatchScouting.Generator(res);
+		});
+	};
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',
@@ -44,7 +77,8 @@ export namespace Scouting {
 			team: integer('team').notNull(),
 			comment: text('comment').notNull(),
 			type: text('type').notNull(),
-			eventKey: text('event_key').notNull()
+			eventKey: text('event_key').notNull(),
+			scoutUsername: text('scout_username').notNull()
 		},
 		versionHistory: {
 			type: 'versions',

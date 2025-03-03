@@ -175,7 +175,15 @@ export namespace Dashboard {
 			// 	}
 			// }
 			const s = this.config.size[size];
-			if (s) return s;
+			if (s) {
+				if (s.width > sizes[size]) {
+					return {
+						width: sizes[size],
+						height: s.height
+					};
+				}
+				return s;
+			}
 
 			return {
 				width: this.config.size.width,
@@ -249,12 +257,12 @@ export namespace Dashboard {
 		}
 
 		minimize() {
-			this.update((state) => ({ ...state, maximized: true }));
+			this.update((state) => ({ ...state, maximized: false }));
 			this.emit('maximized', false);
 		}
 
 		maximize() {
-			this.update((state) => ({ ...state, maximized: false }));
+			this.update((state) => ({ ...state, maximized: true }));
 			this.emit('maximized', true);
 		}
 

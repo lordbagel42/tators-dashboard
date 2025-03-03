@@ -19,7 +19,8 @@ export namespace Scouting {
 			prescouting: 'boolean',
 			remote: 'boolean',
 			trace: 'string',
-			checks: 'string'
+			checks: 'string',
+			scoutUsername: 'string'
 		},
 		socket: sse,
 		browser

@@ -39,7 +39,14 @@
 {#if $card.show}
 	<!-- Overlay for graying out the background when card is maximized -->
 	{#if $card.maximized}
-		<div class="overlay"></div>
+		<div
+			class="overlay"
+			role="button"
+			aria-label="Close overlay"
+			tabindex="0"
+			onclick={() => card.minimize()}
+			onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && card.minimize()}
+		></div>
 	{/if}
 
 	<div
@@ -51,7 +58,7 @@
 			height: {height}px;
 		"
 	>
-		<div class="card-header">
+		<div class="card-header px-2">
 			<div class="d-flex h-100 align-items-center">
 				<div class="card-title h-100 m-0">
 					<div class="d-flex align-items-center h-100">
@@ -60,13 +67,13 @@
 						{:else if card.config.iconType === 'fa'}
 							<i class="fa fa-{card.config.icon}"></i>
 						{:else if card.config.iconType === 'material-icons'}
-							<i class="material-icons text-sm">{card.config.icon}</i>
+							<i class="material-icons h4 mb-0">{card.config.icon}</i>
 						{:else if card.config.iconType === 'custom'}
 							<img src={card.config.icon} alt={card.config.name} class="icon" />
 						{:else if card.config.iconType === 'material-symbols'}
-							<span class="material-symbols-outlined text-sm">{card.config.icon}</span>
+							<span class="material-symbols-outlined h4 mb-0">{card.config.icon}</span>
 						{/if}
-						<h5 class="ms-3">
+						<h5 class="ms-3 mb-0">
 							{capitalize(card.config.name)}
 						</h5>
 					</div>
@@ -82,22 +89,24 @@
 						aria-label="Maximize"
 					>
 						{#if $card.maximized}
-							<i class="material-icons text-sm">close_fullscreen</i>
+							<i class="material-icons h4 mb-0">close_fullscreen</i>
 						{:else}
-							<i class="material-icons text-sm">open_in_full</i>
+							<i class="material-icons h4 mb-0">open_in_full</i>
 						{/if}
 					</button>
-					<button class="btn btn-sm px-1" onclick={() => card.hide()} aria-label="Close">
-						{#if $card.show}
-							<i class="material-icons text-sm">close</i>
-						{:else}
-							<i class="material-icons text-sm">open_in_full</i>
-						{/if}
-					</button>
+					{#if !$card.maximized}
+						<button class="btn btn-sm px-1" onclick={() => card.hide()} aria-label="Close">
+							{#if $card.show}
+								<i class="material-icons h4 mb-0">close</i>
+							{:else}
+								<i class="material-icons h4 mb-0">open_in_full</i>
+							{/if}
+						</button>
+					{/if}
 				</div>
 			</div>
 		</div>
-		<div class="card-body">
+		<div class="card-body py-0 px-3">
 			{@render body()}
 		</div>
 	</div>
@@ -126,5 +135,13 @@
 		height: 100vh;
 		background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent gray */
 		z-index: 999; /* Just below the maximized card */
+	}
+
+	.card-body {
+		height: 217px;
+	}
+
+	.maximized .card-body {
+		height: 60vh;
 	}
 </style>

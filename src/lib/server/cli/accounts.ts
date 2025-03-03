@@ -71,12 +71,7 @@ export default new Folder('Accounts', 'Edit accounts', '👤', [
 
 		if (!confirmed) return terminal.log('Cancelled');
 
-		(
-			await account.update({
-				verification: '',
-				verified: true
-			})
-		).unwrap();
+		(await Account.verify(account)).unwrap();
 
 		(
 			await Logs.log({

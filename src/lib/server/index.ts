@@ -3,6 +3,7 @@ import terminal from '$lib/server/utils/terminal';
 import { Universes } from '$lib/server/structs/universe';
 import { Permissions } from '$lib/server/structs/permissions';
 import { getEntitlementNames } from './utils/entitlements';
+import type { Entitlement } from '$lib/types/entitlements';
 
 const postBuild = async () => {
 	const exists = (await Universes.Universe.fromId('2122')).unwrap();
@@ -70,6 +71,34 @@ const postBuild = async () => {
 		(await member.setUniverse('2122')).unwrap();
 		(await member.setStatic(true)).unwrap();
 	});
+
+	const scoutRole = (
+		await Permissions.Role.fromProperty('name', 'Scout', {
+			type: 'single'
+		})
+	).unwrap();
+	if (!scoutRole) {
+		const entitlements: Entitlement[] = [
+			'view-checklist',
+			'view-pit-scouting',
+			'view-potatoes',
+			'view-roles',
+			'view-scouting',
+			'view-strategy',
+			'view-tba-info',
+			'view-universe'
+		];
+		const scout = (
+			await Permissions.Role.new({
+				universe: '2122',
+				name: 'Scout',
+				description: 'Team Tators Scout',
+				links: '[]',
+				entitlements: JSON.stringify(entitlements)
+			})
+		).unwrap();
+		(await scout.setUniverse('2122')).unwrap();
+	}
 };
 
 {

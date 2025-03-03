@@ -10,7 +10,8 @@ export const POST = async (event) => {
 	terminal.log('Event server request', event.request.url);
 	const header = event.request.headers.get('X-API-KEY');
 
-	const res = (message: string, status: ServerCode) => new Response(JSON.stringify({ message }), { status });
+	const res = (message: string, status: ServerCode) =>
+		new Response(JSON.stringify({ message }), { status });
 
 	if (String(header) !== String(process.env.EVENT_SERVER_API_KEY)) {
 		return res('Invalid API key', 401);
@@ -28,7 +29,7 @@ export const POST = async (event) => {
 			group: z.number().int(),
 			trace: TraceSchema,
 			prescouting: z.boolean(),
-			remote: z.boolean(),
+			remote: z.boolean()
 		})
 		.safeParse(await event.request.json());
 
@@ -54,12 +55,11 @@ export const POST = async (event) => {
 	let accountId = '';
 
 	const account = await Account.Account.fromProperty('username', scout, {
-		type: 'single',
+		type: 'single'
 	});
 	if (account.isOk() && account.value) {
 		accountId = account.value.id;
 	}
-
 
 	const exists = await Scouting.getMatchScouting({
 		eventKey,
@@ -100,26 +100,30 @@ export const POST = async (event) => {
 			scoutGroup: group,
 			trace: JSON.stringify(trace),
 			checks: JSON.stringify(checks),
-			scoutUsername: scout,
+			scoutUsername: scout
 		});
 		if (create.isErr()) {
 			terminal.error('Error creating match scouting', create.error);
 			return res('Internal server error', 500);
 		}
-		matchScoutingId = create.value.id
+		matchScoutingId = create.value.id;
 	}
 
-	const commentRes = resolveAll(await Promise.all(
-		Object.entries(comments).map(([key, value]) => Scouting.TeamComments.new({
-			accountId,
-			team: teamNumber,
-			comment: value,
-			type: key,
-			eventKey,
-			matchScoutingId,
-			scoutUsername: scout,
-		})),
-	));
+	const commentRes = resolveAll(
+		await Promise.all(
+			Object.entries(comments).map(([key, value]) =>
+				Scouting.TeamComments.new({
+					accountId,
+					team: teamNumber,
+					comment: value,
+					type: key,
+					eventKey,
+					matchScoutingId,
+					scoutUsername: scout
+				})
+			)
+		)
+	);
 
 	if (commentRes.isErr()) {
 		terminal.error('Error creating comments', commentRes.error);

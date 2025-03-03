@@ -29,11 +29,16 @@ export namespace Scouting {
 			amount: 3
 		},
 		generators: {
-			universe: () => '2122',
+			universe: () => '2122'
 		},
 		validators: {
-			trace: (trace) => typeof trace === 'string' && z.array(z.tuple([z.number(), z.number(), z.number(), z.string()])).safeParse(JSON.parse(trace)).success,
-			checks: (checks) => typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
+			trace: (trace) =>
+				typeof trace === 'string' &&
+				z
+					.array(z.tuple([z.number(), z.number(), z.number(), z.string()]))
+					.safeParse(JSON.parse(trace)).success,
+			checks: (checks) =>
+				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
 	});
 
@@ -44,19 +49,21 @@ export namespace Scouting {
 		compLevel: string;
 	}) => {
 		return attemptAsync(async () => {
-			const [res] = await DB
-				.select().from(MatchScouting.table)
-				.where(and(
-					eq(MatchScouting.table.eventKey, data.eventKey),
-					eq(MatchScouting.table.matchNumber, data.match),
-					eq(MatchScouting.table.team, data.team),
-					eq(MatchScouting.table.compLevel, data.compLevel)
-				));
+			const [res] = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.eventKey, data.eventKey),
+						eq(MatchScouting.table.matchNumber, data.match),
+						eq(MatchScouting.table.team, data.team),
+						eq(MatchScouting.table.compLevel, data.compLevel)
+					)
+				);
 
 			if (!res) return undefined;
 			return MatchScouting.Generator(res);
 		});
-	}
+	};
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',

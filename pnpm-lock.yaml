@@ -136,7 +136,7 @@ importers:
         version: 0.2.2(filepond@4.32.7)
       tatorscout:
         specifier: github:TeamTators/tatorscout-utils
-        version: utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/17b0eb9ed99aa4150eff4792a7efc9bca574a30d(@types/node@22.13.1)
+        version: utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833(@types/node@22.13.1)
       ts-utils:
         specifier: github:tsaxking/global-ts-utilities
         version: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032
@@ -2549,8 +2549,8 @@ packages:
     peerDependencies:
       eslint: '>=6.0.0'
 
-  eslint-config-prettier@10.0.1:
-    resolution: {integrity: sha512-lZBts941cyJyeaooiKxAtzoPHTN+GbQTJFAIdQbRhA4/8whaAraEh47Whw/ZFfrjNSnlAxqfm9i0XVAEkULjCw==}
+  eslint-config-prettier@10.0.2:
+    resolution: {integrity: sha512-1105/17ZIMjmCOJOPNfVdbXafLCLj3hPmkmB7dLgt7XsQ/zkxSuDerE/xgO3RxoHysR1N1whmquY0lSn2O0VLg==}
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
@@ -4365,8 +4365,8 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/17b0eb9ed99aa4150eff4792a7efc9bca574a30d:
-    resolution: {tarball: https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/17b0eb9ed99aa4150eff4792a7efc9bca574a30d}
+  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833:
+    resolution: {tarball: https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833}
     version: 1.0.0
 
   uuid@11.0.5:
@@ -6713,7 +6713,7 @@ snapshots:
       eslint: 9.19.0
       semver: 7.7.1
 
-  eslint-config-prettier@10.0.1(eslint@9.19.0):
+  eslint-config-prettier@10.0.2(eslint@9.19.0):
     dependencies:
       eslint: 9.19.0
 
@@ -8774,11 +8774,11 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/17b0eb9ed99aa4150eff4792a7efc9bca574a30d(@types/node@22.13.1):
+  utils@https://codeload.github.com/TeamTators/tatorscout-utils/tar.gz/3e2ae8ea72f4812092008d49007b507230de2833(@types/node@22.13.1):
     dependencies:
       '@eslint/compat': 1.2.6(eslint@9.19.0)
       eslint: 9.19.0
-      eslint-config-prettier: 10.0.1(eslint@9.19.0)
+      eslint-config-prettier: 10.0.2(eslint@9.19.0)
       eslint-plugin-svelte: 2.46.1(eslint@9.19.0)(svelte@5.19.9)(ts-node@10.9.2(@types/node@22.13.1)(typescript@5.7.3))
       math: https://codeload.github.com/tsaxking/calculations/tar.gz/6f735b3ade72c81393ee5f07db93647c3d4fff91
       prettier: 3.4.2

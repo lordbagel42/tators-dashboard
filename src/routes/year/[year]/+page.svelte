@@ -3,13 +3,19 @@
 	const { data } = $props();
 	const events = data.events;
 </script>
-
-{#each events as event}
-	<a href="/dashboard/event/{event.key}">
-		<Card title={event.name}>
-			{#snippet body()}
-				<p>{event.year}</p>
-			{/snippet}
-		</Card>
-	</a>
-{/each}
+<div class="container">
+	<div class="row">
+		{#each events as event}
+		<div class="col-md-6 p-3">
+			<a href="/dashboard/event/{event.key}" class="text-reset text-decoration-none">
+				<div class="card bg-primary">
+					<div class="card-body">
+						<h5 class="card-title">{event.name}</h5>
+						<p class="card-text">{event.start_date} - {event.end_date}</p>
+					</div>
+				</div>
+			</a>
+		</div>
+		{/each}
+	</div>
+</div>

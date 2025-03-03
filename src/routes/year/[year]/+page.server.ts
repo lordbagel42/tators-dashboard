@@ -4,6 +4,9 @@ import { ServerCode } from 'ts-utils/status';
 
 export const load = async (req) => {
 	const year = parseInt(req.params.year);
+	if (isNaN(year)) {
+		throw fail(ServerCode.badRequest);
+	}
 	const events = await Event.getEvents(year);
 	if (events.isErr()) {
 		console.error(events.error);

@@ -3,6 +3,7 @@
 	import Modal from '$lib/components/bootstrap/Modal.svelte';
 	import type { Account } from '$lib/model/account.js';
 	import { confirm } from '$lib/utils/prompts.js';
+	import '$lib/defaults/mentor';
 
 	const { data } = $props();
 	const accounts = data.accounts;

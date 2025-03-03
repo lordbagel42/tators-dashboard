@@ -14,6 +14,12 @@ Navbar.addSection({
             href: '/dashboard/mentor/accounts',
             name: 'Accounts',
             type: 'material-icons',
+        },
+        {
+            icon: 'question_answer',
+            href: `/dashboard/mentor/pitscouting/year/${new Date().getFullYear()}`,
+            name: 'Edit Pit Scouting',
+            type: 'material-icons',
         }
     ],
     priority: 1,

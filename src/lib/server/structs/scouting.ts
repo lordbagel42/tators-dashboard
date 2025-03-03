@@ -1,10 +1,14 @@
 import { boolean, integer, text } from 'drizzle-orm/pg-core';
-import { Struct } from 'drizzle-struct/back-end';
+import { Struct, StructStream } from 'drizzle-struct/back-end';
 import { createEntitlement } from '../utils/entitlements';
 import { attemptAsync } from 'ts-utils/check';
 import { DB } from '../db';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { TraceSchema } from 'tatorscout/trace';
+import { Permissions } from './permissions';
+import { Universes } from './universe';
+import terminal from '../utils/terminal';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -33,12 +37,35 @@ export namespace Scouting {
 		validators: {
 			trace: (trace) =>
 				typeof trace === 'string' &&
-				z
-					.array(z.tuple([z.number(), z.number(), z.number(), z.string()]))
+				TraceSchema
 					.safeParse(JSON.parse(trace)).success,
 			checks: (checks) =>
 				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
+	});
+
+	MatchScouting.queryListen('team-event', async (request, data) => {
+		if (!request.locals.account) {
+			terminal.error('Not logged in');
+			return new Error('Not logged in');
+		}
+		const roles = (await Permissions.allAccountRoles(request.locals.account)).unwrap();
+		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap()) {
+			terminal.error('Not authorized');
+			return new Error('Not authorized');
+		}
+
+		console.log(data);
+
+		const { event, team } = z.object({
+			event: z.string(),
+			team: z.number().int(),
+		}).parse(data);
+
+		return streamMatchScouting({
+			eventKey: event,
+			team,
+		});
 	});
 
 	export const getMatchScouting = (data: {
@@ -62,6 +89,30 @@ export namespace Scouting {
 			if (!res) return undefined;
 			return MatchScouting.Generator(res);
 		});
+	};
+
+	export const streamMatchScouting = (data: {
+		eventKey: string;
+		team: number;
+	}) => {
+		const stream = new StructStream(MatchScouting);
+		(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.eventKey, data.eventKey),
+						eq(MatchScouting.table.team, data.team)
+					)
+				);
+			
+				for (let i = 0; i < res.length; i++) {
+					stream.add(MatchScouting.Generator(res[i]));
+				}
+
+				stream.end();
+		})();
+		return stream;
 	};
 
 	export const TeamComments = new Struct({

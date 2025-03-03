@@ -4,8 +4,10 @@ import { Universes } from '$lib/server/structs/universe';
 import { Permissions } from '$lib/server/structs/permissions';
 import { getEntitlementNames } from './utils/entitlements';
 import type { Entitlement } from '$lib/types/entitlements';
+import { openStructs } from './cli/struct';
 
 const postBuild = async () => {
+	terminal.log('POST BUILD');
 	const exists = (await Universes.Universe.fromId('2122')).unwrap();
 	if (!exists) {
 		await Universes.Universe.new(
@@ -95,6 +97,8 @@ const postBuild = async () => {
 				description: 'Team Tators Scout',
 				links: '[]',
 				entitlements: JSON.stringify(entitlements)
+			}, {
+				overwriteGenerators: true,
 			})
 		).unwrap();
 		(await scout.setUniverse('2122')).unwrap();
@@ -102,13 +106,17 @@ const postBuild = async () => {
 };
 
 {
-	const built = new Set<string>();
-	for (const struct of Struct.structs.values()) {
-		struct.once('build', () => {
-			built.add(struct.name);
-			if (built.size === Struct.structs.size) {
-				postBuild();
-			}
-		});
-	}
+	openStructs().then(async () => {
+		const built = new Set<string>();
+		for (const struct of Struct.structs.values()) {
+			struct.once('build', () => {
+				console.log('built:', struct.name);
+				built.add(struct.name);
+				console.log(built.size, Struct.structs.size);
+				if (built.size === Struct.structs.size) {
+					postBuild();
+				}
+			});
+		}
+	});
 }

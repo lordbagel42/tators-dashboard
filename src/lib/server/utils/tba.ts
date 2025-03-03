@@ -92,7 +92,9 @@ export class Event {
 					}).await()
 				)
 					.unwrap()
-					.map((d) => new Team(TeamSchema.parse(JSON.parse(d.data.data)), this));
+					.map(d => TeamSchema.parse(JSON.parse(d.data.data)))
+					.sort((a, b) => a.team_number - b.team_number)
+					.map((d) => new Team(d, this));
 			} else {
 				return (
 					await TBA.get<T[]>(`/event/${this.tba.key}/teams`, {
@@ -100,6 +102,7 @@ export class Event {
 					})
 				)
 					.unwrap()
+					.sort((a, b) => a.team_number - b.team_number)
 					.map((t) => new Team(t, this));
 			}
 		});
@@ -118,7 +121,7 @@ export class Event {
 					.sort((a, b) => {
 						if (a.tba.comp_level === b.tba.comp_level)
 							return a.tba.match_number - b.tba.match_number;
-						if (a.tba.comp_level === 'sf') return a.tba.set_number - b.tba.set_number;
+						if (a.tba.comp_level === 'sf' && b.tba.comp_level === 'sf') return a.tba.set_number - b.tba.set_number;
 						const order = ['qm', 'qf', 'sf', 'f'];
 						return order.indexOf(a.tba.comp_level) - order.indexOf(b.tba.comp_level);
 					});
@@ -134,8 +137,8 @@ export class Event {
 						if (a.tba.comp_level === b.tba.comp_level)
 							return a.tba.match_number - b.tba.match_number;
 						const order = ['qm', 'qf', 'sf', 'f'];
+						if (a.tba.comp_level === 'sf' && b.tba.comp_level === 'sf') return a.tba.set_number - b.tba.set_number;
 						return order.indexOf(a.tba.comp_level) - order.indexOf(b.tba.comp_level);
-						if (a.tba.comp_level === 'sf') return a.tba.set_number - b.tba.set_number;
 					});
 			}
 		});

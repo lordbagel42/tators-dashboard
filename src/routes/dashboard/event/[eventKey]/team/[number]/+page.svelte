@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
@@ -6,6 +7,7 @@
 	import { sleep } from 'ts-utils/sleep';
 	import { afterNavigate } from '$app/navigation';
 	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
+	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 
 	const { data = $bindable() } = $props();
 	const teams = $derived(data.teams);
@@ -172,41 +174,44 @@
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
 			</div>
 		</div>
-		<Card card={summary}>
-			{#snippet body()}
-				<p>This will be the team summary card</p>
-			{/snippet}
-		</Card>
-		<Card card={pictures}>
-			{#snippet body()}
-				<PictureDisplay team={team.team_number} />
-			{/snippet}
-		</Card>
-		<Card card={comments}>
-			{#snippet body()}
-				<p>This will be the comments card</p>
-			{/snippet}
-		</Card>
-		<Card card={actionHeatmap}>
-			{#snippet body()}
-				<p>This will be the action heatmap card</p>
-			{/snippet}
-		</Card>
-		<Card card={matches}>
-			{#snippet body()}
-				<p>This will be the matches card</p>
-			{/snippet}
-		</Card>
-		<Card card={pitScouting}>
-			{#snippet body()}
-				<p>This will be the pit scouting card</p>
-			{/snippet}
-		</Card>
-		<Card card={matchViewer}>
-			{#snippet body()}
-				<p>This will be the match viewer card</p>
-			{/snippet}
-		</Card>
+
+		{#key team}
+			<Card card={summary}>
+				{#snippet body()}
+					<p>This will be the team summary card</p>
+				{/snippet}
+			</Card>
+			<Card card={pictures}>
+				{#snippet body()}
+					<p>This will be the pictures card</p>
+				{/snippet}
+			</Card>
+			<Card card={comments}>
+				{#snippet body()}
+					<p>This will be the comments card</p>
+				{/snippet}
+			</Card>
+			<Card card={actionHeatmap}>
+				{#snippet body()}
+					<p>This will be the action heatmap card</p>
+				{/snippet}
+			</Card>
+			<Card card={matches}>
+				{#snippet body()}
+					<p>This will be the matches card</p>
+				{/snippet}
+			</Card>
+			<Card card={pitScouting}>
+				{#snippet body()}
+					<PitScoutingCard {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={matchViewer}>
+				{#snippet body()}
+					<p>This will be the match viewer card</p>
+				{/snippet}
+			</Card>
+		{/key}
 	{/snippet}
 </DB>
 

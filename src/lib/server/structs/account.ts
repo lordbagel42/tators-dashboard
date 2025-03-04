@@ -444,9 +444,21 @@ export namespace Account {
 	};
 
 	export const verify = async (account: AccountData) => {
-		return account.update({
-			verified: true,
-			verification: ''
+		return attemptAsync(async () => {
+			const universe = (await Universes.Universe.fromId('2122')).unwrap();
+			if (!universe) throw new Error('Universe not found');
+			(await Universes.addToUniverse(account, universe)).unwrap();
+			const scout = (
+				await Permissions.Role.fromProperty('name', 'Scout', { type: 'single' })
+			).unwrap();
+			if (!scout) throw new Error('Role not found');
+			(await Permissions.giveRole(account, scout)).unwrap();
+			return (
+				await account.update({
+					verified: true,
+					verification: ''
+				})
+			).unwrap();
 		});
 	};
 }

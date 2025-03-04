@@ -2,63 +2,81 @@
 	import DateInput from "../forms/DateInput.svelte";
 
 
-interface Data {
+interface Props {
     rank: number;
-    record: string;
     played: number;
+    record: string;
     drivebase: string;
     weight: string;
     averageVelocity: string;
-    averageSecondsNotMoving: string;
+    averageAuto: number;
+    averageTele: number;
+    averageEndgame: number;
 }
 
-const data: Data = {
-    rank: 12,
-    record: "6-2-1",
-    played: 9,
-    drivebase: 'some sort of text',
-    weight: 'number then lbs',
-    averageVelocity: 'number then fts/s',
-    averageSecondsNotMoving: 'number then s'
+const data: Props = {
+    rank: ,
+    played: ,
+    record: "",
+    drivebase: '',
+    weight: '',
+    averageVelocity: '',
+    averageAuto: ,
+    averageTele: ,
+    averageEndgame: ,
 };
 
 
-const Table: React.FC = () => {
+const Table: Props = {
     return (
         <table>
-            <thead> Summary </thead>
             <tbody>
                 <tr>
-                    <td>Rank: {rank}</td>
-                    <td>{data.rank}</td>
+                    <th>Rank</th>
+                    <td>0</td>
                 </tr>
                 <tr>
-                    <td>Record: {record}</td>
-                    <td>{data.record}</td>
+                    <th>Played</th>
+                    <td>0</td>
                 </tr>
                 <tr>
-                    <td>Played: {played}</td>
-                    <td>{data.played}</td>
+                    <th>Record</th>
+                    <td>
+                        "0"
+                        " - "
+                        "0"
+                        " - "
+                        "0"
+                    </td>
                 </tr>
                 <tr>
-                    <td>Drivebase: {drivebase}</td>
-                    <td>{data.drivebase}</td>
+                    <th>Drivebase</th>
+                    <td>"Nothing to show currently"</td>
                 </tr>
                 <tr>
-                    <td>Weight: {weight}</td>
-                    <td>{data.weight}</td>
+                    <th>Weight</th>
+                    <td>"Nothing to show currently"</td>
                 </tr>
                 <tr>
-                    <td>Average Velocity: {averageVelocity}</td>
-                    <td>{data.averageVelocity}</td>
+                    <th>Average Velocity</th>
+                    <td>
+                        "0.00"
+                        " ft/s"
+                    </td>
                 </tr>
                 <tr>
-                    <td>Average Seconds Not Moving: {averageSecondsNotMoving}</td>
-                    <td>{data.averageSecondsNotMoving}</td>
+                    <th>Average Auto</th>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th>Average Tele</th>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th>Average Engame</th>
+                    <td>0</td>
                 </tr>
             </tbody>
         </table>
     );
-};
-
-</script>
+}; 

@@ -73,7 +73,7 @@ importers:
         version: 0.38.4(@types/pg@8.11.11)(@types/react@19.0.8)(pg@8.13.1)(postgres@3.4.5)(react@18.3.1)
       drizzle-struct:
         specifier: github:tsaxking/drizzle-struct
-        version: https://codeload.github.com/tsaxking/drizzle-struct/tar.gz/7ab48cfbce26bac6b0d5292a131e48469252b00e(@types/node@22.10.4)(@types/pg@8.11.11)(@types/react@19.0.2)(react@18.3.1)
+        version: https://codeload.github.com/tsaxking/drizzle-struct/tar.gz/7ab48cfbce26bac6b0d5292a131e48469252b00e(@types/node@22.13.1)(@types/pg@8.11.11)(@types/react@19.0.8)(react@18.3.1)
       drizzle-zod:
         specifier: ^0.6.1
         version: 0.6.1(drizzle-orm@0.38.4(@types/pg@8.11.11)(@types/react@19.0.8)(pg@8.13.1)(postgres@3.4.5)(react@18.3.1))(zod@3.24.1)
@@ -4281,6 +4281,10 @@ packages:
     resolution: {tarball: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/0a672fd110cfe845d5428a714906c9e79c7004ea}
     version: 1.0.0
 
+  ts-utils@https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032:
+    resolution: {tarball: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032}
+    version: 1.0.0
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -6461,7 +6465,7 @@ snapshots:
       postgres: 3.4.5
       react: 18.3.1
 
-  drizzle-struct@https://codeload.github.com/tsaxking/drizzle-struct/tar.gz/7ab48cfbce26bac6b0d5292a131e48469252b00e(@types/node@22.10.4)(@types/pg@8.11.11)(@types/react@19.0.2)(react@18.3.1):
+  drizzle-struct@https://codeload.github.com/tsaxking/drizzle-struct/tar.gz/7ab48cfbce26bac6b0d5292a131e48469252b00e(@types/node@22.13.1)(@types/pg@8.11.11)(@types/react@19.0.8)(react@18.3.1):
     dependencies:
       '@eslint/compat': 1.2.6(eslint@9.19.0)
       '@msgpack/msgpack': 3.0.0-beta3
@@ -6482,11 +6486,11 @@ snapshots:
       prettier: 3.4.2
       prettier-plugin-svelte: 3.3.3(prettier@3.4.2)(svelte@5.19.9)
       proper-lockfile: 4.1.2
-      svelte: 5.16.1
-      ts-node: 10.9.2(@types/node@22.10.4)(typescript@5.7.2)
+      svelte: 5.19.9
+      ts-node: 10.9.2(@types/node@22.13.1)(typescript@5.7.3)
       ts-utils: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/0a672fd110cfe845d5428a714906c9e79c7004ea
-      typescript: 5.7.2
-      uuid: 11.0.4
+      typescript: 5.7.3
+      uuid: 11.0.5
       zod: 3.24.1
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -7213,8 +7217,8 @@ snapshots:
       node-html-parser: 7.0.1
       prettier: 3.4.2
       ts-utils: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/0a672fd110cfe845d5428a714906c9e79c7004ea
-      vite-node: 3.0.5(@types/node@22.10.4)(sass-embedded@1.83.0)
-      vitest: 2.1.8(@types/node@22.10.4)(sass-embedded@1.83.0)
+      vite-node: 3.0.5(@types/node@22.13.1)(sass-embedded@1.83.4)
+      vitest: 2.1.9(@types/node@22.13.1)(sass-embedded@1.83.4)
       zod: 3.24.1
     transitivePeerDependencies:
       - '@edge-runtime/vm'
@@ -8702,6 +8706,10 @@ snapshots:
     dependencies:
       typescript: 5.7.3
 
+  ts-utils@https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032:
+    dependencies:
+      typescript: 5.7.3
+
   tslib@2.8.1: {}
 
   tween-functions@1.2.0: {}
@@ -8785,7 +8793,7 @@ snapshots:
       prettier-plugin-svelte: 3.3.3(prettier@3.4.2)(svelte@5.19.9)
       svelte: 5.19.9
       ts-node: 10.9.2(@types/node@22.13.1)(typescript@5.7.3)
-      ts-utils: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/d761c37b310d6c54c8f13730b8c08a7c75cdca1a
+      ts-utils: https://codeload.github.com/tsaxking/global-ts-utilities/tar.gz/fa45a1b39d465b625029a85e3f5fd98c296d5032
       typescript: 5.7.3
       uuid: 11.0.5
       zod: 3.24.1

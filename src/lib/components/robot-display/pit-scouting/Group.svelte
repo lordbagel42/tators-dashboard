@@ -26,10 +26,7 @@
 <ul class="list-group border-0">
 	{#each $questions as question}
 		<li class="list-group-item border-0">
-			<Question
-				{question}
-				answer={$answers.find((a) => a.data.questionId === question.data.id)}
-			/>
+			<Question {question} answer={$answers.find((a) => a.data.questionId === question.data.id)} />
 		</li>
 	{/each}
 </ul>

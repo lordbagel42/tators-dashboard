@@ -96,7 +96,7 @@ export namespace FIRST {
 		name: 'upload-pictures',
 		structs: [TeamPictures],
 		group: 'FIRST',
-		permissions: ['team_pictures:create'],
+		permissions: ['team_pictures:create']
 	});
 }
 

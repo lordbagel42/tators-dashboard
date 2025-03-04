@@ -50,21 +50,20 @@
 				team: team.team_number,
 				eventKey: event.key,
 				picture: file,
-				accountId: Account.getSelf().get().data.id || '',
+				accountId: Account.getSelf().get().data.id || ''
 			});
 		});
-
 
 		return () => {
 			unsub();
 			off();
-		}
+		};
 	});
 
 	const uploader = new FileUploader(
 		`/dashboard/event/${event.key}/team/${team.team_number}/picture`,
 		{
-			method: 'POST',
+			method: 'POST'
 		}
 	);
 
@@ -108,13 +107,12 @@
 			</div>
 		</div>
 		<div class="col-4">
-			<FileUploaderComponent 
+			<FileUploaderComponent
 				bind:this={uploadComponent}
 				multiple={true}
-				uploader={uploader}
+				{uploader}
 				message="Upload a picture"
 			/>
 		</div>
 	</div>
 </div>
-

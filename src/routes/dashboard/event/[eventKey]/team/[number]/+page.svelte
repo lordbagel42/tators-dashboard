@@ -6,10 +6,11 @@
 	import { type FilterState } from '$lib/types/robot-display.js';
 	import { sleep } from 'ts-utils/sleep';
 	import { afterNavigate } from '$app/navigation';
+	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 
-	const { data = $bindable() } = $props();
+	const { data } = $props();
 	const teams = $derived(data.teams);
 	const team = $derived(data.team);
 	const event = $derived(data.event);
@@ -90,14 +91,21 @@
 			height: 1
 		}
 	});
-
-	const dashboard = $derived(
+	let dashboard = $state(
 		new Dashboard.Dashboard({
-			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
 			id: 'robot-display'
 		})
 	);
+
+	$effect(() => {
+		dashboard = new Dashboard.Dashboard({
+			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
+			id: 'robot-display'
+		});
+	});
 
 	let filter: FilterState = $state({
 		auto: true,
@@ -174,41 +182,44 @@
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
 			</div>
 		</div>
-		<Card card={summary}>
-			{#snippet body()}
-				<p>This will be the team summary card</p>
-			{/snippet}
-		</Card>
-		<Card card={pictures}>
-			{#snippet body()}
-				<p>This will be the pictures card</p>
-			{/snippet}
-		</Card>
-		<Card card={comments}>
-			{#snippet body()}
+
+		{#key team}
+			<Card card={summary}>
+				{#snippet body()}
+					<p>This will be the team summary card</p>
+				{/snippet}
+			</Card>
+			<Card card={pictures}>
+				{#snippet body()}
+					<PictureDisplay {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={comments}>
+				{#snippet body()}
 				<TeamComments team={team.team_number} event={event.key} />
-			{/snippet}
-		</Card>
-		<Card card={actionHeatmap}>
-			{#snippet body()}
-				<p>This will be the action heatmap card</p>
-			{/snippet}
-		</Card>
-		<Card card={matches}>
-			{#snippet body()}
-				<p>This will be the matches card</p>
-			{/snippet}
-		</Card>
-		<Card card={pitScouting}>
-			{#snippet body()}
-				<PitScoutingCard {team} {event} />
-			{/snippet}
-		</Card>
-		<Card card={matchViewer}>
-			{#snippet body()}
-				<p>This will be the match viewer card</p>
-			{/snippet}
-		</Card>
+				{/snippet}
+			</Card>
+			<Card card={actionHeatmap}>
+				{#snippet body()}
+					<p>This will be the action heatmap card</p>
+				{/snippet}
+			</Card>
+			<Card card={matches}>
+				{#snippet body()}
+					<p>This will be the matches card</p>
+				{/snippet}
+			</Card>
+			<Card card={pitScouting}>
+				{#snippet body()}
+					<PitScoutingCard {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={matchViewer}>
+				{#snippet body()}
+					<p>This will be the match viewer card</p>
+				{/snippet}
+			</Card>
+		{/key}
 	{/snippet}
 </DB>
 

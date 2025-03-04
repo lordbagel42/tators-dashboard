@@ -1,8 +1,12 @@
 import { boolean } from 'drizzle-orm/pg-core';
 import { integer } from 'drizzle-orm/pg-core';
 import { text } from 'drizzle-orm/pg-core';
-import { Struct } from 'drizzle-struct/back-end';
+import { Struct, StructStream } from 'drizzle-struct/back-end';
 import { createEntitlement } from '../utils/entitlements';
+import { Permissions } from './permissions';
+import { z } from 'zod';
+import { DB } from '../db';
+import { and, eq } from 'drizzle-orm';
 
 export namespace FIRST {
 	export const TeamPictures = new Struct({
@@ -16,6 +20,34 @@ export namespace FIRST {
 		generators: {
 			universe: () => '2122'
 		}
+	});
+
+	TeamPictures.queryListen('from-event', async (event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+		if (!Permissions.isEntitled(roles, 'view-tba-info')) return new Error('Not entitled');
+
+		const stream = new StructStream(TeamPictures);
+		const { team, eventKey } = z
+			.object({
+				team: z.number(),
+				eventKey: z.string()
+			})
+			.parse(data);
+
+		(async () => {
+			const res = await DB.select()
+				.from(TeamPictures.table)
+				.where(and(eq(TeamPictures.table.number, team), eq(TeamPictures.table.eventKey, eventKey)));
+
+			for (let i = 0; i < res.length; i++) {
+				stream.add(TeamPictures.Generator(res[i]));
+			}
+
+			stream.end();
+		})();
+
+		return stream;
 	});
 
 	// TeamPictures.on('delete', (pic) => {});

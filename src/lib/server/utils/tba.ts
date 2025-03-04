@@ -5,11 +5,13 @@ import {
 	type TBAEvent as E,
 	type TBATeam as T,
 	type TBAMatch as M,
-	teamsFromMatch
+	teamsFromMatch,
+	MediaSchema
 } from 'tatorscout/tba';
 import { attemptAsync } from 'ts-utils/check';
 import { TBA } from '../structs/TBA';
 import { StructData } from 'drizzle-struct/back-end';
+import { z } from 'zod';
 
 export class Event {
 	public static getEvents(year: number) {
@@ -205,6 +207,18 @@ export class Team {
 			return (await this.event.getMatches())
 				.unwrap()
 				.filter((m) => teamsFromMatch(m.tba).includes(this.tba.team_number));
+		});
+	}
+
+	public getMedia() {
+		return attemptAsync(async () => {
+			if (this.custom) return [];
+			const res = await TBA.get(`/team/${this.tba.key}/media/${this.event.tba.year}`, {
+				timeout: 1000 * 60,
+				updateThreshold: 1000 * 60 * 60
+			});
+
+			return z.array(MediaSchema).parse(res.unwrap());
 		});
 	}
 

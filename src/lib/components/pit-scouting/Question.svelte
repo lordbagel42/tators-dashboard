@@ -2,18 +2,21 @@
 	import { Scouting } from '$lib/model/scouting';
 	import { onMount } from 'svelte';
 	import { Account } from '$lib/model/account';
+	import { capitalize } from 'ts-utils/text';
+	import { writable } from 'svelte/store';
 
 	interface Props {
 		question: Scouting.PIT.QuestionData;
-		answers: Scouting.PIT.AnswerArr;
 		team: number;
 	}
 
-	const { question, answers, team }: Props = $props();
+	const props: Props = $props();
+	const question = props.question;
+	const team = $derived(props.team);
 
-	let answer = $answers.find((a) => a.data.questionId === question.data.id);
+	let answer: Scouting.PIT.AnswerData | undefined = $state(undefined);
 
-	let value: string[] = $state([]);
+	const value = writable<string[]>([]);
 	let options: string[] = $state([]);
 	let self = $state(Account.self);
 
@@ -24,129 +27,148 @@
 	});
 
 	$effect(() => {
-		if (!answer) return;
+		if (!answer) {
+			value.set([]);
+			return;
+		}
 		const res = Scouting.PIT.parseAnswer(answer);
 		if (res.isErr()) return console.error(res.error);
-		value = res.value;
+		value.set(res.value);
 		self = Account.getSelf();
 	});
 
-	const updateAnswer = () => {
+	const retrieveAnswer = () => 		Scouting.PIT.Answers.fromProperty('questionId', question.data.id || '', true).await().then(res => {
+			if (res.isErr()) return console.error(res.error);
+			value.set([])
+			answer = res.value.find(a => a.data.team === team);
+		});
+
+	$effect(() => {
+		if (!team) return; // trigger on team change
+		retrieveAnswer();
+	});
+
+	const updateAnswer = async () => {
 		if (answer) {
 			answer.update((a) => ({
 				...a,
-				value: JSON.stringify(value)
+				answer: JSON.stringify($value)
 			}));
 		} else {
 			if (!question.data.id) return console.error('question.data.id did not exist');
 			const accountId = self.get().data.id;
 			if (!accountId) return console.error('No account id found');
-			Scouting.PIT.Answers.new({
+			await Scouting.PIT.Answers.new({
 				questionId: question.data.id,
-				answer: JSON.stringify(value),
+				answer: JSON.stringify($value),
 				team,
 				accountId // Ideally, this would be done on the backend but it's okay to be a little insecure
 			});
+			retrieveAnswer();
 		}
 	};
 </script>
 
-<div class="card">
-	<div class="card-body">
-		<label for="">{$question.question}</label>
+<div>
+	<h5>{$question.question}</h5>
+	<p class="text-muted mb-2">{$question.description}</p>
+	<pre>{$question.key}</pre>
 
-		{#if $question.type === 'text'}
+	{#if $question.type === 'text'}
+		<input
+			type="text"
+			class="form-control"
+			placeholder="Enter a value..."
+			value={$value[0] || ''}
+			onchange={(e) => {
+				value.set([e.currentTarget.value]);
+				updateAnswer();
+			}}
+		/>
+	{:else if $question.type === 'number'}
+		<input
+			type="number"
+			class="form-control"
+			placeholder="Enter a number..."
+			value={$value[0] || ''}
+			onchange={(e) => {
+				value.set([e.currentTarget.value]);
+				updateAnswer();
+			}}
+		/>
+	{:else if $question.type === 'boolean'}
+		<input type="radio" id="{$question.id}-yes" class="btn-check" autocomplete="off" checked={$value.includes('yes')} onclick={() => {
+			value.set(['yes']);
+			updateAnswer();
+		}} />
+		<label class="btn btn-outline-success" for="{$question.id}-yes">Yes</label>
+		<input type="radio" id="{$question.id}-no" class="btn-check" autocomplete="off" checked={$value.includes('no')} onclick={() => {
+			value.set(['no']);
+			updateAnswer();
+		}} />
+		<label class="btn btn-outline-danger" for="{$question.id}-no">No</label>
+	{:else if $question.type === 'checkbox'}
+		<p>
+			<small class="text-muted">
+				Select one or more of the following options:
+			</small>
+		</p>
+		{#each options as option}
 			<input
-				type="text"
-				value={value[0] || ''}
-				onchange={(e) => {
-					value = [e.currentTarget.value];
+				type="checkbox"
+				id="{$question.id}-{option}"
+				class="btn-check"
+				autocomplete="off"
+				checked={$value.includes(option)}
+				onclick={() => {
+					if ($value.includes(option)) {
+						// value = value.filter((v) => v !== option);
+						value.update(v => v.filter((v) => v !== option));
+					} else {
+						// value = [...value, option];
+						value.update(v => [...v, option]);
+					}
 					updateAnswer();
 				}}
 			/>
-		{:else if $question.type === 'number'}
+			<label class="btn btn-outline-primary" for="{$question.id}-{option}">{capitalize(option)}</label>
+		{/each}
+	{:else if $question.type === 'radio'}
+		<p>
+			<small class="text-muted">
+				Select one of the following options:
+			</small>
+		</p>
+		{#each options as option}
 			<input
-				type="number"
-				value={value[0] || ''}
-				onchange={(e) => {
-					value = [e.currentTarget.value];
+				type="radio"
+				id="{$question.id}-{option}"
+				name="{$question.id}"
+				class="btn-check"
+				autocomplete="off"
+				checked={$value.includes(option)}
+				onclick={() => {
+					// value = [option];
+					value.set([option]);
 					updateAnswer();
 				}}
 			/>
-		{:else if $question.type === 'boolean'}
-			<label>
-				<input
-					type="radio"
-					name="boolean"
-					value="yes"
-					checked={value[0] === 'yes'}
-					onchange={() => {
-						value = ['yes'];
-						updateAnswer();
-					}}
-				/>
-				Yes
-			</label>
-			<label>
-				<input
-					type="radio"
-					name="boolean"
-					value="no"
-					checked={value[0] === 'no'}
-					onchange={() => {
-						value = ['no'];
-						updateAnswer();
-					}}
-				/>
-				No
-			</label>
-		{:else if $question.type === 'checkboxes'}
+			<label class="btn btn-outline-primary" for="{$question.id}-{option}">{capitalize(option)}</label>
+		{/each}
+	{:else if $question.type === 'select'}
+		<select
+			class="form-select"
+			onchange={(e) => {
+				console.log('Select', e);
+				// value = [e.currentTarget.value];
+				value.set([e.currentTarget.value]);
+				updateAnswer();
+			}}
+		>
+			<option disabled selected>Select a Value...</option>
 			{#each options as option}
-				<label>
-					<input
-						type="checkbox"
-						value={option}
-						checked={value.includes(option)}
-						onchange={(e) => {
-							if (e.currentTarget.checked) {
-								value = [...value, option];
-							} else {
-								value = value.filter((v) => v !== option);
-							}
-							updateAnswer();
-						}}
-					/>
-					{option}
-				</label>
+				<option value={option} selected={$value.includes(option)}>{option}</option>
 			{/each}
-		{:else if $question.type === 'radios'}
-			{#each options as option}
-				<label>
-					<input
-						type="radio"
-						name="radios"
-						value={option}
-						checked={value[0] === option}
-						onchange={() => {
-							value = [option];
-							updateAnswer();
-						}}
-					/>
-					{option}
-				</label>
-			{/each}
-		{:else if $question.type === 'select'}
-			<select
-				onchange={(e) => {
-					value = [e.currentTarget.value];
-					updateAnswer();
-				}}
-			>
-				<option disabled selected>Select a Value...</option>
-				{#each options as option}
-					<option value={option} selected={value[0] === option}>{option}</option>
-				{/each}
-			</select>
-		{/if}
-	</div>
+		</select>
+	{/if}
 </div>

@@ -15,7 +15,7 @@ export namespace Scouting {
 			// matchId: 'string',
 			team: 'number',
 			scoutId: 'string',
-			scoutGroup: 'string',
+			scoutGroup: 'number',
 			prescouting: 'boolean',
 			remote: 'boolean',
 			trace: 'string',
@@ -37,7 +37,8 @@ export namespace Scouting {
 			team: 'number',
 			comment: 'string',
 			type: 'string',
-			eventKey: 'string'
+			eventKey: 'string',
+			scoutUsername: 'string'
 		},
 		socket: sse,
 		browser

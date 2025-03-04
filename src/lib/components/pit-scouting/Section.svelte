@@ -3,7 +3,6 @@
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import Group from './Group.svelte';
-	import { prompt } from '$lib/utils/prompts';
 
 	interface Props {
 		section: Scouting.PIT.SectionData;
@@ -12,20 +11,22 @@
 
 	const { section, team }: Props = $props();
 
-	let groups = new DataArr(Scouting.PIT.Groups, []);
+	let groups = $state(new DataArr(Scouting.PIT.Groups, []));
 
-	onMount(() => {
+	$effect(() => {
+		if (!section || !team) return; // trigger on section or team change
 		groups = Scouting.PIT.Groups.fromProperty('sectionId', $section.id || '', false);
 		groups.sort((a, b) => Number(a.data.order) - Number(b.data.order));
 	});
 </script>
 
 <div class="container-fluid">
-	<div class="row">
+	<div class="row mb-3">
 		<h3>{$section.name}</h3>
+		<hr>
 	</div>
 	{#each $groups as group}
-		<div class="row">
+		<div class="row mb-3">
 			<Group {group} {team} />
 		</div>
 	{/each}

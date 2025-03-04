@@ -12,7 +12,7 @@
 	const { group, team }: Props = $props();
 
 	let questions = $state(new DataArr(Scouting.PIT.Questions, []));
-	let answers = $state(new DataArr(Scouting.PIT.Answers, []));
+	// let answers = $state(new DataArr(Scouting.PIT.Answers, []));
 
 	let questionIds: string[] = $state([]);
 
@@ -22,19 +22,22 @@
 
 	onMount(() => {
 		questions = Scouting.PIT.Questions.fromProperty('groupId', $group.id || '', false);
-		answers = Scouting.PIT.getAnswersFromGroup(group, questionIds);
+		// answers = Scouting.PIT.getAnswersFromGroup(group, questionIds);
 	});
 </script>
 
 <div class="card">
-	<div class="card-title">
-		<div class="d-flex justify-content-between">
-			<h3>{$group.name}</h3>
-		</div>
-	</div>
 	<div class="card-body">
-		{#each $questions as question}
-			<Question {question} {answers} {team} />
+		<div class="card-title">
+			<div class="d-flex justify-content-between">
+				<h3>{$group.name}</h3>
+			</div>
+		</div>
+		{#each $questions as question, i}
+			{#if i > 0}
+				<hr>		
+			{/if}
+			<Question {question} {team} />
 		{/each}
 	</div>
 </div>

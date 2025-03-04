@@ -15,19 +15,25 @@
 </script>
 
 <div class="container-fluid">
+	<div class="row mb-3">
+		<h1>Pit Scouting</h1>
+		<small class="text-muted">Select a section to scout</small>
+	</div>
 	{#if $sections.length}
-		{#each $sections as section, i}
-			<div class="row">
-				<a href="/dashboard/event/{eventKey}/pitscouting/{i}">
-					<!-- <a href="{location.href}/pitscouting/{i}">  -->
-					<div class="card">
-						<div class="card-header">
-							{section.data.name}
+		<div class="row mb-3">
+			{#each $sections as section, i}
+				<div class="col-md-4 p-3">
+					<a href="/dashboard/event/{eventKey}/pit-scouting/{i}" class="text-reset text-decoration-none">
+						<!-- <a href="{location.href}/pitscouting/{i}">  -->
+						<div class="card">
+							<div class="card-body">
+								<h5 class="card-title">{section.data.name}</h5>
+							</div>
 						</div>
-					</div>
-				</a>
-			</div>
-		{/each}
+					</a>
+				</div>
+			{/each}
+		</div>
 	{:else}
 		<div class="row">
 			<p>No sections found</p>

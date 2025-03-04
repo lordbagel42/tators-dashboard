@@ -114,6 +114,12 @@ export namespace Scouting {
 		});
 		export type SectionData = typeof Sections.sample;
 
+		Sections.on('delete', async (data) => {
+			Groups.fromProperty('sectionId', data.id, {
+				type: 'stream'
+			}).pipe((d) => d.delete());
+		});
+
 		export const Groups = new Struct({
 			name: 'pit_groups',
 			structure: {
@@ -131,6 +137,12 @@ export namespace Scouting {
 		});
 
 		export type GroupData = typeof Groups.sample;
+
+		Groups.on('delete', async (data) => {
+			Questions.fromProperty('groupId', data.id, {
+				type: 'stream'
+			}).pipe((d) => d.delete());
+		});
 
 		export const Questions = new Struct({
 			name: 'pit_questions',
@@ -163,6 +175,12 @@ export namespace Scouting {
 		});
 
 		export type QuestionData = typeof Questions.sample;
+
+		Questions.on('delete', async (data) => {
+			Answers.fromProperty('questionId', data.id, {
+				type: 'stream'
+			}).pipe((d) => d.delete());
+		});
 
 		export const Answers = new Struct({
 			name: 'pit_answers',

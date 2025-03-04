@@ -6,13 +6,12 @@
 
 	interface Props {
 		question: Scouting.PIT.QuestionData;
-		questions: Scouting.PIT.QuestionArr;
-		index: number;
 	}
 
-	const { question, questions, index }: Props = $props();
+	const { question }: Props = $props();
 
 	let q = $state(question.data.question || '');
+	let description = $state(question.data.description || '');
 	let key = $state(question.data.key || '');
 	let type = $state(question.data.type || 'text');
 	let options: string[] = $state([]);
@@ -33,10 +32,11 @@
 		question.update((data) => ({
 			...data,
 			question: q,
-			key,
+			key: key.toLowerCase().trim().replace(/ /g, '_'),
 			type,
 			order,
-			options: JSON.stringify(Array.from(new Set(options)))
+			options: JSON.stringify(Array.from(new Set(options))),
+			description,
 		}));
 	};
 
@@ -48,50 +48,28 @@
 	};
 </script>
 
-<div class="card">
-	<div class="card-header">
-		<button
-			type="button"
-			class="btn btn-secondary"
-			disabled={index === 0}
-			onclick={() => {
-				order = order - 1;
-				save();
-			}}
-		>
-			<i class="material_icons">chevron_up</i>
-		</button>
-		<button
-			type="button"
-			class="btn btn-secondary"
-			disabled={$questions.length === index - 1}
-			onclick={() => {
-				order = order + 1;
-				save();
-			}}
-		>
-			<i class="material_icons">chevron_down</i>
-		</button>
+<div class="container-fluid">
+	<div class="row mb-3">
+		<div class="input-group">
+			<span class="input-group-text">Question</span>
+			<input type="text" bind:value={q} class="form-control" onchange={save} />
+		</div>
 	</div>
-	<div class="card-body">
+	<div class="row mb-3">
 		<div class="input-group">
-			<label for="question">Question</label>
-			<input type="text" id="question" bind:value={q} class="form-control" onchange={save} />
+			<span class="input-group-text">Description</span>
+			<input type="text" bind:value={description} class="form-control" onchange={save} />
 		</div>
+	</div>
+	<div class="row mb-3">
 		<div class="input-group">
-			<label for="key">Key</label>
-			<input
-				type="text"
-				id="key"
-				max="8"
-				min="3"
-				bind:value={key}
-				class="form-control"
-				onchange={save}
-			/>
+			<span class="input-group-text">Key</span>
+			<input type="text" max="8" min="3" bind:value={key} class="form-control" onchange={save} />
 		</div>
+	</div>
+	<div class="row mb-3">
 		<div class="input-group">
-			<label for="type">Type</label>
+			<span class="input-group-text">Type</span>
 			<select id="type" bind:value={type} class="form-control" onchange={save}>
 				<option value="text">Text</option>
 				<option value="number">Number</option>
@@ -101,16 +79,17 @@
 				<option value="checkbox">Checkbox</option>
 			</select>
 		</div>
+	</div>
+	<div class="row mb-3">
 		{#if ['select', 'radio', 'checkbox'].includes(type)}
-			<button class="btn btn-primary" onclick={addOption}>Add Option</button>
 			{#each options as option, i}
-				<div class="input-group">
+				<div class="input-group mb-3">
 					<button
 						class="btn btn-outline-danger"
 						type="button"
-						disabled={i === 0}
 						onclick={() => {
 							options.splice(i, 1);
+							save();
 						}}
 					>
 						<i class="material-icons">delete</i>
@@ -121,33 +100,42 @@
 						class="form-control"
 						onchange={(e) => {
 							options[i] = e.currentTarget.value;
+							save();
 						}}
 					/>
 					<button
 						type="button"
-						class="btn btn-outline-secondary"
+						class="btn btn-outline-secondary btn-sm"
 						onclick={() => {
+							if (i === 0) return;
 							const prev = options[i - 1];
 							options[i - 1] = option;
 							options[i] = prev;
+							save();
 						}}
 					>
-						<i class="material-icons"> chevron_up </i>
+						<i class="material-icons"> keyboard_arrow_up </i>
 					</button>
 					<button
 						type="button"
-						class="btn btn-outline-secondary"
-						disabled={i === options.length - 1}
+						class="btn btn-outline-secondary btn-sm"
 						onclick={() => {
+							if (i === options.length - 1) return;
 							const next = options[i + 1];
 							options[i + 1] = option;
 							options[i] = next;
+							save();
 						}}
 					>
-						<i class="material-icons"> chevron_up </i>
+						<i class="material-icons"> keyboard_arrow_down </i>
 					</button>
 				</div>
 			{/each}
+			<div class="d-flex justify-content-center">
+				<button class="btn btn-primary w-50 btn-sm" onclick={addOption}
+					><i class="material-icons">add</i> Add Option</button
+				>
+			</div>
 		{/if}
 	</div>
 </div>

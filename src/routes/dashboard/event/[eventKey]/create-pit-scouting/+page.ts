@@ -5,3 +5,5 @@ export const load = (event) => {
 		year: Number(year)
 	};
 };
+
+export const ssr = false;

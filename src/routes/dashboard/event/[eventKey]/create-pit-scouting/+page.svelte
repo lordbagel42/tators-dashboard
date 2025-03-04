@@ -1,6 +1,7 @@
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	import { Scouting } from '$lib/model/scouting';
-	import { prompt, select } from '$lib/utils/prompts';
+	import { confirm, prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
@@ -18,13 +19,18 @@
 
 	const addSection = async () => {
 		const name = await prompt('Section Name');
+		console.log(name);
 		if (!name) return;
 
-		Scouting.PIT.Sections.new({
+		console.log('Adding section', name);
+
+		const res = await Scouting.PIT.Sections.new({
 			name,
 			order: $sections.length,
 			eventKey
 		});
+
+		console.log(res);
 	};
 
 	const copy = async () => {
@@ -66,20 +72,61 @@
 </script>
 
 <div class="container">
-	<div class="row">
-		<button type="button" class="btn btn-primary" onclick={generateEventTemplate}>
-			Generate Event Template
-		</button>
-		<button type="button" class="btn btn-primary" onclick={copy}> Copy From Event </button>
-		<button class="btn btn-primary" onclick={addSection}>Add Section</button>
+	<div class="row mb-3">
+		<div class="col">
+			<h1>Pit Scouting</h1>
+		</div>
 	</div>
-	<div class="row">
-		{#each $sections as section, i}
-			<a href="/dashboard/event/{eventKey}/create-pitscouting/{i}">
+	<div class="row mb-3">
+		<div class="col-6 ps-0">
+			<button type="button" class="btn btn-primary w-100" onclick={generateEventTemplate}>
+				<i class="material-icons"> list_alt </i>
+				Generate Event Template
+			</button>
+		</div>
+		<div class="col-6 pe-0">
+			<button type="button" class="btn btn-primary w-100" onclick={copy}>
+				<i class="material-icons">copy_all</i>
+				Copy From Event
+			</button>
+		</div>
+	</div>
+	{#each $sections as section, i}
+		<div class="row mb-3">
 				<div class="card">
-					{section.data.name}
+					<div class="card-body">
+						<div class="d-flex justify-content-between">
+							<h5 class="card-title">
+								{section.data.name}
+							</h5>
+							<div class="btn-group" role="group">
+								<a
+									href="/dashboard/event/{eventKey}/create-pit-scouting/{i}"
+									class="btn btn-primary"
+								>
+									<i class="material-icons">edit</i>
+								</a>
+								<button type="button" class="btn btn-danger" onclick={() => {
+									confirm('Are you sure you want to delete this section?').then((res) => {
+										if (res) section.delete();
+									});
+								}}>
+									<i class="material-icons">
+										delete
+									</i>
+								</button>
+							</div>
+
+
+						</div>
+					</div>
 				</div>
-			</a>
-		{/each}
+		</div>
+	{/each}
+	<div class="row">
+		<button class="btn btn-success" onclick={addSection}>
+			<i class="material-icons">add</i>
+			Add Section
+		</button>
 	</div>
 </div>

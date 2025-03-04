@@ -196,7 +196,7 @@
 			</Card>
 			<Card card={comments}>
 				{#snippet body()}
-				<TeamComments team={team.team_number} event={event.key} />
+					<TeamComments team={team.team_number} event={event.key} />
 				{/snippet}
 			</Card>
 			<Card card={actionHeatmap}>

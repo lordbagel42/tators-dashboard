@@ -12,7 +12,7 @@ export namespace FIRST {
 	export const TeamPictures = new Struct({
 		name: 'team_pictures',
 		structure: {
-			number: integer('number').notNull(),
+			team: integer('team').notNull(),
 			eventKey: text('event_key').notNull(),
 			picture: text('picture').notNull(),
 			accountId: text('account_id').notNull()
@@ -38,7 +38,7 @@ export namespace FIRST {
 		(async () => {
 			const res = await DB.select()
 				.from(TeamPictures.table)
-				.where(and(eq(TeamPictures.table.number, team), eq(TeamPictures.table.eventKey, eventKey)));
+				.where(and(eq(TeamPictures.table.team, team), eq(TeamPictures.table.eventKey, eventKey)));
 
 			for (let i = 0; i < res.length; i++) {
 				stream.add(TeamPictures.Generator(res[i]));
@@ -90,6 +90,13 @@ export namespace FIRST {
 		structs: [TeamPictures, Matches, CustomMatches],
 		group: 'FIRST',
 		permissions: ['team_pictures:read:*', 'matches:read:*', 'custom_matches:*:*']
+	});
+
+	createEntitlement({
+		name: 'upload-pictures',
+		structs: [TeamPictures],
+		group: 'FIRST',
+		permissions: ['team_pictures:create']
 	});
 }
 

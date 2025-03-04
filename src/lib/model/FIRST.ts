@@ -6,7 +6,7 @@ export namespace FIRST {
 	export const TeamPictures = new Struct({
 		name: 'team_pictures',
 		structure: {
-			number: 'number',
+			team: 'number',
 			eventKey: 'string',
 			picture: 'string',
 			accountId: 'string'

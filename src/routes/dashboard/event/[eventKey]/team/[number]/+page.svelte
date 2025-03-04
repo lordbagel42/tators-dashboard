@@ -173,41 +173,44 @@
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
 			</div>
 		</div>
-		<Card card={summary}>
-			{#snippet body()}
-				<p>This will be the team summary card</p>
-			{/snippet}
-		</Card>
-		<Card card={pictures}>
-			{#snippet body()}
-				<p>This will be the pictures card</p>
-			{/snippet}
-		</Card>
-		<Card card={comments}>
-			{#snippet body()}
-				<p>This will be the comments card</p>
-			{/snippet}
-		</Card>
-		<Card card={actionHeatmap}>
-			{#snippet body()}
-				<p>This will be the action heatmap card</p>
-			{/snippet}
-		</Card>
-		<Card card={matches}>
-			{#snippet body()}
-				<p>This will be the matches card</p>
-			{/snippet}
-		</Card>
-		<Card card={pitScouting}>
-			{#snippet body()}
-				<PitScoutingCard {team} {event} />
-			{/snippet}
-		</Card>
-		<Card card={matchViewer}>
-			{#snippet body()}
-				<p>This will be the match viewer card</p>
-			{/snippet}
-		</Card>
+
+		{#key team}
+			<Card card={summary}>
+				{#snippet body()}
+					<p>This will be the team summary card</p>
+				{/snippet}
+			</Card>
+			<Card card={pictures}>
+				{#snippet body()}
+					<p>This will be the pictures card</p>
+				{/snippet}
+			</Card>
+			<Card card={comments}>
+				{#snippet body()}
+					<p>This will be the comments card</p>
+				{/snippet}
+			</Card>
+			<Card card={actionHeatmap}>
+				{#snippet body()}
+					<p>This will be the action heatmap card</p>
+				{/snippet}
+			</Card>
+			<Card card={matches}>
+				{#snippet body()}
+					<p>This will be the matches card</p>
+				{/snippet}
+			</Card>
+			<Card card={pitScouting}>
+				{#snippet body()}
+					<PitScoutingCard {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={matchViewer}>
+				{#snippet body()}
+					<p>This will be the match viewer card</p>
+				{/snippet}
+			</Card>
+		{/key}
 	{/snippet}
 </DB>
 

@@ -19,22 +19,31 @@
 	});
 </script>
 
-<div class="container-fluid">
+<div
+	class="container-fluid"
+	style="
+	max-height: 100%;
+	overflow-y: auto;
+"
+>
 	{#if $sections.length}
 		{#each $sections as section, i}
-			<div class="row">
-				<div class="col-12">
-					{section.data.name}
+			{#if i > 0}
+				<hr />
+			{/if}
+			<div class="row mb-3">
+				<div class="d-flex justify-content-between align-items-center">
+					<h6 class="mb-0">{section.data.name}</h6>
 					<a
-						href="/dashboard/event/{event.key}/pitscouting/{i}/team/{team.team_number}"
-						class="btn btn-primary"
+						href="/dashboard/event/{event.key}/pit-scouting/{i}/team/{team.team_number}"
+						class="btn"
 					>
 						<i class="material-icons">edit</i>
 					</a>
 				</div>
-				<div class="col-12">
-					<Section {section} {team} {event} />
-				</div>
+			</div>
+			<div class="row mb-3">
+				<Section {section} {team} {event} />
 			</div>
 		{/each}
 	{:else}

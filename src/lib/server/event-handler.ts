@@ -232,11 +232,11 @@ export const handleEvent =
 						const safe = z
 							.object({
 								key: z.string(),
-								value: z.string()
+								value: z.unknown()
 							})
 							.safeParse(parsed.data.args);
 						if (!safe.success) return error(new DataError(struct, 'Invalid Read property'));
-						streamer = struct.fromProperty(safe.data.key, safe.data.value, {
+						streamer = struct.fromProperty(safe.data.key, safe.data.value as any, {
 							type: 'stream'
 						});
 					}

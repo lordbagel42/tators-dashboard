@@ -89,6 +89,38 @@ export namespace Scouting {
 		}
 	});
 
+	TeamComments.queryListen('from-event', async (event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap()) return new Error('Not entitled');
+
+		const { eventKey, team } = z.object({
+			eventKey: z.string(),
+			team: z.number()
+		}).parse(data);
+
+		const stream = new StructStream(TeamComments);
+
+		setTimeout(async () => {
+			const comments = await DB.select()
+				.from(TeamComments.table)
+				.where(
+					and(
+						eq(TeamComments.table.eventKey, eventKey),
+						eq(TeamComments.table.team, team)
+					)
+				);
+
+			for (let i = 0; i < comments.length; i++) {
+				stream.add(TeamComments.Generator(comments[i]));
+			}
+
+			stream.end();
+		});
+
+		return stream;
+	});
+
 	createEntitlement({
 		name: 'view-scouting',
 		structs: [MatchScouting, TeamComments],

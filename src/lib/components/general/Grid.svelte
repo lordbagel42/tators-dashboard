@@ -60,10 +60,10 @@
 
 	const onFilterTextBoxChanged = () => {
 		grid.setGridOption('quickFilterText', filterText);
-		console.log(filterText);
 	};
 
 	onMount(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const gridOptions: GridOptions<any> = {
 			theme: darkTheme, // Apply custom dark theme
 			columnDefs,

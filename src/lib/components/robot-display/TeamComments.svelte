@@ -13,9 +13,8 @@
 
 	const { team, event }: Props = $props();
 
-
 	let comments = $state(new DataArr(Scouting.TeamComments, []));
-	
+
 	const accountFilterParams: ITextFilterParams = {
 		filterOptions: ['contains', 'notContains'],
 		textFormatter: (r) => {
@@ -82,17 +81,21 @@
 	// }));
 
 	onMount(() => {
-		comments = Scouting.TeamComments.query('from-event', { eventKey: event, team }, {
-			asStream: false,
-			satisfies: c => c.data.team === team && c.data.eventKey === event,
-		});
+		comments = Scouting.TeamComments.query(
+			'from-event',
+			{ eventKey: event, team },
+			{
+				asStream: false,
+				satisfies: (c) => c.data.team === team && c.data.eventKey === event
+			}
+		);
 	});
 </script>
 
 <div class="h-85 w-100">
 	<Grid
 		columnDefs={columns}
-		rowData={$comments.map(c => c.data)}
+		rowData={$comments.map((c) => c.data)}
 		gridClasses="table table-striped"
 		filterEnable={true}
 		filterClasses=""

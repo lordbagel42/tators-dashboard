@@ -8,8 +8,9 @@
 	import { afterNavigate } from '$app/navigation';
 	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
+	import { onMount, setContext } from 'svelte';
 
-	const { data = $bindable() } = $props();
+	const { data } = $props();
 	const teams = $derived(data.teams);
 	const team = $derived(data.team);
 	const event = $derived(data.event);
@@ -90,14 +91,21 @@
 			height: 1
 		}
 	});
-
-	const dashboard = $derived(
-		new Dashboard.Dashboard({
+	let dashboard = 
+		$state(new Dashboard.Dashboard({
+			// svelte-ignore state_referenced_locally
 			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
 			id: 'robot-display'
-		})
-	);
+		}));
+
+	$effect(() => {
+		dashboard = new Dashboard.Dashboard({
+			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
+			id: 'robot-display'
+		});
+	});
 
 	let filter: FilterState = $state({
 		auto: true,
@@ -183,7 +191,7 @@
 			</Card>
 			<Card card={pictures}>
 				{#snippet body()}
-					<p>This will be the pictures card</p>
+					<PictureDisplay {team} {event} />
 				{/snippet}
 			</Card>
 			<Card card={comments}>

@@ -7,7 +7,9 @@ import {
 	type TBAEvent as E,
 	type TBAMatch as M,
 	type TBATeam as T,
-	teamsFromMatch
+	teamsFromMatch,
+	type TBAMedia,
+	MediaSchema
 } from 'tatorscout/tba';
 import { z } from 'zod';
 
@@ -114,6 +116,17 @@ export class TBATeam {
 				.filter((m) => teamsFromMatch(m.tba).includes(this.tba.team_number));
 			this._matches = m;
 			return m;
+		});
+	}
+
+	private _media: TBAMedia[] | null = null;
+
+	getMedia() {
+		return attemptAsync(async () => {
+			if (this._media) return this._media;
+			const res = await get(`/tba/event/${this.event.tba.key}/teams/${this.tba.team_number}/media`, z.array(MediaSchema));
+			this._media = res.unwrap();
+			return this._media;
 		});
 	}
 }

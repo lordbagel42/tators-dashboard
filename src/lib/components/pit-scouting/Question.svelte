@@ -37,11 +37,14 @@
 		self = Account.getSelf();
 	});
 
-	const retrieveAnswer = () => 		Scouting.PIT.Answers.fromProperty('questionId', question.data.id || '', true).await().then(res => {
-			if (res.isErr()) return console.error(res.error);
-			value.set([])
-			answer = res.value.find(a => a.data.team === team);
-		});
+	const retrieveAnswer = () =>
+		Scouting.PIT.Answers.fromProperty('questionId', question.data.id || '', true)
+			.await()
+			.then((res) => {
+				if (res.isErr()) return console.error(res.error);
+				value.set([]);
+				answer = res.value.find((a) => a.data.team === team);
+			});
 
 	$effect(() => {
 		if (!team) return; // trigger on team change
@@ -97,21 +100,33 @@
 			}}
 		/>
 	{:else if $question.type === 'boolean'}
-		<input type="radio" id="{$question.id}-yes" class="btn-check" autocomplete="off" checked={$value.includes('yes')} onclick={() => {
-			value.set(['yes']);
-			updateAnswer();
-		}} />
+		<input
+			type="radio"
+			id="{$question.id}-yes"
+			class="btn-check"
+			autocomplete="off"
+			checked={$value.includes('yes')}
+			onclick={() => {
+				value.set(['yes']);
+				updateAnswer();
+			}}
+		/>
 		<label class="btn btn-outline-success" for="{$question.id}-yes">Yes</label>
-		<input type="radio" id="{$question.id}-no" class="btn-check" autocomplete="off" checked={$value.includes('no')} onclick={() => {
-			value.set(['no']);
-			updateAnswer();
-		}} />
+		<input
+			type="radio"
+			id="{$question.id}-no"
+			class="btn-check"
+			autocomplete="off"
+			checked={$value.includes('no')}
+			onclick={() => {
+				value.set(['no']);
+				updateAnswer();
+			}}
+		/>
 		<label class="btn btn-outline-danger" for="{$question.id}-no">No</label>
 	{:else if $question.type === 'checkbox'}
 		<p>
-			<small class="text-muted">
-				Select one or more of the following options:
-			</small>
+			<small class="text-muted"> Select one or more of the following options: </small>
 		</p>
 		{#each options as option}
 			<input
@@ -123,27 +138,27 @@
 				onclick={() => {
 					if ($value.includes(option)) {
 						// value = value.filter((v) => v !== option);
-						value.update(v => v.filter((v) => v !== option));
+						value.update((v) => v.filter((v) => v !== option));
 					} else {
 						// value = [...value, option];
-						value.update(v => [...v, option]);
+						value.update((v) => [...v, option]);
 					}
 					updateAnswer();
 				}}
 			/>
-			<label class="btn btn-outline-primary" for="{$question.id}-{option}">{capitalize(option)}</label>
+			<label class="btn btn-outline-primary" for="{$question.id}-{option}"
+				>{capitalize(option)}</label
+			>
 		{/each}
 	{:else if $question.type === 'radio'}
 		<p>
-			<small class="text-muted">
-				Select one of the following options:
-			</small>
+			<small class="text-muted"> Select one of the following options: </small>
 		</p>
 		{#each options as option}
 			<input
 				type="radio"
 				id="{$question.id}-{option}"
-				name="{$question.id}"
+				name={$question.id}
 				class="btn-check"
 				autocomplete="off"
 				checked={$value.includes(option)}
@@ -153,7 +168,9 @@
 					updateAnswer();
 				}}
 			/>
-			<label class="btn btn-outline-primary" for="{$question.id}-{option}">{capitalize(option)}</label>
+			<label class="btn btn-outline-primary" for="{$question.id}-{option}"
+				>{capitalize(option)}</label
+			>
 		{/each}
 	{:else if $question.type === 'select'}
 		<select

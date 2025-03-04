@@ -23,7 +23,10 @@
 		<div class="row mb-3">
 			{#each $sections as section, i}
 				<div class="col-md-4 p-3">
-					<a href="/dashboard/event/{eventKey}/pit-scouting/{i}" class="text-reset text-decoration-none">
+					<a
+						href="/dashboard/event/{eventKey}/pit-scouting/{i}"
+						class="text-reset text-decoration-none"
+					>
 						<!-- <a href="{location.href}/pitscouting/{i}">  -->
 						<div class="card">
 							<div class="card-body">

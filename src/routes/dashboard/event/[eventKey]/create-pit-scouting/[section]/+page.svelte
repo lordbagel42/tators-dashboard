@@ -33,6 +33,7 @@
 			<div class="card-body">
 				<div class="no-scroll-y scroll-x ws-nowrap">
 					<a href="/dashboard/event/{eventKey}/create-pit-scouting" class="btn btn-primary">
+						<i class="material-icons"> arrow_back </i>
 						Back
 					</a>
 					{#each $sections as section, i}
@@ -50,5 +51,7 @@
 			</div>
 		</div>
 	</div>
-	<EditSection {section} />
+	{#key section}
+		<EditSection {section} />
+	{/key}
 </div>

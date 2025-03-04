@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '$lib/imports/robot-display.js';
 	import { Scouting } from '$lib/model/scouting';
-	import { confirm, prompt, select } from '$lib/utils/prompts';
+	import { alert, confirm, prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
@@ -64,10 +64,13 @@
 			console.error(err);
 		}
 	};
-	const generateEventTemplate = () => {
-		Scouting.PIT.Sections.call('generate-event-template', {
+	const generateEventTemplate = async () => {
+		if (!(await confirm('Are you sure you want to generate an event template?'))) return;
+		const res = await Scouting.PIT.Sections.call('generate-event-template', {
 			eventKey: eventKey
 		});
+		if (res.isErr()) return console.error(res.error);
+		if (!res.value.success) alert(`${res.value.message} (You likely already have sections)`);
 	};
 </script>
 
@@ -93,34 +96,31 @@
 	</div>
 	{#each $sections as section, i}
 		<div class="row mb-3">
-				<div class="card">
-					<div class="card-body">
-						<div class="d-flex justify-content-between">
-							<h5 class="card-title">
-								{section.data.name}
-							</h5>
-							<div class="btn-group" role="group">
-								<a
-									href="/dashboard/event/{eventKey}/create-pit-scouting/{i}"
-									class="btn btn-primary"
-								>
-									<i class="material-icons">edit</i>
-								</a>
-								<button type="button" class="btn btn-danger" onclick={() => {
+			<div class="card">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<h5 class="card-title">
+							{section.data.name}
+						</h5>
+						<div class="btn-group" role="group">
+							<a href="/dashboard/event/{eventKey}/create-pit-scouting/{i}" class="btn btn-primary">
+								<i class="material-icons">edit</i>
+							</a>
+							<button
+								type="button"
+								class="btn btn-danger"
+								onclick={() => {
 									confirm('Are you sure you want to delete this section?').then((res) => {
 										if (res) section.delete();
 									});
-								}}>
-									<i class="material-icons">
-										delete
-									</i>
-								</button>
-							</div>
-
-
+								}}
+							>
+								<i class="material-icons"> delete </i>
+							</button>
 						</div>
 					</div>
 				</div>
+			</div>
 		</div>
 	{/each}
 	<div class="row">

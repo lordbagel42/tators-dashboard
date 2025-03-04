@@ -9,10 +9,15 @@
 	<div class="row">
 		{#each teams as team}
 			<div class="col-md-4 p-3">
-				<a href="/dashboard/event/{eventKey}/pit-scouting/{section}/team/{team.team_number}" class="text-reset text-decoration-none">
+				<a
+					href="/dashboard/event/{eventKey}/pit-scouting/{section}/team/{team.team_number}"
+					class="text-reset text-decoration-none"
+				>
 					<div class="card">
 						<div class="card-body text-truncate">
-							<h6 class="card-title">{team.team_number} | <span class="text-muted">{team.nickname}</span></h6>
+							<h6 class="card-title">
+								{team.team_number} | <span class="text-muted">{team.nickname}</span>
+							</h6>
 						</div>
 					</div>
 				</a>

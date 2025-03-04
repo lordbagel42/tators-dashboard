@@ -23,7 +23,7 @@
 <div class="container-fluid">
 	<div class="row mb-3">
 		<h3>{$section.name}</h3>
-		<hr>
+		<hr />
 	</div>
 	{#each $groups as group}
 		<div class="row mb-3">

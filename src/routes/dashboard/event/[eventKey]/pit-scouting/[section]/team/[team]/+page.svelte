@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	import Section from '$lib/components/pit-scouting/Section.svelte';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';

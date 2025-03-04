@@ -36,7 +36,7 @@
 			type,
 			order,
 			options: JSON.stringify(Array.from(new Set(options))),
-			description,
+			description
 		}));
 	};
 

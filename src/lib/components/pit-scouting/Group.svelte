@@ -35,7 +35,7 @@
 		</div>
 		{#each $questions as question, i}
 			{#if i > 0}
-				<hr>		
+				<hr />
 			{/if}
 			<Question {question} {team} />
 		{/each}

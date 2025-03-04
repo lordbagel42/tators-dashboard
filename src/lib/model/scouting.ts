@@ -35,7 +35,7 @@ export namespace Scouting {
 			comment: 'string',
 			type: 'string',
 			eventKey: 'string',
-			scoutUsername: 'string',
+			scoutUsername: 'string'
 		},
 		socket: sse,
 		browser

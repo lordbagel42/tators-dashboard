@@ -36,9 +36,7 @@ export namespace Scouting {
 		},
 		validators: {
 			trace: (trace) =>
-				typeof trace === 'string' &&
-				TraceSchema
-					.safeParse(JSON.parse(trace)).success,
+				typeof trace === 'string' && TraceSchema.safeParse(JSON.parse(trace)).success,
 			checks: (checks) =>
 				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
@@ -57,14 +55,16 @@ export namespace Scouting {
 
 		console.log(data);
 
-		const { event, team } = z.object({
-			event: z.string(),
-			team: z.number().int(),
-		}).parse(data);
+		const { event, team } = z
+			.object({
+				event: z.string(),
+				team: z.number().int()
+			})
+			.parse(data);
 
 		return streamMatchScouting({
 			eventKey: event,
-			team,
+			team
 		});
 	});
 
@@ -91,10 +91,7 @@ export namespace Scouting {
 		});
 	};
 
-	export const streamMatchScouting = (data: {
-		eventKey: string;
-		team: number;
-	}) => {
+	export const streamMatchScouting = (data: { eventKey: string; team: number }) => {
 		const stream = new StructStream(MatchScouting);
 		(async () => {
 			const res = await DB.select()
@@ -105,12 +102,12 @@ export namespace Scouting {
 						eq(MatchScouting.table.team, data.team)
 					)
 				);
-			
-				for (let i = 0; i < res.length; i++) {
-					stream.add(MatchScouting.Generator(res[i]));
-				}
 
-				stream.end();
+			for (let i = 0; i < res.length; i++) {
+				stream.add(MatchScouting.Generator(res[i]));
+			}
+
+			stream.end();
 		})();
 		return stream;
 	};

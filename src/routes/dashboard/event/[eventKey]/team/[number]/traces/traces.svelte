@@ -29,49 +29,49 @@
 			height: 1
 		});
 		const container = new Container(
-		...(trace
-			.map((p, i, a) => {
-				if (i === 0) {
-					const [, x, y, a] = p;
-					if (a) {
-						return new Circle([x, y], 0.03);
+			...(trace
+				.map((p, i, a) => {
+					if (i === 0) {
+						const [, x, y, a] = p;
+						if (a) {
+							return new Circle([x, y], 0.03);
+						}
+						return;
 					}
-					return;
-				}
-				const [, x, y, act] = p;
-				const [, prevX, prevY] = a[i - 1];
-				const path = new Path([
-					[prevX, prevY],
-					[x, y]
-				]);
+					const [, x, y, act] = p;
+					const [, prevX, prevY] = a[i - 1];
+					const path = new Path([
+						[prevX, prevY],
+						[x, y]
+					]);
 
-				// if (i < SECTIONS.auto[1]) {
-				// 	path.properties.line.color = 'blue';
-				// } else if (i < SECTIONS.teleop[1]) {
-				// 	path.properties.line.color = 'green';
-				// } relse {
-				// 	path.properties.line.color = 'red';
-				// }
+					// if (i < SECTIONS.auto[1]) {
+					// 	path.properties.line.color = 'blue';
+					// } else if (i < SECTIONS.teleop[1]) {
+					// 	path.properties.line.color = 'green';
+					// } relse {
+					// 	path.properties.line.color = 'red';
+					// }
 
-				if (act) {
-					const action = new Circle([x, y], 0.03);
-					action.fill.color = 'red';
-					action.properties.line.color = 'red';
-					const img = new Img(`/icons/${act}.png`, {
-						width: 0.05,
-						height: 0.05,
-						x: x - 0.025,
-						y: y - 0.025
-					});
-					return [path, new Container(action, img)];
-				}
+					if (act) {
+						const action = new Circle([x, y], 0.03);
+						action.fill.color = 'red';
+						action.properties.line.color = 'red';
+						const img = new Img(`/icons/${act}.png`, {
+							width: 0.05,
+							height: 0.05,
+							x: x - 0.025,
+							y: y - 0.025
+						});
+						return [path, new Container(action, img)];
+					}
 
-				return [path];
-			})
-			.filter((d) => d)
-			.flat() as Drawable[])
-	);
-	canvas.add(field, container);
+					return [path];
+				})
+				.filter((d) => d)
+				.flat() as Drawable[])
+		);
+		canvas.add(field, container);
 
 		return canvas.animate();
 	});

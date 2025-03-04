@@ -91,15 +91,18 @@ const postBuild = async () => {
 			'view-universe'
 		];
 		const scout = (
-			await Permissions.Role.new({
-				universe: '2122',
-				name: 'Scout',
-				description: 'Team Tators Scout',
-				links: '[]',
-				entitlements: JSON.stringify(entitlements)
-			}, {
-				overwriteGenerators: true,
-			})
+			await Permissions.Role.new(
+				{
+					universe: '2122',
+					name: 'Scout',
+					description: 'Team Tators Scout',
+					links: '[]',
+					entitlements: JSON.stringify(entitlements)
+				},
+				{
+					overwriteGenerators: true
+				}
+			)
 		).unwrap();
 		(await scout.setUniverse('2122')).unwrap();
 	}

@@ -8,24 +8,28 @@
 	const team = $derived(data.team);
 	const event = $derived(data.event);
 
-    let scoutings: Scouting.MatchScoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
+	let scoutings: Scouting.MatchScoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
 
-    onMount(() => {
-        scoutings = Scouting.MatchScouting.query('team-event', {
-            team: team.team_number,
-            event: event.key,
-        }, {
-            asStream: false,
-            includeArchive: false,
-            satisfies: (data) => data.data.team === team.team_number && data.data.eventKey === event.key,
-        });
-    });
+	onMount(() => {
+		scoutings = Scouting.MatchScouting.query(
+			'team-event',
+			{
+				team: team.team_number,
+				event: event.key
+			},
+			{
+				asStream: false,
+				includeArchive: false,
+				satisfies: (data) => data.data.team === team.team_number && data.data.eventKey === event.key
+			}
+		);
+	});
 </script>
 
 {#each $scoutings as scouting}
-    <div class="card">
-        <div class="card-body">
-            <!-- Generate trace here -->
-        </div>
-    </div>
+	<div class="card">
+		<div class="card-body">
+			<!-- Generate trace here -->
+		</div>
+	</div>
 {/each}

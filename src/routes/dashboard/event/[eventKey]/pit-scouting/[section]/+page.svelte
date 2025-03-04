@@ -1,6 +1,7 @@
 <!-- Team select -->
 <!-- This, eventually, is where pit location will go -->
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	const { data } = $props();
 	const { event, teams, section, eventKey } = data;
 </script>

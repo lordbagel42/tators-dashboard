@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	import { page } from '$app/state';
 	import { Scouting } from '$lib/model/scouting';
 	import { DataArr } from 'drizzle-struct/front-end';

@@ -23,15 +23,11 @@
 	});
 </script>
 
-<ul class="list-group">
+<ul class="list-group border-0">
 	{#each $questions as question}
-		<li class="list-group-item">
+		<li class="list-group-item border-0">
 			<Question
 				{question}
-				{group}
-				{section}
-				{team}
-				{event}
 				answer={$answers.find((a) => a.data.questionId === question.data.id)}
 			/>
 		</li>

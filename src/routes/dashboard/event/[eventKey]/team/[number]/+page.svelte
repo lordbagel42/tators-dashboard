@@ -120,6 +120,7 @@
 	});
 </script>
 
+{#key team}
 <DB {dashboard}>
 	{#snippet body()}
 		<div style="grid-column: span var(--grid-size);">
@@ -210,6 +211,8 @@
 		</Card>
 	{/snippet}
 </DB>
+{/key}
+
 
 <style>
 	.btn-disabled {

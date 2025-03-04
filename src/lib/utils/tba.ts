@@ -124,7 +124,10 @@ export class TBATeam {
 	getMedia() {
 		return attemptAsync(async () => {
 			if (this._media) return this._media;
-			const res = await get(`/tba/event/${this.event.tba.key}/teams/${this.tba.team_number}/media`, z.array(MediaSchema));
+			const res = await get(
+				`/tba/event/${this.event.tba.key}/teams/${this.tba.team_number}/media`,
+				z.array(MediaSchema)
+			);
 			this._media = res.unwrap();
 			return this._media;
 		});

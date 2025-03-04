@@ -91,13 +91,13 @@
 			height: 1
 		}
 	});
-	let dashboard = 
-		$state(new Dashboard.Dashboard({
-			// svelte-ignore state_referenced_locally
-			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+	let dashboard = $state(
+		new Dashboard.Dashboard({
+			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, matches, pitScouting, matchViewer],
 			id: 'robot-display'
-		}));
+		})
+	);
 
 	$effect(() => {
 		dashboard = new Dashboard.Dashboard({

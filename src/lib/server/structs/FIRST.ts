@@ -28,20 +28,17 @@ export namespace FIRST {
 		if (!Permissions.isEntitled(roles, 'view-tba-info')) return new Error('Not entitled');
 
 		const stream = new StructStream(TeamPictures);
-		const { team, eventKey } = z.object({
-			team: z.number(),
-			eventKey: z.string()
-		}).parse(data);
+		const { team, eventKey } = z
+			.object({
+				team: z.number(),
+				eventKey: z.string()
+			})
+			.parse(data);
 
 		(async () => {
 			const res = await DB.select()
 				.from(TeamPictures.table)
-				.where(
-					and(
-						eq(TeamPictures.table.number, team),
-						eq(TeamPictures.table.eventKey, eventKey),
-					)
-				);
+				.where(and(eq(TeamPictures.table.number, team), eq(TeamPictures.table.eventKey, eventKey)));
 
 			for (let i = 0; i < res.length; i++) {
 				stream.add(TeamPictures.Generator(res[i]));

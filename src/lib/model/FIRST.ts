@@ -32,7 +32,7 @@ export namespace FIRST {
 			blue1: 'number',
 			blue2: 'number',
 			blue3: 'number',
-			blue4: 'number',
+			blue4: 'number'
 		},
 		socket: sse,
 		browser

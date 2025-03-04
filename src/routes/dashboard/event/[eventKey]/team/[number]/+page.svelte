@@ -8,7 +8,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
-	import { onMount, setContext } from 'svelte';
+	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -32,8 +32,8 @@
 		icon: 'chat',
 		id: 'card2',
 		size: {
-			width: 1,
-			height: 2
+			width: 2,
+			height: 1
 		}
 	});
 
@@ -196,7 +196,7 @@
 			</Card>
 			<Card card={comments}>
 				{#snippet body()}
-					<p>This will be the comments card</p>
+				<TeamComments team={team.team_number} event={event.key} />
 				{/snippet}
 			</Card>
 			<Card card={actionHeatmap}>

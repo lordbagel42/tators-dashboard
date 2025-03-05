@@ -222,6 +222,18 @@ export class Team {
 		});
 	}
 
+	public getStatus() {
+		return attemptAsync(async () => {
+			if (this.custom) return null;
+			const res = await TBA.get(`/team/${this.tba.key}/event/${this.event.tba.key}/status`, {
+				timeout: 1000 * 60,
+				updateThreshold: 1000 * 60 * 10
+			});
+
+			return res.unwrap();
+		});
+	}
+
 	// delete() {
 	//     return attemptAsync(async () => {
 	//         if (this.data) {

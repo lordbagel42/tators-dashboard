@@ -11,9 +11,7 @@
 		event: TBAEvent;
 	}
 
-	const {
-		team, event
-	}: Props = $props();
+	const { team, event }: Props = $props();
 
 	let rank = $state(0);
 	let record = $state('');
@@ -25,10 +23,14 @@
 	// let averageSecondsNotMoving = $state(0);
 
 	onMount(() => {
-		new T(team, new E(event)).getStatus().then(s => {
+		new T(team, new E(event)).getStatus().then((s) => {
 			if (s.isErr()) return console.error(s.error);
 			rank = s.value.qual?.ranking.rank ?? 0;
-			const { wins, losses, ties } = s.value.qual?.ranking.record ?? { wins: 0, losses: 0, ties: 0 };
+			const { wins, losses, ties } = s.value.qual?.ranking.record ?? {
+				wins: 0,
+				losses: 0,
+				ties: 0
+			};
 			record = `${wins}-${losses}-${ties}`;
 			played = wins + losses + ties;
 		});

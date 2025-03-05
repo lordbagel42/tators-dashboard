@@ -32,7 +32,9 @@ export namespace Scouting {
 	export type MatchScoutingArr = DataArr<typeof MatchScouting.data.structure>;
 
 	export const getAverageVelocity = (data: MatchScoutingData[]) => {
-		return Trace.velocity.average(data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray);
+		return Trace.velocity.average(
+			data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray
+		);
 	};
 
 	// export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
@@ -44,12 +46,15 @@ export namespace Scouting {
 	// }
 
 	export const scoutingFromTeam = (team: number, eventKey: string) => {
-		return MatchScouting.query('from-team', { team, eventKey }, { 
-			asStream: false,
-			satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
-		});
+		return MatchScouting.query(
+			'from-team',
+			{ team, eventKey },
+			{
+				asStream: false,
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
+			}
+		);
 	};
-
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',

@@ -5,6 +5,8 @@ import {
 	type TBAEvent as E,
 	type TBATeam as T,
 	type TBAMatch as M,
+	type TBATeamEventStatus,
+	TeamEventStatusSchema,
 	teamsFromMatch,
 	MediaSchema
 } from 'tatorscout/tba';
@@ -230,7 +232,7 @@ export class Team {
 				updateThreshold: 1000 * 60 * 10
 			});
 
-			return res.unwrap();
+			return TeamEventStatusSchema.parse(res.unwrap());
 		});
 	}
 

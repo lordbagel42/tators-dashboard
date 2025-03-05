@@ -118,10 +118,10 @@ export namespace Permissions {
 
 	export const entitlementsFromRole = async (role: RoleData) => {
 		return attemptAsync(async () => {
-			const entitlements = JSON.parse(role.data.entitlements);
+			const entitlements = z.array(z.string()).parse(JSON.parse(role.data.entitlements));
 			return resolveAll<EntitlementPermission>(
 				await Promise.all(
-					entitlements.map((e: string) => {
+					entitlements.map((e) => {
 						return readEntitlement(e as Entitlement);
 					})
 				)
@@ -241,10 +241,12 @@ export namespace Permissions {
 
 			const usedEntitlements = allEntitlements
 				// TODO: if action is readversionhistory or readarchive, properties should be filtered by the read permissions
-				.filter(
-					(p) =>
-						p.struct === struct &&
-						p.permissions.some((p) => p.action === action || p.action === '*')
+				.filter((ent) =>
+					ent.permissions.some(
+						(perm) =>
+							(perm.struct === '*' ? ent.structs.includes(struct) : perm.struct === struct) &&
+							(perm.action === action || perm.action === '*')
+					)
 				);
 
 			return data
@@ -254,7 +256,6 @@ export namespace Permissions {
 					return universes.includes(d.universe);
 				})
 				.map((d) => {
-					const { data } = d;
 					const properties: string[] = usedEntitlements
 						.map((e) => e.permissions.map((perm) => perm.property))
 						.flat()
@@ -265,6 +266,7 @@ export namespace Permissions {
 					if (properties.includes('*')) {
 						return d.safe();
 					}
+					const data = d.safe();
 
 					return Object.fromEntries(properties.map((p) => [p, data[p]])) as Partial<
 						Structable<S['data']['structure']>
@@ -292,13 +294,18 @@ export namespace Permissions {
 				.unwrap()
 				.flat()
 				.filter(
-					(e) =>
-						e.permissions.some((p) => p.action === action || p.action === '*') &&
-						e.struct === stream.struct.data.name
+					(ent) =>
+						ent.permissions.some(
+							(perm) =>
+								(perm.struct === '*'
+									? ent.structs.includes(stream.struct.data.name)
+									: perm.struct === stream.struct.data.name) &&
+								(perm.action === action || perm.action === '*')
+						)
+					// e.structs === stream.struct.data.name
 				);
 
 			stream.pipe((d) => {
-				// console.log('Testing:', d);
 				if (bypass.some((b) => b(account, d))) {
 					return newStream.add(d.safe());
 				}
@@ -348,10 +355,9 @@ export namespace Permissions {
 			// console.log(JSON.stringify(entitlements, null, 4));
 			const res = entitlements.some((e) =>
 				e.permissions.some(
-					(p) => (p.action === action || p.action === '*') && e.struct === struct.data.name
+					(p) => (p.action === action || p.action === '*') && e.structs === struct.data.name
 				)
 			);
-			console.log(res);
 			return res;
 		});
 	};
@@ -384,15 +390,17 @@ export namespace Permissions {
 
 	createEntitlement({
 		name: 'manage-roles',
-		struct: Role,
+		structs: [Role],
 		permissions: ['*'],
-		pages: ['roles']
+		pages: ['roles'],
+		group: 'Roles'
 	});
 
 	createEntitlement({
 		name: 'view-roles',
-		struct: Role,
-		permissions: ['read:name', 'read:description']
+		structs: [Role],
+		permissions: ['role:read:name', 'role:read:description'],
+		group: 'Roles'
 	});
 }
 

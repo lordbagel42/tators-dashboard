@@ -4,8 +4,10 @@ import { decode } from 'ts-utils/text';
 import { notify } from './prompts';
 import { z } from 'zod';
 import { Requests } from './requests';
+import { Random } from 'ts-utils/math';
 
 class SSE {
+	public uuid = Random.uuid();
 	public readonly emitter = new EventEmitter();
 
 	public on = this.emitter.on.bind(this.emitter);
@@ -49,7 +51,9 @@ class SSE {
 
 	connect() {
 		const connect = () => {
-			const source = new EventSource(`/sse`);
+			this.uuid = Random.uuid();
+			Requests.setMeta('sse', this.uuid);
+			const source = new EventSource(`/sse/init/${this.uuid}`);
 
 			source.addEventListener('error', (e) => console.error('Error:', e));
 
@@ -59,14 +63,15 @@ class SSE {
 
 			source.addEventListener('open', onConnect);
 
-			let id = 0;
-
 			const onMessage = (event: MessageEvent) => {
 				try {
-					const e = JSON.parse(decode(event.data));
-					console.log(e);
-					// if (e.id < id) return;
-					id = e.id;
+					const e = z
+						.object({
+							id: z.number(),
+							event: z.string(),
+							data: z.unknown()
+						})
+						.parse(JSON.parse(decode(event.data)));
 					if (!Object.hasOwn(e, 'event')) {
 						return console.error('Invalid event (missing .event)', e);
 					}
@@ -92,13 +97,13 @@ class SSE {
 								type: 'alert',
 								color: parsed.data.severity,
 								title: parsed.data.title,
-								message: parsed.data.message
+								message: parsed.data.message,
+								autoHide: 5000
 							});
 						return;
 					}
 
 					if (!['close', 'ping'].includes(e.event)) {
-						console.log('emitting', e.event, e.data);
 						this.emit(e.event, e.data);
 					}
 
@@ -143,7 +148,7 @@ class SSE {
 	}
 
 	private ack(id: number) {
-		fetch(`/sse/ack/${id}`);
+		fetch(`/sse/ack/${this.uuid}/${id}`);
 	}
 
 	private ping() {

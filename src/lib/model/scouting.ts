@@ -4,6 +4,8 @@ import { browser } from '$app/environment';
 import { attempt, attemptAsync } from 'ts-utils/check';
 import { z } from 'zod';
 import { Account } from './account';
+import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
+import { $Math } from 'ts-utils/math';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -28,6 +30,26 @@ export namespace Scouting {
 
 	export type MatchScoutingData = StructData<typeof MatchScouting.data.structure>;
 	export type MatchScoutingArr = DataArr<typeof MatchScouting.data.structure>;
+
+	export const getAverageVelocity = (data: MatchScoutingData[]) => {
+		return Trace.velocity.average(data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray);
+	};
+
+	// export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
+	// 	if (year === 2025) {
+	// 		return $Math.average(
+	// 			data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]') as TraceArray)).auto.total)
+	// 		);
+	// 	}
+	// }
+
+	export const scoutingFromTeam = (team: number, eventKey: string) => {
+		return MatchScouting.query('from-team', { team, eventKey }, { 
+			asStream: false,
+			satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
+		});
+	};
+
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',

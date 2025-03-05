@@ -9,7 +9,9 @@ import {
 	type TBATeam as T,
 	teamsFromMatch,
 	type TBAMedia,
-	MediaSchema
+	MediaSchema,
+	type TBATeamEventStatus,
+	TeamEventStatusSchema
 } from 'tatorscout/tba';
 import { z } from 'zod';
 
@@ -130,6 +132,20 @@ export class TBATeam {
 			);
 			this._media = res.unwrap();
 			return this._media;
+		});
+	}
+
+	private _status: TBATeamEventStatus | null = null;
+
+	getStatus() {
+		return attemptAsync(async () => {
+			if (this._status) return this._status;
+			const res = await get(
+				`/tba/event/${this.event.tba.key}/teams/${this.tba.team_number}/status`,
+				TeamEventStatusSchema
+			);
+			this._status = res.unwrap();
+			return this._status;
 		});
 	}
 }

@@ -92,7 +92,8 @@ export const POST = async (event) => {
 			prescouting,
 			remote,
 			trace: JSON.stringify(trace),
-			checks: JSON.stringify(checks)
+			checks: JSON.stringify(checks),
+			alliance: alliance ? alliance : 'unknown',
 		});
 		if (update.isErr()) {
 			terminal.error('Error updating match scouting', update.error);
@@ -110,7 +111,8 @@ export const POST = async (event) => {
 			scoutGroup: group,
 			trace: JSON.stringify(trace),
 			checks: JSON.stringify(checks),
-			scoutUsername: scout
+			scoutUsername: scout,
+			alliance: alliance ? alliance : 'unknown',
 		});
 		if (create.isErr()) {
 			terminal.error('Error creating match scouting', create.error);

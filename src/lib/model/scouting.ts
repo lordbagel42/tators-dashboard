@@ -22,7 +22,8 @@ export namespace Scouting {
 			remote: 'boolean',
 			trace: 'string',
 			checks: 'string',
-			scoutUsername: 'string'
+			scoutUsername: 'string',
+			alliance: 'string',
 		},
 		socket: sse,
 		browser
@@ -37,13 +38,48 @@ export namespace Scouting {
 		);
 	};
 
-	// export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
-	// 	if (year === 2025) {
-	// 		return $Math.average(
-	// 			data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]') as TraceArray)).auto.total)
-	// 		);
-	// 	}
-	// }
+	export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				return $Math.average(
+					data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').auto.total)
+				);
+			}
+			return 0;
+		});
+	}
+
+	export const averageTeleopScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+		if (year === 2025) {
+			const teles = 
+				data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').teleop);
+
+			return $Math.average(teles.map(t => t.total - (t.dpc + t.shc + t.park)));
+		}
+		return 0;
+	});
+	}
+
+	export const averageEndgameScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+		if (year === 2025) {
+			const teles =
+				data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').teleop);
+
+			return $Math.average(teles.map(t => t.park + t.dpc + t.shc));
+		}
+		return 0;
+	});
+	}
+
+	export const averageSecondsNotMoving = (data: MatchScoutingData[]) => {
+		return attempt(() => {
+		return $Math.average(
+			data.map(d => Trace.secondsNotMoving(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, false))
+		)
+	});
+	};
 
 	export const scoutingFromTeam = (team: number, eventKey: string) => {
 		return MatchScouting.query(

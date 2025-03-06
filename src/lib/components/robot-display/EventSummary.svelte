@@ -17,10 +17,13 @@
 	let record = $state('');
 	let played = $state(0);
 	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
+	let auto = $state(0);
+	let teleop = $state(0);
+	let endgame = $state(0);
 	// let drivebase = $state('');
 	// let weight = $state(0);
 	// let averageVelocity = $state(0);
-	// let averageSecondsNotMoving = $state(0);
+	let averageSecondsNotMoving = $state(0);
 
 	onMount(() => {
 		new T(team, new E(event)).getStatus().then((s) => {
@@ -36,6 +39,18 @@
 		});
 
 		scouting = Scouting.scoutingFromTeam(team.team_number, event.key);
+
+		return scouting.subscribe(s => {
+			const autoRes = Scouting.averageAutoScore(s, event.year);
+			const teleRes = Scouting.averageTeleopScore(s, event.year);
+			const endRes = Scouting.averageEndgameScore(s, event.year);
+			const secondsRes = Scouting.averageSecondsNotMoving(s);
+		
+			auto = autoRes.isErr() ? 0 : autoRes.value;
+			teleop = teleRes.isErr() ? 0 : teleRes.value;
+			endgame = endRes.isErr() ? 0 : endRes.value;
+			averageSecondsNotMoving = secondsRes.isErr() ? 0 : secondsRes.value;
+		});
 	});
 </script>
 
@@ -63,6 +78,22 @@
 				{/if}
 			</td>
 		</tr>
+		<tr>
+			<td>Average Auto Score:</td>
+			<td>{auto}</td>
+		</tr>
+		<tr>
+			<td>Average Teleop Score:</td>
+			<td>{teleop}</td>
+		</tr>
+		<tr>
+			<td>Average Endgame Score:</td>
+			<td>{endgame}</td>
+		</tr>
+		<tr>
+			<td>Average Seconds Not Moving:</td>
+			<td>{averageSecondsNotMoving}</td>
+		</tr>
 		<!-- <tr>
 			<td>Drivebase:</td>
 			<td>{drivebase}</td>
@@ -70,10 +101,6 @@
 		<tr>
 			<td>Weight:</td>
 			<td>{weight}</td>
-		</tr>
-		<tr>
-			<td>Average Seconds Not Moving:</td>
-			<td>{averageSecondsNotMoving}</td>
 		</tr> -->
 	</tbody>
 </table>

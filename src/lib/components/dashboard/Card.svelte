@@ -139,6 +139,7 @@
 
 	.card-body {
 		height: 217px;
+		overflow: auto;
 	}
 
 	.maximized .card-body {

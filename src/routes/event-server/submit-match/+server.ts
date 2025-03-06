@@ -17,21 +17,27 @@ export const POST = async (event) => {
 		return res('Invalid API key', 401);
 	}
 
+	const body = await event.request.json();
+
 	const parsed = z
 		.object({
-			checks: z.array(z.string()),
-			comments: z.record(z.string(), z.string()),
-			matchNumber: z.number().int(),
-			teamNumber: z.number().int(),
-			compLevel: z.enum(['pr', 'qm', 'qf', 'sf', 'f']),
-			eventKey: z.string(),
-			scout: z.string(),
-			group: z.number().int(),
 			trace: TraceSchema,
+			eventKey: z.string(),
+			match: z.number().int(),
+			team: z.number().int(),
+			compLevel: z.enum(['pr', 'qm', 'qf', 'sf', 'f']),
+			flipX: z.boolean(),
+			flipY: z.boolean(),
+			checks: z.array(z.string()),
+			comments: z.record(z.string()),
+			scout: z.string(),
 			prescouting: z.boolean(),
+			practice: z.boolean(),
+			alliance: z.union([z.literal('red'), z.literal('blue'), z.literal(null)]),
+			group: z.number().int(),
 			remote: z.boolean()
 		})
-		.safeParse(await event.request.json());
+		.safeParse(body);
 
 	if (!parsed.success) {
 		terminal.warn('Invalid request body', parsed.error.message);
@@ -39,16 +45,20 @@ export const POST = async (event) => {
 	}
 
 	const {
+		trace,
+		eventKey,
+		match,
+		team,
+		compLevel,
+		flipX,
+		flipY,
 		checks,
 		comments,
-		matchNumber,
-		teamNumber,
-		compLevel,
-		eventKey,
 		scout,
-		group,
-		trace,
 		prescouting,
+		practice,
+		alliance,
+		group,
 		remote
 	} = parsed.data;
 
@@ -63,8 +73,8 @@ export const POST = async (event) => {
 
 	const exists = await Scouting.getMatchScouting({
 		eventKey,
-		match: matchNumber,
-		team: teamNumber,
+		match,
+		team,
 		compLevel
 	});
 
@@ -91,9 +101,9 @@ export const POST = async (event) => {
 	} else {
 		const create = await Scouting.MatchScouting.new({
 			eventKey,
-			matchNumber,
+			matchNumber: match,
 			compLevel,
-			team: teamNumber,
+			team,
 			scoutId: accountId,
 			prescouting,
 			remote,
@@ -114,7 +124,7 @@ export const POST = async (event) => {
 			Object.entries(comments).map(([key, value]) =>
 				Scouting.TeamComments.new({
 					accountId,
-					team: teamNumber,
+					team,
 					comment: value,
 					type: key,
 					eventKey,

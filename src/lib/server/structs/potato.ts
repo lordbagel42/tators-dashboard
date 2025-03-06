@@ -1,7 +1,7 @@
 import { integer, text } from 'drizzle-orm/pg-core';
 import { Struct } from 'drizzle-struct/back-end';
 import { Account } from './account';
-import { attemptAsync } from 'ts-utils';
+import { attemptAsync } from 'ts-utils/check';
 import { Scouting } from './scouting';
 import { FIRST } from './FIRST';
 import { eq } from 'drizzle-orm';

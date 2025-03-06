@@ -38,9 +38,7 @@ export namespace Scouting {
 		},
 		validators: {
 			trace: (trace) =>
-				typeof trace === 'string' &&
-				TraceSchema
-					.safeParse(JSON.parse(trace)).success,
+				typeof trace === 'string' && TraceSchema.safeParse(JSON.parse(trace)).success,
 			checks: (checks) =>
 				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}

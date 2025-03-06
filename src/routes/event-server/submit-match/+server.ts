@@ -35,7 +35,7 @@ export const POST = async (event) => {
 			practice: z.boolean(),
 			alliance: z.union([z.literal('red'), z.literal('blue'), z.literal(null)]),
 			group: z.number().int(),
-			remote: z.boolean(),
+			remote: z.boolean()
 		})
 		.safeParse(body);
 
@@ -59,7 +59,7 @@ export const POST = async (event) => {
 		practice,
 		alliance,
 		group,
-		remote,
+		remote
 	} = parsed.data;
 
 	let accountId = '';

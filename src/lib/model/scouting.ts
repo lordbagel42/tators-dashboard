@@ -4,6 +4,8 @@ import { browser } from '$app/environment';
 import { attempt, attemptAsync } from 'ts-utils/check';
 import { z } from 'zod';
 import { Account } from './account';
+import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
+import { $Math } from 'ts-utils/math';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -20,7 +22,8 @@ export namespace Scouting {
 			remote: 'boolean',
 			trace: 'string',
 			checks: 'string',
-			scoutUsername: 'string'
+			scoutUsername: 'string',
+			alliance: 'string'
 		},
 		socket: sse,
 		browser
@@ -28,6 +31,87 @@ export namespace Scouting {
 
 	export type MatchScoutingData = StructData<typeof MatchScouting.data.structure>;
 	export type MatchScoutingArr = DataArr<typeof MatchScouting.data.structure>;
+
+	export const getAverageVelocity = (data: MatchScoutingData[]) => {
+		return Trace.velocity.average(
+			data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray
+		);
+	};
+
+	export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				return $Math.average(
+					data.map(
+						(d) =>
+							Trace.score.parse2025(
+								TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+								d.data.alliance as 'red' | 'blue'
+							).auto.total
+					)
+				);
+			}
+			return 0;
+		});
+	};
+
+	export const averageTeleopScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
+
+				return $Math.average(teles.map((t) => t.total - (t.dpc + t.shc + t.park)));
+			}
+			return 0;
+		});
+	};
+
+	export const averageEndgameScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
+
+				return $Math.average(teles.map((t) => t.park + t.dpc + t.shc));
+			}
+			return 0;
+		});
+	};
+
+	export const averageSecondsNotMoving = (data: MatchScoutingData[]) => {
+		return attempt(() => {
+			return $Math.average(
+				data.map((d) =>
+					Trace.secondsNotMoving(
+						TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+						false
+					)
+				)
+			);
+		});
+	};
+
+	export const scoutingFromTeam = (team: number, eventKey: string) => {
+		return MatchScouting.query(
+			'from-team',
+			{ team, eventKey },
+			{
+				asStream: false,
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
+			}
+		);
+	};
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',

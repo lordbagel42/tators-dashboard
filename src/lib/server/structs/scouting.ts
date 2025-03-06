@@ -27,7 +27,8 @@ export namespace Scouting {
 			remote: boolean('remote').notNull(),
 			trace: text('trace').notNull(),
 			checks: text('checks').notNull(),
-			scoutUsername: text('scout_username').notNull()
+			scoutUsername: text('scout_username').notNull(),
+			alliance: text('alliance').notNull()
 		},
 		versionHistory: {
 			type: 'versions',
@@ -42,6 +43,36 @@ export namespace Scouting {
 			checks: (checks) =>
 				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
+	});
+
+	MatchScouting.queryListen('from-team', async (event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
+			return new Error('Not entitled');
+
+		const { team, eventKey } = z
+			.object({
+				team: z.number(),
+				eventKey: z.string()
+			})
+			.parse(data);
+
+		const stream = new StructStream(MatchScouting);
+
+		setTimeout(async () => {
+			const matchScouting = await DB.select()
+				.from(MatchScouting.table)
+				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, eventKey)));
+
+			for (let i = 0; i < matchScouting.length; i++) {
+				stream.add(MatchScouting.Generator(matchScouting[i]));
+			}
+
+			stream.end();
+		});
+
+		return stream;
 	});
 
 	export const getMatchScouting = (data: {

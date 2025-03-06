@@ -11,5 +11,5 @@ export default async () => {
 
 	const team = teams.find((t) => t.tba.team_number === 8);
 	if (!team) return;
-	console.log((await team.getMedia()).unwrap());
+	console.log((await team.getStatus()).unwrap());
 };

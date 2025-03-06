@@ -9,6 +9,7 @@
 	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
+	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -186,7 +187,7 @@
 		{#key team}
 			<Card card={summary}>
 				{#snippet body()}
-					<p>This will be the team summary card</p>
+					<EventSummary {team} {event} />
 				{/snippet}
 			</Card>
 			<Card card={pictures}>

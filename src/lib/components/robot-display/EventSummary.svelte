@@ -40,12 +40,12 @@
 
 		scouting = Scouting.scoutingFromTeam(team.team_number, event.key);
 
-		return scouting.subscribe(s => {
+		return scouting.subscribe((s) => {
 			const autoRes = Scouting.averageAutoScore(s, event.year);
 			const teleRes = Scouting.averageTeleopScore(s, event.year);
 			const endRes = Scouting.averageEndgameScore(s, event.year);
 			const secondsRes = Scouting.averageSecondsNotMoving(s);
-		
+
 			auto = autoRes.isErr() ? 0 : autoRes.value;
 			teleop = teleRes.isErr() ? 0 : teleRes.value;
 			endgame = endRes.isErr() ? 0 : endRes.value;

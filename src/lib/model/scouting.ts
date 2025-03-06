@@ -23,7 +23,7 @@ export namespace Scouting {
 			trace: 'string',
 			checks: 'string',
 			scoutUsername: 'string',
-			alliance: 'string',
+			alliance: 'string'
 		},
 		socket: sse,
 		browser
@@ -42,43 +42,64 @@ export namespace Scouting {
 		return attempt(() => {
 			if (year === 2025) {
 				return $Math.average(
-					data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').auto.total)
+					data.map(
+						(d) =>
+							Trace.score.parse2025(
+								TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+								d.data.alliance as 'red' | 'blue'
+							).auto.total
+					)
 				);
 			}
 			return 0;
 		});
-	}
+	};
 
 	export const averageTeleopScore = (data: MatchScoutingData[], year: number) => {
 		return attempt(() => {
-		if (year === 2025) {
-			const teles = 
-				data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').teleop);
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
 
-			return $Math.average(teles.map(t => t.total - (t.dpc + t.shc + t.park)));
-		}
-		return 0;
-	});
-	}
+				return $Math.average(teles.map((t) => t.total - (t.dpc + t.shc + t.park)));
+			}
+			return 0;
+		});
+	};
 
 	export const averageEndgameScore = (data: MatchScoutingData[], year: number) => {
 		return attempt(() => {
-		if (year === 2025) {
-			const teles =
-				data.map(d => Trace.score.parse2025(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, d.data.alliance as 'red' | 'blue').teleop);
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
 
-			return $Math.average(teles.map(t => t.park + t.dpc + t.shc));
-		}
-		return 0;
-	});
-	}
+				return $Math.average(teles.map((t) => t.park + t.dpc + t.shc));
+			}
+			return 0;
+		});
+	};
 
 	export const averageSecondsNotMoving = (data: MatchScoutingData[]) => {
 		return attempt(() => {
-		return $Math.average(
-			data.map(d => Trace.secondsNotMoving(TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray, false))
-		)
-	});
+			return $Math.average(
+				data.map((d) =>
+					Trace.secondsNotMoving(
+						TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+						false
+					)
+				)
+			);
+		});
 	};
 
 	export const scoutingFromTeam = (team: number, eventKey: string) => {

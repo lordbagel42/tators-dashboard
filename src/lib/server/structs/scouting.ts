@@ -28,7 +28,7 @@ export namespace Scouting {
 			trace: text('trace').notNull(),
 			checks: text('checks').notNull(),
 			scoutUsername: text('scout_username').notNull(),
-			alliance: text('alliance').notNull(),
+			alliance: text('alliance').notNull()
 		},
 		versionHistory: {
 			type: 'versions',

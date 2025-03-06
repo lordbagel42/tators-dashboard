@@ -10,6 +10,7 @@ import { eq, and } from 'drizzle-orm';
 import { Session } from './session';
 import { Permissions } from './permissions';
 import terminal from '../utils/terminal';
+import { TraceSchema } from 'tatorscout/trace';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -38,8 +39,7 @@ export namespace Scouting {
 		validators: {
 			trace: (trace) =>
 				typeof trace === 'string' &&
-				z
-					.array(z.tuple([z.number(), z.number(), z.number(), z.string()]))
+				TraceSchema
 					.safeParse(JSON.parse(trace)).success,
 			checks: (checks) =>
 				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success

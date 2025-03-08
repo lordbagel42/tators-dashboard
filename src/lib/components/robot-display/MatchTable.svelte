@@ -135,8 +135,13 @@
 						</td>
 						<td>{generateStatus(match)}</td>
 						<td>
-							<a href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/match/{match.tba.comp_level}/{match.tba.match_number}" class="btn btn-primary">
-							<i class="material-icons">visibility</i></a>
+							<a
+								href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/match/{match.tba
+									.comp_level}/{match.tba.match_number}"
+								class="btn btn-primary"
+							>
+								<i class="material-icons">visibility</i></a
+							>
 						</td>
 					</tr>
 				{/each}

@@ -1,10 +1,6 @@
-import { FIRST } from '$lib/server/structs/FIRST.js';
-import { Scouting } from '$lib/server/structs/scouting.js';
-import { and, eq } from 'drizzle-orm';
 import * as TBA from '$lib/server/utils/tba';
 import { fail } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
-import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
 
 export const load = async (event) => {
 	const eventKey = event.params.eventKey;
@@ -31,8 +27,8 @@ export const load = async (event) => {
 	}
 
 	return {
+		event: e.value.tba,
 		team: team.tba,
-		teams: teams.value.map((t) => t.tba),
-		event: e.value.tba
+		teams: teams.value.map((t) => t.tba)
 	};
 };

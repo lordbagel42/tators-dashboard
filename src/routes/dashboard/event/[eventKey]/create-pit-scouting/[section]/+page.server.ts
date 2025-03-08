@@ -9,7 +9,8 @@ export const load = async (event) => {
 		await Scouting.PIT.Sections.fromProperty('eventKey', eventKey, {
 			type: 'stream'
 		}).await()
-	).unwrap();
+	).unwrap()
+	.sort((a, b) => a.data.order - b.data.order);
 
 	const s = sections[parseInt(section)];
 

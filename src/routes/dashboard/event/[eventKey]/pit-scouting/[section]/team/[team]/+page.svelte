@@ -31,7 +31,7 @@
 
 <div class="container">
 	<div class="row">
-		<h2>Pitscouting</h2>
+		<h2>Pitscouting: {team.nickname}</h2>
 	</div>
 	<div class="row mb-3">
 		<div class="ws-nowrap p-3 mb-3" bind:this={scroller} style="overflow-x: auto;">

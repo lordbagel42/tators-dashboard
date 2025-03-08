@@ -98,6 +98,16 @@ export namespace Scouting {
 		});
 	};
 
+	export const getTeamScouting = (team: number, event: string)=>  {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, event)));
+
+			return res.map((r) => MatchScouting.Generator(r));
+		});
+	}
+
 	export const TeamComments = new Struct({
 		name: 'team_comments',
 		structure: {

@@ -8,7 +8,13 @@ export const GET = async (event) => {
         error: data.error.message,
     });
 
-    return new Response(JSON.stringify(data.value.serialize()), {
+    const res = await data.value.serialize();
+
+    if (res.isErr()) throw fail(ServerCode.internalServerError, {
+        error: res.error.message,
+    });
+
+    return new Response(JSON.stringify(res.value), {
         status: 200,
         headers: {
             'Content-Type': 'application/json',

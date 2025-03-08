@@ -18,6 +18,6 @@ export default defineConfig({
 	server: {
 		port: Number(process.env.PORT) || 5173,
 		allowedHosts: ['kit.tatorscout.org'],
-		cors: false,
+		cors: false
 	}
 });

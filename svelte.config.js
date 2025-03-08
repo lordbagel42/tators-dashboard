@@ -14,8 +14,8 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
 		csp: {
-			mode: 'nonce',
-		},
+			mode: 'nonce'
+		}
 		// env: process.env,
 	},
 

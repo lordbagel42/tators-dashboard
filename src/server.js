@@ -12,7 +12,6 @@ app.use((req, res, next) => {
 
 // add a route that lives separately from the SvelteKit app
 app.get('/healthcheck', (req, res) => {
-
 	res.end('ok');
 });
 

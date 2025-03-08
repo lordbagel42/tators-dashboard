@@ -7,7 +7,6 @@ import terminal from '$lib/server/utils/terminal';
 
 export async function GET(event) {
 	const res = await sse.connect(event);
-	console.log('SSE Connection', res);
 	if (res.isErr()) {
 		terminal.error(res.error);
 		return new Response('Server Error', {

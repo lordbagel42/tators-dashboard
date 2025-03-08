@@ -4,14 +4,20 @@ import { Container } from 'canvas/container';
 import { Path } from 'canvas/path';
 import { Circle } from 'canvas/circle';
 import { Img } from 'canvas/image';
-import { SVG } from 'canvas/svg';
 import type { TraceArray, Action } from 'tatorscout/trace';
 import type { Focus } from '$lib/types/robot-display';
 
 const generateAction = (x: number, y: number, action: Action, color: string) => {
-	const c = new Circle([x, y], 5);
-	c.fill.color = color;
-	const svg = new SVG(`/icons/${action}.svg`, [x, y]);
+	const c = new Circle([x, y], .025);
+	// c.fill.color = color;
+	c.properties.fill.color = color;
+	c.properties.line.color = 'transparent';
+	const svg = new Img(`/assets/icons/${action}.png`, {
+		x: x - .025,
+		y: y - .025,
+		width: .05,
+		height: .05
+	});
 	svg.text.color = 'black';
 	return new Container(c, svg);
 };
@@ -38,14 +44,20 @@ const ACTION_COLORS: Record<Action, string> = {
 	shc: 'white'
 };
 
+const SECTION_COLORS = {
+	auto: 'green',
+	teleop: 'blue',
+	endgame: 'red'
+};
+
 export class MatchCanvas {
 	private doActions = true;
 	private doPath = true;
 	private min = 0;
-	private max = 600; // 150 seconds * 4 frames per second
+	private max: number;
 	private _focus?: Focus;
 
-	private readonly canvas: Canvas;
+	public readonly canvas: Canvas;
 	private readonly container = new Container();
 	private readonly background: Img;
 
@@ -54,10 +66,11 @@ export class MatchCanvas {
 		public readonly year: number,
 		public readonly ctx: CanvasRenderingContext2D
 	) {
+		this.max = trace.length;
 		this.canvas = new Canvas(ctx);
 		this.canvas.ratio = 2;
-		this.canvas.adaptable = true;
-		this.background = new Img(`/${year}field.png`);
+		// this.canvas.adaptable = true;
+		this.background = new Img(`/field/${year}.png`);
 
 		this.init();
 	}
@@ -85,6 +98,16 @@ export class MatchCanvas {
 				[x2, y2]
 			]);
 
+			if (i < 15 * 4) {
+				path.properties.line.color = SECTION_COLORS.auto;
+			}
+			if (i >= 15 * 4 && i < 135 * 4) {
+				path.properties.line.color = SECTION_COLORS.teleop;
+			}
+			if (i >= 135 * 4) {
+				path.properties.line.color = SECTION_COLORS.endgame;
+			}
+
 			this.container.children.push(path);
 
 			if (a2) {
@@ -92,6 +115,7 @@ export class MatchCanvas {
 			}
 		}
 		this.canvas.add(this.background, this.container);
+		this.setFilter();
 	}
 
 	between(min: number, max: number) {

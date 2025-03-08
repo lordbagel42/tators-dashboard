@@ -10,11 +10,12 @@
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
+	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
 
 	const { data } = $props();
-	const teams = $derived(data.teams);
-	const team = $derived(data.team);
-	const event = $derived(data.event);
+	const event = $derived(new TBAEvent(data.event));
+	const teams = $derived(data.teams.map(t => new TBATeam(t, event)));
+	const team = $derived(new TBATeam(data.team, event));
 
 	const summary = new Dashboard.Card({
 		name: 'Event Summary',
@@ -83,7 +84,7 @@
 	});
 	let dashboard = $state(
 		new Dashboard.Dashboard({
-			name: `Robot Display: ${data.team.tba.team_number} - ${data.team.tba.nickname}`,
+			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
 			id: 'robot-display'
 		})
@@ -189,11 +190,11 @@
 					<TeamComments team={team.tba.team_number} event={event.tba.key} />
 				{/snippet}
 			</Card>
-			<Card card={actionHeatmap}>
+			<!-- <Card card={actionHeatmap}>
 				{#snippet body()}
 					<p>This will be the action heatmap card</p>
 				{/snippet}
-			</Card>
+			</Card> -->
 			<Card card={pitScouting}>
 				{#snippet body()}
 					<PitScoutingCard {team} {event} />
@@ -201,7 +202,15 @@
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<p>This will be the match viewer card</p>
+					<div class="container-fluid">
+						<div class="row mb-3">
+							<div class="col-12">
+								<a href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces" class="btn btn-primary">
+									Traces
+								</a>
+							</div>
+						</div>
+					</div>
 				{/snippet}
 			</Card>
 		{/key}

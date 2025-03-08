@@ -14,7 +14,7 @@
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
-	const teams = $derived(data.teams.map(t => new TBATeam(t, event)));
+	const teams = $derived(data.teams.map((t) => new TBATeam(t, event)));
 	const team = $derived(new TBATeam(data.team, event));
 
 	const summary = new Dashboard.Card({
@@ -205,7 +205,10 @@
 					<div class="container-fluid">
 						<div class="row mb-3">
 							<div class="col-12">
-								<a href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces" class="btn btn-primary">
+								<a
+									href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces"
+									class="btn btn-primary"
+								>
 									Traces
 								</a>
 							</div>

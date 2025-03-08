@@ -8,15 +8,15 @@ import type { TraceArray, Action } from 'tatorscout/trace';
 import type { Focus } from '$lib/types/robot-display';
 
 const generateAction = (x: number, y: number, action: Action, color: string) => {
-	const c = new Circle([x, y], .025);
+	const c = new Circle([x, y], 0.025);
 	// c.fill.color = color;
 	c.properties.fill.color = color;
 	c.properties.line.color = 'transparent';
 	const svg = new Img(`/assets/icons/${action}.png`, {
-		x: x - .025,
-		y: y - .025,
-		width: .05,
-		height: .05
+		x: x - 0.025,
+		y: y - 0.025,
+		width: 0.05,
+		height: 0.05
 	});
 	svg.text.color = 'black';
 	return new Container(c, svg);

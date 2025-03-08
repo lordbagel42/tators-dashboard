@@ -34,5 +34,5 @@ export const load = async (event) => {
 		team: team.tba,
 		teams: teams.value.map((t) => t.tba),
 		event: e.value.tba
-	}
+	};
 };

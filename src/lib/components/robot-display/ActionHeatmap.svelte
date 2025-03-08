@@ -63,19 +63,7 @@
 			team: team.tba.team_number
 		});
 
-		c = new MatchCanvas(array, event.tba.year, ctx, {
-			amp: 'red',
-			bal: 'blue',
-			cbe: 'green',
-			clb: 'yellow',
-			cne: 'purble',
-			lob: 'orange',
-			nte: 'black',
-			pck: 'white',
-			spk: 'pink',
-			src: 'brown',
-			trp: 'cyan'
-		});
+		c = new MatchCanvas(array, event.tba.year, ctx);
 
 		c.hidePath();
 

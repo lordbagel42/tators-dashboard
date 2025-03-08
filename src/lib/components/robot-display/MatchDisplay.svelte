@@ -27,19 +27,7 @@
 		const parsed = Scouting.parseTrace(pullTrace.data.trace);
 		if (parsed.isErr()) throw new Error(`Error parsing trace: ${parsed.error.message}`);
 
-		matchCanvas = new MatchCanvas(parsed.value, year, ctx, {
-			amp: 'red',
-			bal: 'blue',
-			cbe: 'green',
-			clb: 'yellow',
-			cne: 'purble',
-			lob: 'orange',
-			nte: 'black',
-			pck: 'white',
-			spk: 'pink',
-			src: 'brown',
-			trp: 'cyan'
-		});
+		matchCanvas = new MatchCanvas(parsed.value, year, ctx);
 
 		stop = matchCanvas.animate();
 

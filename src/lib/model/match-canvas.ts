@@ -16,6 +16,28 @@ const generateAction = (x: number, y: number, action: Action, color: string) => 
 	return new Container(c, svg);
 };
 
+const ACTION_COLORS: Record<Action, string> = {
+	amp: 'red',
+	bal: 'blue',
+	cbe: 'green',
+	clb: 'yellow',
+	cne: 'purble',
+	lob: 'orange',
+	nte: 'black',
+	pck: 'white',
+	spk: 'pink',
+	src: 'brown',
+	trp: 'cyan',
+	cl1: 'red',
+	cl2: 'blue',
+	cl3: 'yellow',
+	cl4: 'green',
+	brg: 'purple',
+	prc: 'orange',
+	dpc: 'black',
+	shc: 'white'
+};
+
 export class MatchCanvas {
 	private doActions = true;
 	private doPath = true;
@@ -30,8 +52,7 @@ export class MatchCanvas {
 	constructor(
 		public readonly trace: TraceArray,
 		public readonly year: number,
-		public readonly ctx: CanvasRenderingContext2D,
-		public readonly actionColors: Record<Action, string>
+		public readonly ctx: CanvasRenderingContext2D
 	) {
 		this.canvas = new Canvas(ctx);
 		this.canvas.ratio = 2;
@@ -57,7 +78,7 @@ export class MatchCanvas {
 
 			// Need the i == 1 check otherwise every action will be drawn twice
 			if (a1 && i == 1) {
-				this.container.children.push(generateAction(x1, y1, a1, this.actionColors[a1]));
+				this.container.children.push(generateAction(x1, y1, a1, ACTION_COLORS[a1]));
 			}
 			const path = new Path([
 				[x1, y1],
@@ -67,7 +88,7 @@ export class MatchCanvas {
 			this.container.children.push(path);
 
 			if (a2) {
-				this.container.children.push(generateAction(x2, y2, a2, this.actionColors[a2]));
+				this.container.children.push(generateAction(x2, y2, a2, ACTION_COLORS[a2]));
 			}
 		}
 		this.canvas.add(this.background, this.container);

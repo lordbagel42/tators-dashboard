@@ -81,11 +81,9 @@
 			height: 1
 		}
 	});
-
-
 	let dashboard = $state(
 		new Dashboard.Dashboard({
-			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
+			name: `Robot Display: ${data.team.tba.team_number} - ${data.team.tba.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
 			id: 'robot-display'
 		})
@@ -93,7 +91,7 @@
 
 	$effect(() => {
 		dashboard = new Dashboard.Dashboard({
-			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			name: `Robot Display: ${team.tba.team_number} - ${team.tba.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
 			id: 'robot-display'
 		});
@@ -108,7 +106,7 @@
 	let scroller: HTMLDivElement;
 
 	afterNavigate(() => {
-		const btn = scroller.querySelector(`[data-team="${team.team_number}"]`);
+		const btn = scroller.querySelector(`[data-team="${team.tba.team_number}"]`);
 		if (btn) {
 			sleep(500).then(() =>
 				btn.scrollIntoView({
@@ -128,20 +126,20 @@
 				{#each teams as t}
 					<a
 						type="button"
-						href="/dashboard/event/{event.key}/team/{t.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{t.tba.team_number}"
 						class="btn mx-2"
-						class:btn-primary={t.team_number !== team.team_number}
-						class:btn-outline-secondary={t.team_number === team.team_number}
-						class:btn-disabled={t.team_number === team.team_number}
-						class:text-muted={t.team_number === team.team_number}
+						class:btn-primary={t.tba.team_number !== team.tba.team_number}
+						class:btn-outline-secondary={t.tba.team_number === team.tba.team_number}
+						class:btn-disabled={t.tba.team_number === team.tba.team_number}
+						class:text-muted={t.tba.team_number === team.tba.team_number}
 						onclick={(e) => {
-							if (t.team_number === team.team_number) {
+							if (t.tba.team_number === team.tba.team_number) {
 								return e.preventDefault();
 							}
 						}}
-						data-team={t.team_number}
+						data-team={t.tba.team_number}
 					>
-						{t.team_number}
+						{t.tba.team_number}
 					</a>
 				{/each}
 			</div>
@@ -188,17 +186,12 @@
 			</Card>
 			<Card card={comments}>
 				{#snippet body()}
-					<TeamComments team={team.team_number} event={event.key} />
+					<TeamComments team={team.tba.team_number} event={event.tba.key} />
 				{/snippet}
 			</Card>
 			<Card card={actionHeatmap}>
 				{#snippet body()}
 					<p>This will be the action heatmap card</p>
-				{/snippet}
-			</Card>
-			<Card card={matchViewer}>
-				{#snippet body()}
-					<p>This will be the matches card</p>
 				{/snippet}
 			</Card>
 			<Card card={pitScouting}>

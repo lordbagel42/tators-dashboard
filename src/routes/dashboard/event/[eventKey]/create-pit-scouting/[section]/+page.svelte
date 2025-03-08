@@ -20,6 +20,7 @@
 
 	onMount(() => {
 		sections = Scouting.PIT.Sections.fromProperty('eventKey', page.params.eventKey, false);
+		// sections.filter(s => true);
 		sections.sort((a, b) => Number(a.data.order) - Number(b.data.order));
 	});
 </script>

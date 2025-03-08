@@ -18,7 +18,7 @@
 		quality?: number;
 	}
 
-	const { multiple, uploader, message, quality = 100 }: Props = $props();
+	const { multiple, uploader, message, quality = 10 }: Props = $props();
 
 	const emitter = new EventEmitter<{
 		init: void;

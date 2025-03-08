@@ -78,7 +78,7 @@
 					{#each pictures as picture, i}
 						<div class="carousel-item {i === 0 ? 'active' : ''}">
 							<img
-								src={picture}
+								src="/assets{picture}"
 								alt="..."
 								class="d-block w-100"
 								style="object-fit: contain; height: 250px;"

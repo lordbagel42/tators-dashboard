@@ -19,18 +19,13 @@
 
 	const addSection = async () => {
 		const name = await prompt('Section Name');
-		console.log(name);
 		if (!name) return;
-
-		console.log('Adding section', name);
 
 		const res = await Scouting.PIT.Sections.new({
 			name,
 			order: $sections.length,
 			eventKey
 		});
-
-		console.log(res);
 	};
 
 	const copy = async () => {

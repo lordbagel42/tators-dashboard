@@ -108,11 +108,11 @@
 		});
 	});
 
-	let filter: FilterState = $state({
-		auto: true,
-		teleop: true,
-		endgame: true
-	});
+	// let filter: FilterState = $state({
+	// 	auto: true,
+	// 	teleop: true,
+	// 	endgame: true
+	// });
 
 	let scroller: HTMLDivElement;
 
@@ -154,7 +154,7 @@
 					</a>
 				{/each}
 			</div>
-			<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+			<!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
 				<input
 					type="checkbox"
 					class="btn-check"
@@ -181,7 +181,7 @@
 					bind:checked={filter.endgame}
 				/>
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
-			</div>
+			</div> -->
 		</div>
 
 		{#key team}

@@ -78,11 +78,14 @@ export const actions = {
 		};
 	},
 	OAuth2: async () => {
-		const domain = String(process.env.PUBLIC_DOMAIN).includes('localhost') ? `${process.env.PUBLIC_DOMAIN}:${process.env.PORT}` : process.env.PUBLIC_DOMAIN;
+		const domain = String(process.env.PUBLIC_DOMAIN).includes('localhost')
+			? `${process.env.PUBLIC_DOMAIN}:${process.env.PORT}`
+			: process.env.PUBLIC_DOMAIN;
 		const client = new OAuth2Client({
 			clientSecret: SECRET_OAUTH2_CLIENT_SECRET,
 			clientId: SECRET_OAUTH2_CLIENT_ID,
-			redirectUri: process.env.HTTPS === 'true' ? 'https://' : 'http://' + domain + '/account/oauth/sign-in',
+			redirectUri:
+				process.env.HTTPS === 'true' ? 'https://' : 'http://' + domain + '/account/oauth/sign-in'
 		});
 		// log(client);
 		const authorizeUrl = client.generateAuthUrl({

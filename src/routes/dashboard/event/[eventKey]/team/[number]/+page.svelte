@@ -1,15 +1,17 @@
 <script lang="ts">
+	import '$lib/imports/robot-display.js';
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
 	import { type Focus } from '$lib/types/robot-display.js';
 	import { sleep } from 'ts-utils/sleep';
 	import { afterNavigate } from '$app/navigation';
-	import ActionHeatmap from '$lib/components/robot-display/ActionHeatmap.svelte';
-	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
-	import { Navbar } from '$lib/model/navbar.js';
+	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
+	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
+	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
+	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
 
-	const { data = $bindable() } = $props();
+	const { data } = $props();
 	const teams = $derived(data.teams);
 	const team = $derived(data.team);
 	const event = $derived(data.event);
@@ -31,8 +33,8 @@
 		icon: 'chat',
 		id: 'card2',
 		size: {
-			width: 1,
-			height: 2
+			width: 2,
+			height: 1
 		}
 	});
 
@@ -80,45 +82,33 @@
 		}
 	});
 
-	const dashboard = $derived(
+
+	let dashboard = $state(
 		new Dashboard.Dashboard({
-			name: `Robot Display: ${team.tba.team_number} - ${team.tba.nickname}`,
+			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
 			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
 			id: 'robot-display'
 		})
 	);
 
 	$effect(() => {
-		Navbar.addSection({
-			name: `${event.tba.name} Dashboard`,
-			links: [
-				{
-					name: `${event.tba.key} Dashboard`,
-					href: `/dashboard/event/${event.tba.key}`,
-					icon: 'event',
-					type: 'material-icons'
-				},
-				{
-					name: `${event.tba.key} Matches`,
-					href: `/dashboard/event/${event.tba.key}/matches`,
-					icon: 'view_list',
-					type: 'material-icons'
-				}
-			],
-			priority: 1
+		dashboard = new Dashboard.Dashboard({
+			name: `Robot Display: ${team.team_number} - ${team.nickname}`,
+			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
+			id: 'robot-display'
 		});
 	});
 
-	let focus: Focus = $state({
-		auto: true,
-		teleop: true,
-		endgame: true
-	});
+	// let filter: FilterState = $state({
+	// 	auto: true,
+	// 	teleop: true,
+	// 	endgame: true
+	// });
 
 	let scroller: HTMLDivElement;
 
 	afterNavigate(() => {
-		const btn = scroller.querySelector(`[data-team="${team.tba.team_number}"]`);
+		const btn = scroller.querySelector(`[data-team="${team.team_number}"]`);
 		if (btn) {
 			sleep(500).then(() =>
 				btn.scrollIntoView({
@@ -138,24 +128,24 @@
 				{#each teams as t}
 					<a
 						type="button"
-						href="/dashboard/event/{event.tba.key}/team/{t.tba.team_number}"
+						href="/dashboard/event/{event.key}/team/{t.team_number}"
 						class="btn mx-2"
-						class:btn-primary={t.tba.team_number !== team.tba.team_number}
-						class:btn-outline-secondary={t.tba.team_number === team.tba.team_number}
-						class:btn-disabled={t.tba.team_number === team.tba.team_number}
-						class:text-muted={t.tba.team_number === team.tba.team_number}
+						class:btn-primary={t.team_number !== team.team_number}
+						class:btn-outline-secondary={t.team_number === team.team_number}
+						class:btn-disabled={t.team_number === team.team_number}
+						class:text-muted={t.team_number === team.team_number}
 						onclick={(e) => {
-							if (t.tba.team_number === team.tba.team_number) {
+							if (t.team_number === team.team_number) {
 								return e.preventDefault();
 							}
 						}}
-						data-team={t.tba.team_number}
+						data-team={t.team_number}
 					>
-						{t.tba.team_number}
+						{t.team_number}
 					</a>
 				{/each}
 			</div>
-			<div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+			<!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
 				<input
 					type="checkbox"
 					class="btn-check"
@@ -182,38 +172,46 @@
 					bind:checked={focus.endgame}
 				/>
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
-			</div>
+			</div> -->
 		</div>
-		<Card card={summary}>
-			{#snippet body()}
-				<p>This will be the team summary card</p>
-			{/snippet}
-		</Card>
-		<Card card={pictures}>
-			{#snippet body()}
-				<p>This will be the pictures card</p>
-			{/snippet}
-		</Card>
-		<Card card={comments}>
-			{#snippet body()}
-				<p>This will be the comments card</p>
-			{/snippet}
-		</Card>
-		<Card card={actionHeatmap}>
-			{#snippet body()}
-				<ActionHeatmap {team} {focus} {event} />
-			{/snippet}
-		</Card>
-		<Card card={pitScouting}>
-			{#snippet body()}
-				<p>This will be the pit scouting card</p>
-			{/snippet}
-		</Card>
-		<Card card={matchViewer}>
-			{#snippet body()}
-				<MatchTable {team} {event} />
-			{/snippet}
-		</Card>
+
+		{#key team}
+			<Card card={summary}>
+				{#snippet body()}
+					<EventSummary {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={pictures}>
+				{#snippet body()}
+					<PictureDisplay {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={comments}>
+				{#snippet body()}
+					<TeamComments team={team.team_number} event={event.key} />
+				{/snippet}
+			</Card>
+			<Card card={actionHeatmap}>
+				{#snippet body()}
+					<p>This will be the action heatmap card</p>
+				{/snippet}
+			</Card>
+			<Card card={matchViewer}>
+				{#snippet body()}
+					<p>This will be the matches card</p>
+				{/snippet}
+			</Card>
+			<Card card={pitScouting}>
+				{#snippet body()}
+					<PitScoutingCard {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={matchViewer}>
+				{#snippet body()}
+					<p>This will be the match viewer card</p>
+				{/snippet}
+			</Card>
+		{/key}
 	{/snippet}
 </DB>
 

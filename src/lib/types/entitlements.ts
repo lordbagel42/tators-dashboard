@@ -4,6 +4,7 @@ export type Entitlement =
   | 'manage-roles'
   | 'manage-tba'
   | 'manage-universe'
+  | 'upload-pictures'
   | 'view-checklist'
   | 'view-pit-scouting'
   | 'view-potatoes'
@@ -20,4 +21,8 @@ export type Group =
   | 'Checklists'
   | 'Potatoes'
   | 'Strategy'
-  | 'FIRST';
+  | 'FIRST'
+  | 'FIRST'
+  | 'Checklists'
+  | 'Potatoes'
+  | 'Strategy';

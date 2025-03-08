@@ -1,9 +1,11 @@
 import { Struct, type StructData, type DataArr } from 'drizzle-struct/front-end';
 import { sse } from '../utils/sse';
 import { browser } from '$app/environment';
-import { attempt } from 'ts-utils/check';
+import { attempt, attemptAsync } from 'ts-utils/check';
 import { z } from 'zod';
-import { type TraceArray } from 'tatorscout/trace';
+import { Account } from './account';
+import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
+import { $Math } from 'ts-utils/math';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -15,11 +17,13 @@ export namespace Scouting {
 			// matchId: 'string',
 			team: 'number',
 			scoutId: 'string',
-			scoutGroup: 'string',
+			scoutGroup: 'number',
 			prescouting: 'boolean',
 			remote: 'boolean',
 			trace: 'string',
-			checks: 'string'
+			checks: 'string',
+			scoutUsername: 'string',
+			alliance: 'string'
 		},
 		socket: sse,
 		browser
@@ -27,6 +31,87 @@ export namespace Scouting {
 
 	export type MatchScoutingData = StructData<typeof MatchScouting.data.structure>;
 	export type MatchScoutingArr = DataArr<typeof MatchScouting.data.structure>;
+
+	export const getAverageVelocity = (data: MatchScoutingData[]) => {
+		return Trace.velocity.average(
+			data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray
+		);
+	};
+
+	export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				return $Math.average(
+					data.map(
+						(d) =>
+							Trace.score.parse2025(
+								TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+								d.data.alliance as 'red' | 'blue'
+							).auto.total
+					)
+				);
+			}
+			return 0;
+		});
+	};
+
+	export const averageTeleopScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
+
+				return $Math.average(teles.map((t) => t.total - (t.dpc + t.shc + t.park)));
+			}
+			return 0;
+		});
+	};
+
+	export const averageEndgameScore = (data: MatchScoutingData[], year: number) => {
+		return attempt(() => {
+			if (year === 2025) {
+				const teles = data.map(
+					(d) =>
+						Trace.score.parse2025(
+							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+							d.data.alliance as 'red' | 'blue'
+						).teleop
+				);
+
+				return $Math.average(teles.map((t) => t.park + t.dpc + t.shc));
+			}
+			return 0;
+		});
+	};
+
+	export const averageSecondsNotMoving = (data: MatchScoutingData[]) => {
+		return attempt(() => {
+			return $Math.average(
+				data.map((d) =>
+					Trace.secondsNotMoving(
+						TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
+						false
+					)
+				)
+			);
+		});
+	};
+
+	export const scoutingFromTeam = (team: number, eventKey: string) => {
+		return MatchScouting.query(
+			'from-team',
+			{ team, eventKey },
+			{
+				asStream: false,
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
+			}
+		);
+	};
 
 	export const TeamComments = new Struct({
 		name: 'team_comments',
@@ -36,7 +121,8 @@ export namespace Scouting {
 			team: 'number',
 			comment: 'string',
 			type: 'string',
-			eventKey: 'string'
+			eventKey: 'string',
+			scoutUsername: 'string'
 		},
 		socket: sse,
 		browser
@@ -67,8 +153,8 @@ export namespace Scouting {
 			name: 'pit_sections',
 			structure: {
 				name: 'string',
-				multiple: 'boolean',
-				accountId: 'string'
+				order: 'number',
+				eventKey: 'string'
 			},
 			socket: sse,
 			browser
@@ -80,10 +166,9 @@ export namespace Scouting {
 		export const Groups = new Struct({
 			name: 'pit_groups',
 			structure: {
-				eventKey: 'string',
 				sectionId: 'string',
 				name: 'string',
-				accountId: 'string'
+				order: 'number'
 			},
 			socket: sse,
 			browser
@@ -92,28 +177,31 @@ export namespace Scouting {
 		export type GroupData = StructData<typeof Groups.data.structure>;
 		export type GroupArr = DataArr<typeof Groups.data.structure>;
 
-		export const Qustions = new Struct({
+		export const Questions = new Struct({
 			name: 'pit_questions',
 			structure: {
 				groupId: 'string',
 				question: 'string',
+				description: 'string',
 				type: 'string',
-				accountId: 'string'
+				key: 'string',
+				order: 'number',
+				options: 'string'
 			},
 			socket: sse,
 			browser
 		});
 
-		export type QuestionData = StructData<typeof Qustions.data.structure>;
-		export type QuestionArr = DataArr<typeof Qustions.data.structure>;
+		export type QuestionData = StructData<typeof Questions.data.structure>;
+		export type QuestionArr = DataArr<typeof Questions.data.structure>;
 
 		export const Answers = new Struct({
 			name: 'pit_answers',
 			structure: {
 				questionId: 'string',
-				accountId: 'string',
-				value: 'string',
-				matchId: 'string'
+				answer: 'string',
+				team: 'number',
+				accountId: 'string'
 			},
 			socket: sse,
 			browser
@@ -121,5 +209,59 @@ export namespace Scouting {
 
 		export type AnswerData = StructData<typeof Answers.data.structure>;
 		export type AnswerArr = DataArr<typeof Answers.data.structure>;
+
+		export type Options = {};
+
+		export const parseOptions = (question: QuestionData) => {
+			return attempt(() => {
+				const options = question.data.options;
+				if (!options) throw new Error('No options key');
+				return z.array(z.string()).parse(JSON.parse(options));
+			});
+		};
+
+		export const parseAnswer = (answer: AnswerData) => {
+			return attempt(() => {
+				const value = answer.data.answer;
+				if (!value) throw new Error('No answer key');
+				return z.array(z.string()).parse(JSON.parse(value));
+			});
+		};
+
+		export const getAnswersFromGroup = (group: GroupData, questionIDs: string[]) => {
+			return Answers.query(
+				'from-group',
+				{
+					group: group.data.id
+				},
+				{
+					asStream: false,
+					satisfies: (d) => (d.data.questionId ? questionIDs.includes(d.data.questionId) : false)
+				}
+			);
+		};
+
+		export const answerQuestion = (
+			question: QuestionData,
+			answer: string[],
+			team: number,
+			account: Account.AccountData
+		) => {
+			return attemptAsync(async () => {
+				if (!question.data.id) throw new Error('Question ID not found');
+				const accountId = account.data.id;
+				if (!accountId) throw new Error('Account ID not found');
+				const res = (
+					await Answers.new({
+						questionId: question.data.id,
+						answer: JSON.stringify(answer),
+						team,
+						accountId
+					})
+				).unwrap();
+
+				if (!res.success) throw new Error(res.message || 'Failed to answer question');
+			});
+		};
 	}
 }

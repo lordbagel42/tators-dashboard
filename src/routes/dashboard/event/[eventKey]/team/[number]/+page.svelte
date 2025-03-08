@@ -10,6 +10,7 @@
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
+	import { globalFilter } from '$lib/model/filter.js';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -108,12 +109,6 @@
 		});
 	});
 
-	let filter: FilterState = $state({
-		auto: true,
-		teleop: true,
-		endgame: true
-	});
-
 	let scroller: HTMLDivElement;
 
 	afterNavigate(() => {
@@ -160,7 +155,7 @@
 					class="btn-check"
 					id="btncheck1"
 					autocomplete="off"
-					bind:checked={filter.auto}
+					bind:checked={$globalFilter.auto}
 				/>
 				<label class="btn btn-outline-secondary" for="btncheck1">Auto</label>
 
@@ -169,7 +164,7 @@
 					class="btn-check"
 					id="btncheck2"
 					autocomplete="off"
-					bind:checked={filter.teleop}
+					bind:checked={$globalFilter.teleop}
 				/>
 				<label class="btn btn-outline-secondary" for="btncheck2">Teleop</label>
 
@@ -178,7 +173,7 @@
 					class="btn-check"
 					id="btncheck3"
 					autocomplete="off"
-					bind:checked={filter.endgame}
+					bind:checked={$globalFilter.endgame}
 				/>
 				<label class="btn btn-outline-secondary" for="btncheck3">Endgame</label>
 			</div>

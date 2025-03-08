@@ -5,6 +5,7 @@
 	import Grid from '../general/Grid.svelte';
 	import type { INumberFilterParams, ITextFilterParams } from 'ag-grid-community';
 	import { onMount } from 'svelte';
+	import { globalFilter } from '$lib/model/filter';
 
 	interface Props {
 		team: number;
@@ -89,6 +90,13 @@
 				satisfies: (c) => c.data.team === team && c.data.eventKey === event
 			}
 		);
+
+		return globalFilter.subscribe((f) => {
+			comments.filter(d => {
+				const { auto, teleop, endgame } = f;
+				
+			});
+		});
 	});
 </script>
 

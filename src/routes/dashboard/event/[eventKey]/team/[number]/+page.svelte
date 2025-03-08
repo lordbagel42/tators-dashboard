@@ -11,6 +11,7 @@
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
 	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
+	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -202,7 +203,7 @@
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<div class="container-fluid">
+					<!-- <div class="container-fluid">
 						<div class="row mb-3">
 							<div class="col-12">
 								<a
@@ -213,7 +214,8 @@
 								</a>
 							</div>
 						</div>
-					</div>
+					</div> -->
+					<MatchTable {team} {event} />
 				{/snippet}
 			</Card>
 		{/key}

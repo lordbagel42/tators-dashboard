@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { TBATeam, TBAMatch, TBAEvent } from '$lib/utils/tba';
 	import { DataArr } from 'drizzle-struct/front-end';
+	import MatchDisplay from './MatchDisplay.svelte';
 
 	interface Props {
 		event: TBAEvent;
@@ -68,14 +69,14 @@
 		});
 
 		import('bootstrap').then((bs) => {
-			table.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+			table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
 				new bs.Tooltip(el);
 			});
 		});
 
 		return () => {
 			import('bootstrap').then((bs) => {
-				table.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+				table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
 					const tooltip = bs.Tooltip.getInstance(el);
 					if (tooltip) tooltip.dispose();
 				});
@@ -100,6 +101,12 @@
 
 <div class="scroll-y" style="overflow-y: hidden; max-height: 100%;">
 	<div class="table-responsive">
+		<a
+			href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces"
+			class="btn btn-primary"
+		>
+			View all Traces
+		</a>
 		<table class="table table-striped table-hover" bind:this={table}>
 			<thead>
 				<tr>
@@ -107,6 +114,7 @@
 					<th>Time</th>
 					<th>Flag</th>
 					<th>Status</th>
+					<th>View</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -126,6 +134,10 @@
 							</i>
 						</td>
 						<td>{generateStatus(match)}</td>
+						<td>
+							<a href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/match/{match.tba.comp_level}/{match.tba.match_number}" class="btn btn-primary">
+							<i class="material-icons">visibility</i></a>
+						</td>
 					</tr>
 				{/each}
 			</tbody>

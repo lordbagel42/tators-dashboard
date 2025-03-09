@@ -36,7 +36,7 @@
 	<div class="container pt-5">
 		<div class="row">
 			<h1>
-				{env.PUBLIC_APP_NAME}: Sign Up
+				<a href="/" class="text-reset text-decoration-none">{env.PUBLIC_APP_NAME}</a>: Sign Up
 			</h1>
 		</div>
 		<div class="row mb-3">
@@ -174,7 +174,7 @@
 			</form>
 		</div>
 		<div class="row mb-3">
-			<div class="col">
+			<!-- <div class="col">
 				<form action="?/OAuth2" method="POST">
 					<button class="gsi-material-button">
 						<div class="gsi-material-button-state"></div>
@@ -211,7 +211,7 @@
 						</div>
 					</button>
 				</form>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </main>

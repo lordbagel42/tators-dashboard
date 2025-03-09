@@ -90,6 +90,7 @@
 		"ag-grid-community": "^33.0.4",
 		"bootstrap": "^5.3.3",
 		"busboy": "^1.6.0",
+		"canvas": "git+https://github.com/tsaxking/canvas.git",
 		"chalk": "^5.4.1",
 		"check-password-strength": "^2.0.10",
 		"cli-table": "^0.3.11",
@@ -121,9 +122,21 @@
 		"tatorscout": "github:TeamTators/tatorscout-utils",
 		"ts-utils": "github:tsaxking/global-ts-utilities",
 		"uuid": "^11.0.4",
-		"canvas": "git+https://github.com/tsaxking/canvas.git",
 		"vite-node": "^3.0.4",
 		"yaml": "^2.7.0",
 		"zod": "^3.24.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"canvas",
+			"colors",
+			"drizzle-struct",
+			"tatorscout",
+			"math",
+			"html-constructor",
+			"ts-utils",
+			"esbuild",
+			"svelte-preprocess"
+		]
 	}
 }

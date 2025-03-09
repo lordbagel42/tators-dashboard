@@ -19,11 +19,11 @@
 	<div class="offcanvas-body">
 		<ul class="list-unstyled">
 			{#each $sections as section}
-				<li>
+				<li class="mb-3">
 					<h4 class="text-secondary">{section.name}</h4>
 					<ul class="list-unstyled">
 						{#each section.links as link}
-							<li class="ps-3">
+							<li class="ps-3 mb-2">
 								<a class="text-reset text-decoration-none" href={link.href}>
 									{#if link.type === 'material-icons'}
 										<i class="material-icons">{link.icon}</i>

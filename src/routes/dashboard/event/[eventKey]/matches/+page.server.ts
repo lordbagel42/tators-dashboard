@@ -10,16 +10,13 @@ export const load = async (event) => {
 		throw redirect(ServerCode.temporaryRedirect, `/404?url${event.url.href}`);
 	}
 
-	const [teams, matches] = await Promise.all([
-		e.value.getTeams(), 
-		e.value.getMatches(),
-	]);
+	const [teams, matches] = await Promise.all([e.value.getTeams(), e.value.getMatches()]);
 
 	if (teams.isErr()) throw fail(ServerCode.internalServerError);
 	if (matches.isErr()) throw fail(ServerCode.internalServerError);
 
 	const scouting = await Scouting.MatchScouting.fromProperty('eventKey', event.params.eventKey, {
-		type: 'stream',
+		type: 'stream'
 	}).await();
 
 	if (scouting.isErr()) throw fail(ServerCode.internalServerError);
@@ -27,6 +24,6 @@ export const load = async (event) => {
 	return {
 		event: e.value.tba,
 		matches: matches.value.map((m) => m.tba),
-		scouting: scouting.value.map(s => s.safe()),
+		scouting: scouting.value.map((s) => s.safe())
 	};
 };

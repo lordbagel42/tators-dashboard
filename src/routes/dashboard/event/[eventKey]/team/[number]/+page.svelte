@@ -11,6 +11,8 @@
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
 	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
+	import Progress from '$lib/components/charts/Progress.svelte';
+	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -22,7 +24,7 @@
 		name: 'Event Summary',
 		iconType: 'material-icons',
 		icon: 'summarize',
-		id: 'card1',
+		id: 'event_summary',
 		size: {
 			width: 1,
 			height: 1,
@@ -41,7 +43,7 @@
 		name: 'Comments',
 		iconType: 'material-icons',
 		icon: 'chat',
-		id: 'card2',
+		id: 'comments',
 		size: {
 			width: 2,
 			height: 1,
@@ -60,7 +62,7 @@
 		name: 'Pictures',
 		iconType: 'material-icons',
 		icon: 'image',
-		id: 'card3',
+		id: 'pictures',
 		size: {
 			width: 2,
 			height: 1,
@@ -79,7 +81,7 @@
 		name: 'Action Heatmap',
 		iconType: 'material-icons',
 		icon: 'layers',
-		id: 'card4',
+		id: 'heatmap',
 		size: {
 			width: 1,
 			height: 1
@@ -90,7 +92,7 @@
 		name: 'Pit Scouting',
 		iconType: 'material-icons',
 		icon: 'question_answer',
-		id: 'card6',
+		id: 'pit_scouting',
 		size: {
 			width: 1,
 			height: 2,
@@ -109,7 +111,7 @@
 		name: 'Matches',
 		iconType: 'material-icons',
 		icon: 'preview',
-		id: 'card7',
+		id: 'matches',
 		size: {
 			width: 2,
 			height: 1,
@@ -123,10 +125,58 @@
 			}
 		}
 	});
+
+	const progress = new Dashboard.Card({
+		name: 'Progress',
+		iconType: 'material-icons',
+		icon: 'trending_up',
+		id: 'progress',
+		size: {
+			width: 1,
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
+		}
+	});
+
+	const eventStats = new Dashboard.Card({
+		name: 'Event Stats',
+		iconType: 'material-icons',
+		icon: 'trending_up',
+		id: 'event_stats',
+		size: {
+			width: 2,
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
+		}
+	});
+
 	let dashboard = $state(
 		new Dashboard.Dashboard({
 			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
-			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
+			cards: [
+				summary,
+				pictures,
+				comments,
+				actionHeatmap,
+				pitScouting,
+				matchViewer,
+				progress,
+				eventStats
+			],
 			id: 'robot-display'
 		})
 	);
@@ -134,7 +184,16 @@
 	$effect(() => {
 		dashboard = new Dashboard.Dashboard({
 			name: `Robot Display: ${team.tba.team_number} - ${team.tba.nickname}`,
-			cards: [summary, pictures, comments, actionHeatmap, pitScouting, matchViewer],
+			cards: [
+				summary,
+				pictures,
+				comments,
+				actionHeatmap,
+				pitScouting,
+				matchViewer,
+				progress,
+				eventStats
+			],
 			id: 'robot-display'
 		});
 	});
@@ -237,19 +296,17 @@
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<!-- <div class="container-fluid">
-						<div class="row mb-3">
-							<div class="col-12">
-								<a
-									href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces"
-									class="btn btn-primary"
-								>
-									Traces
-								</a>
-							</div>
-						</div>
-					</div> -->
 					<MatchTable {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={progress}>
+				{#snippet body()}
+					<Progress {team} {event} />
+				{/snippet}
+			</Card>
+			<Card card={eventStats}>
+				{#snippet body()}
+					<TeamEventStats {team} {event} />
 				{/snippet}
 			</Card>
 		{/key}

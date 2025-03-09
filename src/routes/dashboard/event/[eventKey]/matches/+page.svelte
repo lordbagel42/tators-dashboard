@@ -7,8 +7,9 @@
 	import { Navbar } from '$lib/model/navbar.js';
 
 	const { data } = $props();
-	const matches = data.matches;
-	const event = data.event;
+	const matches = $derived(data.matches);
+	const event = $derived(data.event);
+	const matchScouting = $derived(new DataArr(Scouting.MatchScouting, data.scouting));
 
 	$effect(() => {
 		Navbar.addSection({
@@ -25,11 +26,6 @@
 		});
 	});
 
-	let matchScouting = $state(new DataArr(Scouting.MatchScouting, []));
-
-	onMount(() => {
-		matchScouting = Scouting.MatchScouting.fromProperty('eventKey', data.event.key, false);
-	});
 
 	const team = (teamKey: string) => {
 		return Number(teamKey.substring(3));
@@ -47,11 +43,32 @@
 				m.data.team === team
 		);
 	};
+
+	onMount(() => {
+		const add = (scouting: Scouting.MatchScoutingData) => {
+			if (scouting.data.eventKey !== event.key) return;
+			matchScouting.add(scouting);
+		};
+		const remove = (scouting: Scouting.MatchScoutingData) => {
+			if (scouting.data.eventKey !== event.key) return;
+			matchScouting.remove(scouting);
+		};
+
+		const update = () => {
+			matchScouting.inform();
+		}
+
+		Scouting.MatchScouting.on('new', add);
+		Scouting.MatchScouting.on('delete', remove);
+		Scouting.MatchScouting.on('update', update);
+		Scouting.MatchScouting.on('archive', remove);
+		Scouting.MatchScouting.on('restore', add);
+	});
 </script>
 
 {#snippet teamLink(teamKey: string, color: 'red' | 'blue', match: TBAMatch)}
 	<td class:table-danger={color === 'red'} class:table-primary={color === 'blue'}>
-		<a href="/dashboard/event/{data.event.key}/team/{team(teamKey)}" style="text-decoration: none;">
+		<a href="/dashboard/event/{data.event.key}/team/{team(teamKey)}/match/{match.comp_level}/{match.match_number}" style="text-decoration: none;">
 			<span
 				class="badge"
 				class:bg-danger={!findMatch(match, matchScouting.data, team(teamKey))}

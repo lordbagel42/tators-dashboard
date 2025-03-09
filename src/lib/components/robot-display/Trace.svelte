@@ -35,14 +35,13 @@
 </script>
 
 <div class="card">
-	<div class="card-body p-1">
+	<div class="card-body py-3 px-1">
 		<canvas
 			bind:this={target}
 			style="
             height: auto;
             width: 100%;
             aspect-ratio: 2 / 1;
-            margin: auto;
             display: block;
         "
 		></canvas>

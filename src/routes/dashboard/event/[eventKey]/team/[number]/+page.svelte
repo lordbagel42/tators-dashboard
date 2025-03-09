@@ -3,7 +3,6 @@
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
-	import { type Focus } from '$lib/types/robot-display.js';
 	import { sleep } from 'ts-utils/sleep';
 	import { afterNavigate } from '$app/navigation';
 	import PictureDisplay from '$lib/components/robot-display/PictureDisplay.svelte';
@@ -11,6 +10,7 @@
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
 	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
+	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -25,7 +25,15 @@
 		id: 'card1',
 		size: {
 			width: 1,
-			height: 1
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
 		}
 	});
 
@@ -36,7 +44,15 @@
 		id: 'card2',
 		size: {
 			width: 2,
-			height: 1
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
 		}
 	});
 
@@ -47,7 +63,15 @@
 		id: 'card3',
 		size: {
 			width: 2,
-			height: 1
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
 		}
 	});
 
@@ -69,7 +93,15 @@
 		id: 'card6',
 		size: {
 			width: 1,
-			height: 2
+			height: 2,
+			sm: {
+				width: 2,
+				height: 2
+			},
+			xs: {
+				width: 2,
+				height: 2
+			}
 		}
 	});
 
@@ -80,7 +112,15 @@
 		id: 'card7',
 		size: {
 			width: 2,
-			height: 1
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
 		}
 	});
 	let dashboard = $state(
@@ -98,12 +138,6 @@
 			id: 'robot-display'
 		});
 	});
-
-	// let filter: FilterState = $state({
-	// 	auto: true,
-	// 	teleop: true,
-	// 	endgame: true
-	// });
 
 	let scroller: HTMLDivElement;
 
@@ -203,7 +237,7 @@
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<div class="container-fluid">
+					<!-- <div class="container-fluid">
 						<div class="row mb-3">
 							<div class="col-12">
 								<a
@@ -214,7 +248,8 @@
 								</a>
 							</div>
 						</div>
-					</div>
+					</div> -->
+					<MatchTable {team} {event} />
 				{/snippet}
 			</Card>
 		{/key}

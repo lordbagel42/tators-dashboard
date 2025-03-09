@@ -7,9 +7,5 @@ export default async () => {
 	await openStructs();
 	await Struct.buildAll(DB);
 	const data = (await Event.getEvent('2025caoc')).unwrap();
-	const teams = (await data.getTeams()).unwrap();
-
-	const team = teams.find((t) => t.tba.team_number === 8);
-	if (!team) return;
-	console.log((await team.getStatus()).unwrap());
+	const matches = (await data.getMatches()).unwrap();
 };

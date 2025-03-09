@@ -389,15 +389,15 @@ export namespace Scouting {
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
 				const [
-					general, 
-					// mech, 
+					general
+					// mech,
 					// electrical
 				] = await Promise.all([
 					Sections.new({
 						name: 'General',
 						eventKey,
 						order: 0
-					}),
+					})
 					// Sections.new({
 					// 	name: 'Mechanical',
 					// 	eventKey,
@@ -415,16 +415,11 @@ export namespace Scouting {
 				// const electSection = electrical.unwrap();
 
 				// TODO: Write boilerplate groups/questions
-				const [
-					overviewRes,
-					strategyRes,
-					gameplayRes,
-					summaryRes,
-				] = await Promise.all([
+				const [overviewRes, strategyRes, gameplayRes, summaryRes] = await Promise.all([
 					Groups.new({
 						sectionId: genSection.id,
 						name: 'Overview',
-						order: 0,
+						order: 0
 					}),
 					Groups.new({
 						sectionId: genSection.id,
@@ -434,13 +429,13 @@ export namespace Scouting {
 					Groups.new({
 						sectionId: genSection.id,
 						name: 'Gameplay',
-						order: 2,
+						order: 2
 					}),
 					Groups.new({
 						sectionId: genSection.id,
 						name: 'Summary',
 						order: 3
-					}),
+					})
 				]);
 
 				const overview = overviewRes.unwrap();
@@ -454,10 +449,11 @@ export namespace Scouting {
 							question: 'What is your favorite part of the robot, or what are you most proud of?',
 							groupId: overview.id,
 							key: 'favorite',
-							description: 'This could be a mechanism, a programming feature, design choice, team dynamic, etc.',
+							description:
+								'This could be a mechanism, a programming feature, design choice, team dynamic, etc.',
 							type: 'textarea',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
 							question: 'What is the inspection weight?',
@@ -466,7 +462,7 @@ export namespace Scouting {
 							description: 'The inspection weight in lbs',
 							type: 'number',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
 							question: 'What is the robot width',
@@ -475,7 +471,7 @@ export namespace Scouting {
 							description: 'The robot width in inches',
 							type: 'number',
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
 						Questions.new({
 							question: 'What is the robot length',
@@ -484,7 +480,7 @@ export namespace Scouting {
 							description: 'The robot length in inches',
 							type: 'number',
 							options: '[]',
-							order: 2,
+							order: 2
 						}),
 						Questions.new({
 							question: 'What is the drive train type?',
@@ -493,7 +489,7 @@ export namespace Scouting {
 							description: 'Swerve, Tank, Mecanum, etc.',
 							type: 'text',
 							options: '[]',
-							order: 3,
+							order: 3
 						}),
 						Questions.new({
 							question: 'How much drive practice has your driver had?',
@@ -502,7 +498,7 @@ export namespace Scouting {
 							description: 'In hours. Assume around 4h per regional if they answer with that.',
 							type: 'text',
 							options: '[]',
-							order: 4,
+							order: 4
 						}),
 						Questions.new({
 							question: 'What is the programming language you use?',
@@ -511,32 +507,28 @@ export namespace Scouting {
 							description: 'Java, C++, LabView, etc.',
 							type: 'text',
 							options: '[]',
-							order: 5,
+							order: 5
 						}),
 
-
-
-
 						Questions.new({
-							question: 'What are your robot\'s key strengths?',
+							question: "What are your robot's key strengths?",
 							groupId: strategy.id,
 							key: 'strengths',
 							description: 'What that robot can demonstrably deliver',
 							type: 'textarea',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
 							question: 'Are there any trade-offs you made in the design process?',
 							groupId: strategy.id,
 							key: 'limitations',
-							description: 'Any design choices that were made to prioritize one aspect of the robot over another',
+							description:
+								'Any design choices that were made to prioritize one aspect of the robot over another',
 							type: 'textarea',
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
-
-
 
 						Questions.new({
 							question: 'Describe your autonomous capabilites',
@@ -545,40 +537,41 @@ export namespace Scouting {
 							description: 'Are there multiple autos? What are their primary objectives?',
 							type: 'textarea',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
 							question: 'Describe your teleop capabilites',
 							groupId: gameplay.id,
 							key: 'teleop',
-							description: 'What are your primary and secondary functionalities in teleop? Does this change between quals and elims?',
+							description:
+								'What are your primary and secondary functionalities in teleop? Does this change between quals and elims?',
 							type: 'textarea',
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
 						Questions.new({
 							question: 'What are your endgame capabilities?',
 							groupId: gameplay.id,
 							key: 'endgame',
-							description: 'How fast they can complete the endgame tasks, and how consistently they can do so.',
+							description:
+								'How fast they can complete the endgame tasks, and how consistently they can do so.',
 							type: 'textarea',
 							options: '[]',
-							order: 2,
+							order: 2
 						}),
-
-
-
 
 						Questions.new({
-							question: 'This is a question for you to answer, not to ask. What are some observations you noticed about the robot and/or the team?',
+							question:
+								'This is a question for you to answer, not to ask. What are some observations you noticed about the robot and/or the team?',
 							groupId: summary.id,
 							key: 'observations',
-							description: 'Do not ask this question to the team, this is for your own observations. Describe their attitude/dynamic, any concerns you see about their robot, etc. Feel free to leave this blank if you have nothing to say.',
+							description:
+								'Do not ask this question to the team, this is for your own observations. Describe their attitude/dynamic, any concerns you see about their robot, etc. Feel free to leave this blank if you have nothing to say.',
 							type: 'textarea',
 							options: '[]',
-							order: 1,
-						}),
-					]),
+							order: 1
+						})
+					])
 				);
 			});
 		};

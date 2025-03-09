@@ -85,55 +85,43 @@
 				class="form-control"
 				placeholder="Enter a value..."
 				value={$value[0] || ''}
-				oninput={() => disabled = false}
+				oninput={() => (disabled = false)}
 				onchange={(e) => {
 					value.set([e.currentTarget.value]);
 					updateAnswer();
 				}}
 			/>
-			<button 
-			type="button" 
-			class="ms-3 btn btn-success"
-			{disabled}
-		>
-			<i class="material-icons">save</i>
-		</button>
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
 		{:else if $question.type === 'textarea'}
-		<textarea
-			class="form-control"
-			placeholder="Enter a value..."
-				oninput={() => disabled = false}
-			onchange={(e) => {
-				value.set([e.currentTarget.value]);
-				updateAnswer();
-			}}
-		>{$value[0] || ''}</textarea>
-		<button 
-		type="button" 
-		class="ms-3 btn btn-success"
-		{disabled}
-	>
-		<i class="material-icons">save</i>
-	</button>
+			<textarea
+				class="form-control"
+				placeholder="Enter a value..."
+				oninput={() => (disabled = false)}
+				onchange={(e) => {
+					value.set([e.currentTarget.value]);
+					updateAnswer();
+				}}>{$value[0] || ''}</textarea
+			>
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
 		{:else if $question.type === 'number'}
 			<input
 				type="number"
 				class="form-control"
 				placeholder="Enter a number..."
-				oninput={() => disabled = false}
+				oninput={() => (disabled = false)}
 				value={$value[0] || ''}
 				onchange={(e) => {
 					value.set([e.currentTarget.value]);
 					updateAnswer();
 				}}
 			/>
-			<button 
-			type="button" 
-			class="ms-3 btn btn-success"
-			{disabled}
-		>
-			<i class="material-icons">save</i>
-		</button>
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
 		{:else if $question.type === 'boolean'}
 			<input
 				type="radio"
@@ -223,6 +211,5 @@
 				{/each}
 			</select>
 		{/if}
-
 	</div>
 </div>

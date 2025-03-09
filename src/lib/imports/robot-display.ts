@@ -1,7 +1,6 @@
 import { browser } from '$app/environment';
 import { Navbar } from '$lib/model/navbar';
 
-
 export default (eventKey: string) => {
 	Navbar.addSection({
 		name: 'Robot Display',

@@ -2,18 +2,12 @@ import { Client } from 'pg';
 import { config } from 'dotenv';
 import { getOldTables, testAll } from './old-tables';
 import { Account } from '../../src/lib/server/structs/account';
-import { FIRST } from '../../src/lib/server/structs/FIRST';
-import { Scouting } from '../../src/lib/server/structs/scouting';
-import { DB } from '../../src/lib/server/db';
-import { Struct } from 'drizzle-struct/back-end';
-import { z } from 'zod';
-import { Strategy } from '../../src/lib/server/structs/strategy';
 import backup from '../backup';
 import restore from '../restore';
-import { attemptAsync } from 'ts-utils/check';
 import cliProgress from 'cli-progress';
 import terminal from '../../src/lib/server/utils/terminal';
 import { prompt } from '../../src/lib/server/cli/utils';
+import { Logs } from '../../src/lib/server/structs/log';
 
 const initDB = async () => {
 	config();
@@ -61,7 +55,7 @@ export default async () => {
 		const exists = (await Account.Account.fromId(a.id)).unwrap();
 		if (exists) return;
 		terminal.log('Migrating account', a.username);
-		(
+		const res = (
 			await Account.Account.new({
 				username: a.username,
 				email: a.email,
@@ -74,6 +68,14 @@ export default async () => {
 				verification: a.verification || ''
 			})
 		).unwrap();
+
+		Logs.log({
+			struct: 'Account',
+			dataId: res.id,
+			accountId: 'CLI',
+			message: 'Migrated account',
+			type: 'create',
+		});
 	});
 
 	await accountStream.await();

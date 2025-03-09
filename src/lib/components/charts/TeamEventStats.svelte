@@ -13,7 +13,7 @@
 		staticY?: number;
 	}
 
-	const { team, event, staticY }: Props = $props();
+	let { team, event, staticY = $bindable() }: Props = $props();
 
 	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
 
@@ -54,6 +54,94 @@
 					return M.average(numbers.filter((n) => !isNaN(n)));
 				};
 
+				const datasets = [
+					{
+						label: 'Coral',
+						data: [
+							// Auto
+							Math.min(...score.map(coral('auto'))),
+							average(score.map(coral('auto'))),
+							Math.max(...score.map(coral('auto'))),
+							// Teleop
+							Math.min(...score.map(coral('teleop'))),
+							average(score.map(coral('teleop'))),
+							Math.max(...score.map(coral('teleop'))),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => coral('auto')(s) + coral('teleop')(s))),
+							average(score.map((s) => coral('auto')(s) + coral('teleop')(s))),
+							Math.max(...score.map((s) => coral('auto')(s) + coral('teleop')(s)))
+						]
+					},
+					{
+						label: 'Algae',
+						data: [
+							// Auto
+							Math.min(...score.map(algae('auto'))),
+							average(score.map(algae('auto'))),
+							Math.max(...score.map(algae('auto'))),
+							// Teleop
+							Math.min(...score.map(algae('teleop'))),
+							average(score.map(algae('teleop'))),
+							Math.max(...score.map(algae('teleop'))),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => algae('auto')(s) + algae('teleop')(s))),
+							average(score.map((s) => algae('auto')(s) + algae('teleop')(s))),
+							Math.max(...score.map((s) => algae('auto')(s) + algae('teleop')(s)))
+						]
+					},
+					{
+						label: 'Endgame',
+						data: [
+							// Auto
+							0,
+							0,
+							0,
+							// Teleop
+							0,
+							0,
+							0,
+							// Endgame
+							Math.min(...score.map(endgame)),
+							average(score.map(endgame)),
+							Math.max(...score.map(endgame)),
+							// Total
+							Math.min(...score.map(endgame)),
+							average(score.map(endgame)),
+							Math.max(...score.map(endgame))
+						]
+					}
+				];
+
+				const labels = [
+					'Min Auto',
+					'Avg Auto',
+					'Max Auto',
+					'Min Tele',
+					'Avg Tele',
+					'Max Tele',
+					'Min End',
+					'Avg End',
+					'Max End',
+					'Min Total',
+					'Avg Total',
+					'Max Total'
+				];
+
+				let max = 0;
+				for (let i = 0; i < labels.length; i++) {
+					const sum = datasets.reduce((acc, d) => acc + d.data[i], 0);
+					max = Math.max(max, sum);
+				}
+				staticY = Math.max(staticY || 0, max);
+
 				chart = new Chart(canvas, {
 					options: {
 						scales: {
@@ -71,85 +159,8 @@
 					},
 					type: 'bar',
 					data: {
-						datasets: [
-							{
-								label: 'Coral',
-								data: [
-									// Auto
-									Math.min(...score.map(coral('auto'))),
-									average(score.map(coral('auto'))),
-									Math.max(...score.map(coral('auto'))),
-									// Teleop
-									Math.min(...score.map(coral('teleop'))),
-									average(score.map(coral('teleop'))),
-									Math.max(...score.map(coral('teleop'))),
-									// Endgame
-									0,
-									0,
-									0,
-									// Total
-									Math.min(...score.map((s) => coral('auto')(s) + coral('teleop')(s))),
-									average(score.map((s) => coral('auto')(s) + coral('teleop')(s))),
-									Math.max(...score.map((s) => coral('auto')(s) + coral('teleop')(s)))
-								]
-							},
-							{
-								label: 'Algae',
-								data: [
-									// Auto
-									Math.min(...score.map(algae('auto'))),
-									average(score.map(algae('auto'))),
-									Math.max(...score.map(algae('auto'))),
-									// Teleop
-									Math.min(...score.map(algae('teleop'))),
-									average(score.map(algae('teleop'))),
-									Math.max(...score.map(algae('teleop'))),
-									// Endgame
-									0,
-									0,
-									0,
-									// Total
-									Math.min(...score.map((s) => algae('auto')(s) + algae('teleop')(s))),
-									average(score.map((s) => algae('auto')(s) + algae('teleop')(s))),
-									Math.max(...score.map((s) => algae('auto')(s) + algae('teleop')(s)))
-								]
-							},
-							{
-								label: 'Endgame',
-								data: [
-									// Auto
-									0,
-									0,
-									0,
-									// Teleop
-									0,
-									0,
-									0,
-									// Endgame
-									Math.min(...score.map(endgame)),
-									average(score.map(endgame)),
-									Math.max(...score.map(endgame)),
-									// Total
-									Math.min(...score.map(endgame)),
-									average(score.map(endgame)),
-									Math.max(...score.map(endgame))
-								]
-							}
-						],
-						labels: [
-							'Min Auto',
-							'Avg Auto',
-							'Max Auto',
-							'Min Tele',
-							'Avg Tele',
-							'Max Tele',
-							'Min End',
-							'Avg End',
-							'Max End',
-							'Min Total',
-							'Avg Total',
-							'Max Total'
-						]
+						datasets,
+						labels
 					}
 				});
 			} catch (error) {

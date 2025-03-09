@@ -12,7 +12,7 @@
 		staticY?: number;
 	}
 
-	const { team, event, staticY }: Props = $props();
+	let { team, event, staticY = $bindable() }: Props = $props();
 
 	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
 
@@ -37,6 +37,38 @@
 				});
 				const labels = data.map((s) => `${s.data.compLevel}${s.data.matchNumber}`);
 
+				const datasets = [
+					{
+						label: 'Coral',
+						data: score.map(
+							(s) =>
+								s.auto.cl1 +
+								s.auto.cl2 +
+								s.auto.cl3 +
+								s.auto.cl4 +
+								s.teleop.cl1 +
+								s.teleop.cl2 +
+								s.teleop.cl3 +
+								s.teleop.cl4
+						)
+					},
+					{
+						label: 'Algae',
+						data: score.map((s) => s.auto.brg + s.auto.prc + s.teleop.brg + s.teleop.prc)
+					},
+					{
+						label: 'Endgame',
+						data: score.map((s) => s.teleop.park + s.teleop.shc + s.teleop.dpc)
+					}
+				];
+
+				let max = 0;
+				for (let i = 0; i < labels.length; i++) {
+					const sum = datasets.reduce((acc, d) => acc + d.data[i], 0);
+					max = Math.max(max, sum);
+				}
+				staticY = Math.max(staticY || 0, max);
+
 				chart = new Chart(canvas, {
 					options: {
 						scales: {
@@ -54,30 +86,7 @@
 					},
 					type: 'bar',
 					data: {
-						datasets: [
-							{
-								label: 'Coral',
-								data: score.map(
-									(s) =>
-										s.auto.cl1 +
-										s.auto.cl2 +
-										s.auto.cl3 +
-										s.auto.cl4 +
-										s.teleop.cl1 +
-										s.teleop.cl2 +
-										s.teleop.cl3 +
-										s.teleop.cl4
-								)
-							},
-							{
-								label: 'Algae',
-								data: score.map((s) => s.auto.brg + s.auto.prc + s.teleop.brg + s.teleop.prc)
-							},
-							{
-								label: 'Endgame',
-								data: score.map((s) => s.teleop.park + s.teleop.shc + s.teleop.dpc)
-							}
-						],
+						datasets,
 						labels
 					}
 				});

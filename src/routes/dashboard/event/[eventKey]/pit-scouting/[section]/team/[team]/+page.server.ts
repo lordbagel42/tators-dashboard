@@ -30,6 +30,7 @@ export const load = async (event) => {
 		sections: sections.map((s) => s.safe()),
 		teams: teams.map((t) => t.tba),
 		team: team.tba,
-		sectionIndex: parseInt(section)
+		sectionIndex: parseInt(section),
+		event: e.tba
 	};
 };

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import Section from '$lib/components/pit-scouting/Section.svelte';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
@@ -12,6 +12,9 @@
 	const teams = $derived(data.teams);
 	const team = $derived(data.team);
 	const sectionIndex = $derived(data.sectionIndex);
+	const event = $derived(data.event);
+
+	$effect(() => nav(event));
 
 	let scroller: HTMLDivElement;
 
@@ -30,7 +33,7 @@
 </script>
 
 <div class="container">
-	<div class="row">
+	<div class="row mb-3">
 		<h2>Pitscouting: {team.nickname}</h2>
 	</div>
 	<div class="row mb-3">

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import nav from '$lib/imports/robot-display.js';
 	import { Scouting } from '$lib/model/scouting.js';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
@@ -10,6 +11,8 @@
 	const matches = $derived(data.matches);
 	const event = $derived(data.event);
 	const matchScouting = $derived(new DataArr(Scouting.MatchScouting, data.scouting));
+
+	$effect(() => nav(event));
 
 	$effect(() => {
 		Navbar.addSection({

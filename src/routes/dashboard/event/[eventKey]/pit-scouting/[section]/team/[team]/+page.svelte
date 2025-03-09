@@ -33,7 +33,7 @@
 </script>
 
 <div class="container">
-	<div class="row">
+	<div class="row mb-3">
 		<h2>Pitscouting: {team.nickname}</h2>
 	</div>
 	<div class="row mb-3">

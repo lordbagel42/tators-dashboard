@@ -38,10 +38,10 @@ export namespace Scouting {
 			universe: () => '2122'
 		},
 		validators: {
-			trace: (trace) =>
-				typeof trace === 'string' && TraceSchema.safeParse(JSON.parse(trace)).success,
-			checks: (checks) =>
-				typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
+			// trace: (trace) =>
+			// 	typeof trace === 'string' && TraceSchema.safeParse(JSON.parse(trace)).success,
+			// checks: (checks) =>
+			// 	typeof checks === 'string' && z.array(z.string()).safeParse(JSON.parse(checks)).success
 		}
 	});
 

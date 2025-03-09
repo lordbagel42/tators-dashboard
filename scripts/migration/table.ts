@@ -27,10 +27,10 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 
 	public query(offset: number) {
 		return attemptAsync(async () => {
+			const squeal = `SELECT * FROM "${this.name}" LIMIT ${LIMIT} OFFSET ${offset};`;
 			const res = await this.database.query(
-				`SELECT * FROM ${this.name} LIMIT ${LIMIT} OFFSET ${offset};`
+				squeal,
 			);
-
 			return z.array(this.zod).parse(res.rows);
 		});
 	}
@@ -71,7 +71,7 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 
 	public test() {
 		return attemptAsync(async () => {
-			const res = await this.database.query(`SELECT * FROM ${this.name} LIMIT 1;`);
+			const res = await this.database.query(`SELECT * FROM "${this.name}" LIMIT 1;`);
 
 			const zRes = z.array(this.zod).safeParse(res.rows);
 
@@ -85,8 +85,9 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 
 	public fromId(id: string) {
 		return attemptAsync(async () => {
-			const res = await this.database.query(`SELECT * FROM ${this.name} WHERE id = '${id}';`);
+			const res = await this.database.query(`SELECT * FROM "${this.name}" WHERE id = '${id}';`);
 
+			if (!res.rows[0]) return null;
 			return this.zod.parse(res.rows[0]);
 		});
 	}
@@ -94,8 +95,9 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 	public fromProperty<K extends keyof T>(property: K, value: T[K]) {
 		return attemptAsync(async () => {
 			const res = await this.database.query(
-				`SELECT * FROM ${this.name} WHERE ${String(property)} = '${value}';`
+				`SELECT * FROM "${this.name}" WHERE "${String(property)}" = '${value}';`
 			);
+			if (!res.rows[0]) return null;
 
 			return this.zod.parse(res.rows[0]);
 		});

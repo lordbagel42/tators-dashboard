@@ -20,7 +20,7 @@ export namespace Account {
 		name: 'account',
 		structure: {
 			username: text('username').notNull().unique(),
-			key: text('key').notNull().unique(),
+			key: text('key').notNull(),
 			salt: text('salt').notNull(),
 			firstName: text('first_name').notNull(),
 			lastName: text('last_name').notNull(),
@@ -35,24 +35,26 @@ export namespace Account {
 		safes: ['key', 'salt', 'verification']
 	});
 
-	Account.on('create', async (account) => {
-		const verification = account.data.verification;
-		const link = await Email.createLink('/admin/verifiy/' + verification);
-		if (link.isErr()) return terminal.error(link.error);
-		const admins = await getAdmins();
-		if (admins.isErr()) return terminal.error(admins.error);
-		const res = await Email.send({
-			type: 'new-user',
-			data: {
-				verification: link.value,
-				username: account.data.username
-			},
-			subject: `New User Registered ${account.data.username}`,
-			to: admins.value.map((a) => a.data.email)
-		});
+	// Account.on('create', async (account) => {
+	// 	const source = account.metadata.get('source');
+	// 	if (source === 'migration') return console.log('Migration account, skipping email');
+	// 	const verification = account.data.verification;
+	// 	const link = await Email.createLink('/admin/verifiy/' + verification);
+	// 	if (link.isErr()) return terminal.error(link.error);
+	// 	const admins = await getAdmins();
+	// 	if (admins.isErr()) return terminal.error(admins.error);
+	// 	const res = await Email.send({
+	// 		type: 'new-user',
+	// 		data: {
+	// 			verification: link.value,
+	// 			username: account.data.username
+	// 		},
+	// 		subject: `New User Registered ${account.data.username}`,
+	// 		to: admins.value.map((a) => a.data.email)
+	// 	});
 
-		if (res.isErr()) return terminal.error(res.error);
-	});
+	// 	if (res.isErr()) return terminal.error(res.error);
+	// });
 
 	Account.queryListen('universe-members', async (event, data) => {
 		const session = (await Session.getSession(event)).unwrap();

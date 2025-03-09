@@ -27,7 +27,7 @@ export const getOldTables = (DB: Client) => {
 				custom_data: z.string()
 			}),
 			DB
-		)
+		),
 
 		// DiscordAccount: new Table(
 		// 	'discord_account',
@@ -180,39 +180,39 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-		// MatchScouting: new Table(
-		// 	'match_scouting',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		match_id: z.string(),
-		// 		team: z.number().int(),
-		// 		scout_id: z.union([z.string(), z.null()]).optional(),
-		// 		scout_name: z.union([z.string(), z.null()]).optional(),
-		// 		scout_group: z.number().int().min(0).max(5),
-		// 		time: z.string(),
-		// 		pre_scouting: z.number().int(),
-		// 		trace: z.string(), // JSON TraceArray
-		// 		checks: z.string(), // JSON string array
-		// 		archived: z.boolean()
-		// 	}),
-		// 	DB
-		// ),
+		MatchScouting: new Table(
+			'match_scouting',
+			z.object({
+				id: z.string(),
+				match_id: z.string(),
+				team: z.number().int(),
+				scout_id: z.union([z.string(), z.null()]).optional(),
+				scout_name: z.union([z.string(), z.null()]).optional(),
+				scout_group: z.number().int(),
+				time: z.string(),
+				pre_scouting: z.number().int(),
+				trace: z.string(), // JSON TraceArray
+				checks: z.string(), // JSON string array
+				archived: z.boolean()
+			}),
+			DB
+		),
 
-		// TeamComments: new Table(
-		// 	'team_comments',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		match_scouting_id: z.string(),
-		// 		account_id: z.union([z.string(), z.null()]).optional(),
-		// 		team: z.number().int(),
-		// 		comment: z.string(),
-		// 		time: z.string(),
-		// 		type: z.string(),
-		// 		event_key: z.string(),
-		// 		archived: z.boolean()
-		// 	}),
-		// 	DB
-		// ),
+		TeamComments: new Table(
+			'team_comments',
+			z.object({
+				id: z.string(),
+				match_scouting_id: z.string(),
+				account_id: z.union([z.string(), z.null()]).optional(),
+				team: z.number().int(),
+				comment: z.string(),
+				time: z.string(),
+				type: z.string(),
+				event_key: z.string(),
+				archived: z.boolean()
+			}),
+			DB
+		)
 
 		// ScoutingQuestionSections: new Table(
 		// 	'scouting_question_sections',

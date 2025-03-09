@@ -16,7 +16,7 @@
 	<div class="d-flex justify-content-between w-100">
 		<div class="start d-flex align-items-center">
 			<button
-				class="btn mx-3"
+				class="btn"
 				type="button"
 				data-bs-toggle="offcanvas"
 				data-bs-target="#pages"
@@ -31,10 +31,10 @@
 				href="/home">{title}</a
 			>
 		</div>
-		<div class="end">
+		<div class="end d-flex align-items-center">
 			<div class="dropdown">
 				<button
-					class="btn dropdown-toggle"
+					class="btn dropdown-toggle px-2"
 					type="button"
 					data-bs-toggle="dropdown"
 					aria-expanded="false"
@@ -49,6 +49,19 @@
 						<li><a class="dropdown-item" href="/account/sign-out">Sign Out</a></li>
 					{/if}
 				</ul>
+				<button
+					class="btn px-2"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+				<i class="material-icons">
+					menu
+				</i>
+			</button>
 			</div>
 			<!-- <button
 				class="me-5 btn position-relative"
@@ -67,30 +80,19 @@
 			</button> -->
 		</div>
 	</div>
-	<button
-		class="navbar-toggler"
-		type="button"
-		data-bs-toggle="collapse"
-		data-bs-target="#navbarNav"
-		aria-controls="navbarNav"
-		aria-expanded="false"
-		aria-label="Toggle navigation"
-	>
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarNav">
-		<ul class="navbar-nav">
-			<li class="nav-item">
-				<a class="nav-link active" aria-current="page" href="/">Home</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a
-				>
-			</li>
-		</ul>
-	</div>
 </nav>
 
+<div class="collapse navbar-collapse position-fixed bg-dark p-3 shadow border-secondary border-1" id="navbarNav">
+	<ul class="navbar-nav">
+		<li class="nav-item">
+			<a class="nav-link active" aria-current="page" href="/">Home</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a
+			>
+		</li>
+	</ul>
+</div>
 <SideNav id="pages" />
 
 <!-- <Notifications bind:notifs /> -->

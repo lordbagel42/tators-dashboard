@@ -20,12 +20,6 @@
 
 <div class="container-fluid">
 	<div class="row mb-3">
-		<div class="col-12">
-			<h4>Match {match.tba.comp_level}{match.tba.match_number}</h4>
-			<hr />
-		</div>
-	</div>
-	<div class="row mb-3">
 		{#if scouting}
 			<Trace {scouting} {event} />
 		{:else}

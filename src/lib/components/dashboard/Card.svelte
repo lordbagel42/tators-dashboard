@@ -28,9 +28,9 @@
 		});
 	};
 
-	onResize();
 
 	onMount(() => {
+		onResize();
 		window.addEventListener('resize', onResize);
 		return () => window.removeEventListener('resize', onResize);
 	});
@@ -113,10 +113,6 @@
 {/if}
 
 <style>
-	/* .card {
-		transition: all 0.3s ease;
-	} */
-
 	.maximized {
 		position: fixed !important;
 		height: 80% !important;

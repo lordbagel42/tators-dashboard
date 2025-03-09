@@ -131,6 +131,14 @@ export namespace Scouting {
 	export type TeamCommentsData = StructData<typeof TeamComments.data.structure>;
 	export type TeamCommentsArr = DataArr<typeof TeamComments.data.structure>;
 
+	export const parseTrace = (trace: string) => {
+		return attempt<TraceArray>(() => {
+			return z
+				.array(z.tuple([z.number(), z.number(), z.number(), z.string()]))
+				.parse(JSON.parse(trace)) as TraceArray;
+		});
+	};
+
 	export namespace PIT {
 		export const Sections = new Struct({
 			name: 'pit_sections',

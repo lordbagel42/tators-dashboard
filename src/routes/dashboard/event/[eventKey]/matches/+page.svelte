@@ -4,14 +4,26 @@
 	import { onMount } from 'svelte';
 	import { type TBAMatch } from 'tatorscout/tba';
 	import { dateTime } from 'ts-utils/clock';
+	import { Navbar } from '$lib/model/navbar.js';
 
 	const { data } = $props();
-	const matches = data.matches;
+	const matches = $derived(data.matches);
+	const event = $derived(data.event);
+	const matchScouting = $derived(new DataArr(Scouting.MatchScouting, data.scouting));
 
-	let matchScouting = $state(new DataArr(Scouting.MatchScouting, []));
-
-	onMount(() => {
-		matchScouting = Scouting.MatchScouting.fromProperty('eventKey', data.event.key, false);
+	$effect(() => {
+		Navbar.addSection({
+			name: `${event.name} Dashboard`,
+			priority: 1,
+			links: [
+				{
+					name: `${event.key} Dashboard`,
+					href: `/dashboard/event/${event.key}`,
+					icon: 'event',
+					type: 'material-icons'
+				}
+			]
+		});
 	});
 
 	const team = (teamKey: string) => {
@@ -30,11 +42,37 @@
 				m.data.team === team
 		);
 	};
+
+	onMount(() => {
+		const add = (scouting: Scouting.MatchScoutingData) => {
+			if (scouting.data.eventKey !== event.key) return;
+			matchScouting.add(scouting);
+		};
+		const remove = (scouting: Scouting.MatchScoutingData) => {
+			if (scouting.data.eventKey !== event.key) return;
+			matchScouting.remove(scouting);
+		};
+
+		const update = () => {
+			matchScouting.inform();
+		};
+
+		Scouting.MatchScouting.on('new', add);
+		Scouting.MatchScouting.on('delete', remove);
+		Scouting.MatchScouting.on('update', update);
+		Scouting.MatchScouting.on('archive', remove);
+		Scouting.MatchScouting.on('restore', add);
+	});
 </script>
 
 {#snippet teamLink(teamKey: string, color: 'red' | 'blue', match: TBAMatch)}
 	<td class:table-danger={color === 'red'} class:table-primary={color === 'blue'}>
-		<a href="/dashboard/event/{data.event.key}/team/{team(teamKey)}" style="text-decoration: none;">
+		<a
+			href="/dashboard/event/{data.event.key}/team/{team(
+				teamKey
+			)}/match/{match.comp_level}/{match.match_number}"
+			style="text-decoration: none;"
+		>
 			<span
 				class="badge"
 				class:bg-danger={!findMatch(match, matchScouting.data, team(teamKey))}

@@ -125,8 +125,6 @@ export class Event {
 					.sort((a, b) => {
 						if (a.tba.comp_level === b.tba.comp_level)
 							return a.tba.match_number - b.tba.match_number;
-						if (a.tba.comp_level === 'sf' && b.tba.comp_level === 'sf')
-							return a.tba.set_number - b.tba.set_number;
 						const order = ['qm', 'qf', 'sf', 'f'];
 						return order.indexOf(a.tba.comp_level) - order.indexOf(b.tba.comp_level);
 					});
@@ -142,8 +140,6 @@ export class Event {
 						if (a.tba.comp_level === b.tba.comp_level)
 							return a.tba.match_number - b.tba.match_number;
 						const order = ['qm', 'qf', 'sf', 'f'];
-						if (a.tba.comp_level === 'sf' && b.tba.comp_level === 'sf')
-							return a.tba.set_number - b.tba.set_number;
 						return order.indexOf(a.tba.comp_level) - order.indexOf(b.tba.comp_level);
 					});
 			}
@@ -169,7 +165,9 @@ export class Match {
 		public readonly tba: M,
 		public readonly event: Event,
 		public readonly data?: StructData<typeof TBA.Matches.data.structure>
-	) {}
+	) {
+		if (tba.comp_level === 'sf') tba.match_number = tba.set_number;
+	}
 
 	get custom() {
 		return this.event.custom;

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { TBATeam, TBAEvent, TBAMedia } from 'tatorscout/tba';
 	import * as TBA from '$lib/utils/tba';
 	import { Scouting } from '$lib/model/scouting';
 	import { FIRST } from '$lib/model/FIRST';
@@ -9,6 +8,7 @@
 	import FileUploaderComponent from '../forms/FileUploader.svelte';
 	import { FileUploader } from '$lib/utils/files';
 	import { Account } from '$lib/model/account';
+	import { TBATeam, TBAEvent } from '$lib/utils/tba';
 
 	interface Props {
 		team: TBATeam;
@@ -22,7 +22,7 @@
 	const { team, event }: Props = $props();
 
 	onMount(() => {
-		new TBA.TBATeam(team, new TBA.TBAEvent(event)).getMedia().then((m) => {
+		team.getMedia().then((m) => {
 			if (m.isErr()) return console.error(m.error);
 			pictures.push(
 				...m.value.filter((media) => media.type === 'imgur').map((media) => media.direct_url)
@@ -32,12 +32,13 @@
 		teamPictures = FIRST.TeamPictures.query(
 			'from-event',
 			{
-				team: team.team_number,
-				eventKey: event.key
+				team: team.tba.team_number,
+				eventKey: event.tba.key
 			},
 			{
 				asStream: false,
-				satisfies: (tp) => tp.data.team === team.team_number && tp.data.eventKey === event.key
+				satisfies: (tp) =>
+					tp.data.team === team.tba.team_number && tp.data.eventKey === event.tba.key
 			}
 		);
 
@@ -47,8 +48,8 @@
 
 		const off = uploadComponent.on('upload', (file) => {
 			FIRST.TeamPictures.new({
-				team: team.team_number,
-				eventKey: event.key,
+				team: team.tba.team_number,
+				eventKey: event.tba.key,
 				picture: file,
 				accountId: Account.getSelf().get().data.id || ''
 			});
@@ -61,7 +62,7 @@
 	});
 
 	const uploader = new FileUploader(
-		`/dashboard/event/${event.key}/team/${team.team_number}/picture`,
+		`/dashboard/event/${event.tba.key}/team/${team.tba.team_number}/picture`,
 		{
 			method: 'POST'
 		}
@@ -73,12 +74,12 @@
 <div class="container-fluid h-100">
 	<div class="row h-100">
 		<div class="col-8">
-			<div id="carousel-{team.team_number}" class="carousel slide h-100">
+			<div id="carousel-{team.tba.team_number}" class="carousel slide h-100">
 				<div class="carousel-inner">
 					{#each pictures as picture, i}
 						<div class="carousel-item {i === 0 ? 'active' : ''}">
 							<img
-								src={picture}
+								src="/assets{picture}"
 								alt="..."
 								class="d-block w-100"
 								style="object-fit: contain; height: 250px;"
@@ -89,7 +90,7 @@
 				<button
 					class="carousel-control-prev"
 					type="button"
-					data-bs-target="#carousel-{team.team_number}"
+					data-bs-target="#carousel-{team.tba.team_number}"
 					data-bs-slide="prev"
 				>
 					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -98,7 +99,7 @@
 				<button
 					class="carousel-control-next"
 					type="button"
-					data-bs-target="#carousel-{team.team_number}"
+					data-bs-target="#carousel-{team.tba.team_number}"
 					data-bs-slide="next"
 				>
 					<span class="carousel-control-next-icon" aria-hidden="true"></span>

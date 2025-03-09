@@ -46,7 +46,7 @@
 	<div class="container pt-5">
 		<div class="row">
 			<h1>
-				{env.PUBLIC_APP_NAME}: Sign In
+				<a href="/" class="text-reset text-decoration-none">{env.PUBLIC_APP_NAME}</a>: Sign In
 			</h1>
 		</div>
 		<div class="row mb-3">
@@ -75,8 +75,6 @@
 					/>
 				</div>
 
-				<a href="/account/password-reset" class="link-primary"> Password Reset </a>
-
 				<hr />
 				{#if form?.message}
 					{#if form.message === 'Logged in'}
@@ -91,7 +89,7 @@
 			</form>
 		</div>
 		<div class="row mb-3">
-			<div class="col">
+			<!-- <div class="col">
 				<form action="?/OAuth2" method="POST">
 					<button class="gsi-material-button">
 						<div class="gsi-material-button-state"></div>
@@ -128,7 +126,7 @@
 						</div>
 					</button>
 				</form>
-			</div>
+			</div> -->
 			<div class="col">
 				<button class="btn btn-secondary" onclick={requestPasswordReset}>
 					Request Password Reset

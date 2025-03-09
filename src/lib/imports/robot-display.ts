@@ -37,6 +37,12 @@ export default (event: TBAEvent) => {
 				href: `/dashboard/event/${event.key}/matches`,
 				icon: 'view_list',
 				type: 'material-icons'
+			},
+			{
+				name: 'Team Compare',
+				href: `/dashboard/event/${event.key}/compare`,
+				icon: 'compare',
+				type: 'material-icons'
 			}
 		]
 	});

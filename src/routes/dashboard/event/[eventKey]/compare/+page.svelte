@@ -18,17 +18,17 @@
 		staticY = 0;
 	});
 
-    $effect(() => {
-        // view on search params
-        const search = new URLSearchParams(location.search);
-        search.set('view', view);
-        goto(`${location.pathname}?${search.toString()}`);
-    });
+	$effect(() => {
+		// view on search params
+		const search = new URLSearchParams(location.search);
+		search.set('view', view);
+		goto(`${location.pathname}?${search.toString()}`);
+	});
 
-    onMount(() => {
-        const search = new URLSearchParams(location.search);
-        view = search.get('view') as 'progress' | 'stats' || 'progress';
-    });
+	onMount(() => {
+		const search = new URLSearchParams(location.search);
+		view = (search.get('view') as 'progress' | 'stats') || 'progress';
+	});
 </script>
 
 <div class="container-fluid">
@@ -99,15 +99,13 @@
 					<div class="card">
 						<div class="card-body">
 							<h5 class="card-title">{team.tba.team_number} | {team.tba.nickname}</h5>
-                            <div
-                                style="height: 300px;"
-                            >
-							{#if view === 'progress'}
-								<Progress {team} {event} bind:staticY />
-							{:else}
-								<TeamEventStats {team} {event} bind:staticY />
-							{/if}
-                        </div>
+							<div style="height: 300px;">
+								{#if view === 'progress'}
+									<Progress {team} {event} bind:staticY />
+								{:else}
+									<TeamEventStats {team} {event} bind:staticY />
+								{/if}
+							</div>
 						</div>
 					</div>
 				</div>

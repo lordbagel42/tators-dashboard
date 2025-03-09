@@ -1,8 +1,9 @@
 import { Event } from '$lib/server/utils/tba.js';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 
 export const load = async (event) => {
+    if (!event.locals.account) throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
 	const e = await Event.getEvent(event.params.eventKey);
 	if (e.isErr()) {
 		throw fail(ServerCode.notFound, {

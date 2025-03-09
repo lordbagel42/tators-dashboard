@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import EditSection from '$lib/components/pit-scouting/EditSection.svelte';
 	import { Scouting } from '$lib/model/scouting';
 	import { prompt, select } from '$lib/utils/prompts';
@@ -15,6 +15,8 @@
 	const sectionIndex = $derived(data.sectionIndex);
 	const section = $derived(data.section);
 	const year = $derived(data.year);
+
+	$effect(() => nav(eventKey));
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 

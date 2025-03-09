@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import { Scouting } from '$lib/model/scouting';
 	import { alert, confirm, prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
@@ -8,7 +8,10 @@
 	import { TBAEvent } from '$lib/utils/tba.js';
 
 	const { data } = $props();
-	const { eventKey, year } = data;
+	const eventKey = $derived(data.eventKey);
+	const year = $derived(data.year);
+
+	$effect(() => nav(eventKey));
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 

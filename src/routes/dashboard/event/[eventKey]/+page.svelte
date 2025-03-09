@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
@@ -8,6 +8,8 @@
 	const event = $derived(data.event);
 	const teams = $derived(data.teams);
 	const matches = $derived(data.matches);
+
+	$effect(() => nav(event.key));
 
 	$effect(() => {
 		Navbar.addSection({

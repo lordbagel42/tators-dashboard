@@ -2,13 +2,12 @@
 	import { goto } from '$app/navigation';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
+	import { onMount } from 'svelte';
 
 	const { data } = $props();
 	const event = $derived(data.event);
 	const selectedTeams = $derived(data.selectedTeams);
 	const teams = $derived(data.teams);
-
-	$inspect(selectedTeams);
 
 	let scroller: HTMLDivElement;
 	let staticY = $state(0);
@@ -18,12 +17,24 @@
 		if (!view) return; // On view set
 		staticY = 0;
 	});
+
+    $effect(() => {
+        // view on search params
+        const search = new URLSearchParams(location.search);
+        search.set('view', view);
+        goto(`${location.pathname}?${search.toString()}`);
+    });
+
+    onMount(() => {
+        const search = new URLSearchParams(location.search);
+        view = search.get('view') as 'progress' | 'stats' || 'progress';
+    });
 </script>
 
 <div class="container-fluid">
 	<div class="row mb-3">
 		<div class="col">
-			<div class="d-flex justify-content-between">
+			<div class="d-flex justify-content-between align-items-center">
 				<h1>Compare Teams</h1>
 				<div class="btn-group" role="group" aria-label="View">
 					<input
@@ -35,7 +46,7 @@
 						bind:group={view}
 						value="progress"
 					/>
-					<label class="btn btn-outline-primary" for="progress-view">Progress</label>
+					<label class="btn btn-outline-primary h-min" for="progress-view">Progress</label>
 					<input
 						type="radio"
 						class="btn-check"
@@ -44,7 +55,7 @@
 						bind:group={view}
 						value="stats"
 					/>
-					<label class="btn btn-outline-primary" for="stats-view">Event Stats</label>
+					<label class="btn btn-outline-primary h-min" for="stats-view">Event Stats</label>
 				</div>
 			</div>
 		</div>
@@ -84,7 +95,7 @@
 	<div class="row mb-3">
 		{#key selectedTeams}
 			{#each selectedTeams as team}
-				<div class="col-md-4">
+				<div class="col-md-4 mb-3">
 					<div class="card">
 						<div class="card-body" style="height: 300px;">
 							<h5 class="card-title">{team.tba.team_number} | {team.tba.nickname}</h5>

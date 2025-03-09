@@ -97,4 +97,4 @@
 	});
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<canvas bind:this={canvas} class="h-100 w-100"></canvas>

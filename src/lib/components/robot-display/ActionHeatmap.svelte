@@ -58,10 +58,7 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) throw new Error('Could not get 2d context');
 
-		matches = Scouting.getMatchScouting({
-			eventKey: event.tba.key,
-			team: team.tba.team_number
-		});
+		matches = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 
 		c = new MatchCanvas(array, event.tba.year, ctx);
 

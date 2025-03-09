@@ -15,8 +15,15 @@ export const load = async (event) => {
 	if (teams.isErr()) throw fail(ServerCode.internalServerError);
 	if (matches.isErr()) throw fail(ServerCode.internalServerError);
 
+	const scouting = await Scouting.MatchScouting.fromProperty('eventKey', event.params.eventKey, {
+		type: 'stream'
+	}).await();
+
+	if (scouting.isErr()) throw fail(ServerCode.internalServerError);
+
 	return {
 		event: e.value.tba,
-		matches: matches.value.map((m) => m.tba)
+		matches: matches.value.map((m) => m.tba),
+		scouting: scouting.value.map((s) => s.safe())
 	};
 };

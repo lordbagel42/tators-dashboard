@@ -17,11 +17,7 @@
 	let matchScouting = $state(new DataArr(Scouting.MatchScouting, []));
 
 	const generateMatchStr = (match: TBAMatch) => {
-		if (match.tba.comp_level === 'sf') {
-			return `sf ${match.tba.set_number}`;
-		} else {
-			return `${match.tba.comp_level} ${match.tba.match_number}`;
-		}
+		return `${match.tba.comp_level} ${match.tba.match_number}`;
 	};
 
 	const generateTime = (match: TBAMatch) => {
@@ -87,13 +83,7 @@
 
 	const findMatch = (match: TBAMatch) => {
 		return matchScouting.data.find((m) => {
-			if (match.tba.comp_level === 'sf') {
-				return m.data.compLevel === 'sf' && m.data.matchNumber === match.tba.set_number;
-			} else {
-				return (
-					m.data.compLevel === match.tba.comp_level && m.data.matchNumber === match.tba.match_number
-				);
-			}
+			return m.data.compLevel === match.tba.comp_level && m.data.matchNumber === match.tba.match_number;
 		});
 	};
 </script>

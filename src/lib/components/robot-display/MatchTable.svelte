@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { TBATeam, TBAMatch, TBAEvent } from '$lib/utils/tba';
 	import { DataArr } from 'drizzle-struct/front-end';
+	import MatchDisplay from './MatchDisplay.svelte';
 
 	interface Props {
 		event: TBAEvent;
@@ -33,13 +34,15 @@
 	};
 
 	const generateFlagColor = (match?: Scouting.MatchScoutingData) => {
-		if (!match) return 'white';
+		if (!match) return 'danger';
 		// TODO: Implement flag color
+		return 'success';
 	};
 
 	const generateFlagTitle = (match?: Scouting.MatchScoutingData) => {
 		if (!match) return 'No Scouting data';
 		// TODO: Parse checks
+		return 'Scouting data available';
 	};
 
 	const generateStatus = (match: TBAMatch) => {
@@ -47,11 +50,6 @@
 			return 'Not Played';
 		} else {
 			return 'Played';
-			// const winning = match.winning_alliance;
-			// const alliance = match.alliances.red.team_keys.includes('frc' + team.data.number)
-			//     ? 'red'
-			//     : 'blue';
-			// return winning === alliance ? 'Win' : 'Loss';
 		}
 	};
 
@@ -62,31 +60,30 @@
 			}
 		});
 
-		matchScouting = Scouting.getMatchScouting({
-			eventKey: event.tba.key,
-			team: team.tba.team_number
-		});
+		matchScouting = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 
-		import('bootstrap').then((bs) => {
-			table.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
-				new bs.Tooltip(el);
-			});
-		});
+		// import('bootstrap').then((bs) => {
+		// 	table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+		// 		new bs.Tooltip(el);
+		// 	});
+		// });
+
+		matchScouting.subscribe(console.log);
 
 		return () => {
-			import('bootstrap').then((bs) => {
-				table.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
-					const tooltip = bs.Tooltip.getInstance(el);
-					if (tooltip) tooltip.dispose();
-				});
-			});
+			// import('bootstrap').then((bs) => {
+			// 	table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
+			// 		const tooltip = bs.Tooltip.getInstance(el);
+			// 		if (tooltip) tooltip.dispose();
+			// 	});
+			// });
 		};
 	});
 
 	let table: HTMLTableElement;
 
-	const findMatch = (match: TBAMatch) => {
-		return matchScouting.data.find((m) => {
+	const findMatch = (scouting: Scouting.MatchScoutingData[], match: TBAMatch) => {
+		return scouting.find((m) => {
 			if (match.tba.comp_level === 'sf') {
 				return m.data.compLevel === 'sf' && m.data.matchNumber === match.tba.set_number;
 			} else {
@@ -100,6 +97,12 @@
 
 <div class="scroll-y" style="overflow-y: hidden; max-height: 100%;">
 	<div class="table-responsive">
+		<a
+			href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/traces"
+			class="btn btn-primary"
+		>
+			View all Traces
+		</a>
 		<table class="table table-striped table-hover" bind:this={table}>
 			<thead>
 				<tr>
@@ -107,6 +110,7 @@
 					<th>Time</th>
 					<th>Flag</th>
 					<th>Status</th>
+					<th>View</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -116,16 +120,23 @@
 						<td>{generateTime(match)}</td>
 						<td>
 							<i
-								class="material-icons"
-								style="color: {generateFlagColor(findMatch(match))}"
-								data-bs-toggle="tooltip"
-								data-bs-placement="top"
-								title={generateFlagTitle(findMatch(match))}
+								class="material-icons text-{generateFlagColor(findMatch($matchScouting, match))}"
+								style="color: "
+								title={generateFlagTitle(findMatch($matchScouting, match))}
 							>
 								flag
 							</i>
 						</td>
 						<td>{generateStatus(match)}</td>
+						<td>
+							<a
+								href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}/match/{match.tba
+									.comp_level}/{match.tba.match_number}"
+								class="btn btn-primary"
+							>
+								<i class="material-icons">visibility</i></a
+							>
+						</td>
 					</tr>
 				{/each}
 			</tbody>

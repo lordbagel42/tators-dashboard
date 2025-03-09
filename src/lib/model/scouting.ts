@@ -131,15 +131,6 @@ export namespace Scouting {
 	export type TeamCommentsData = StructData<typeof TeamComments.data.structure>;
 	export type TeamCommentsArr = DataArr<typeof TeamComments.data.structure>;
 
-	export const getMatchScouting = (data: { eventKey: string; team: number }) => {
-		return MatchScouting.query('get-team-scouting', data, {
-			asStream: false,
-			satisfies: ({ data }) => {
-				return data.eventKey === data.eventKey && data.team === data.team;
-			}
-		});
-	};
-
 	export const parseTrace = (trace: string) => {
 		return attempt<TraceArray>(() => {
 			return z

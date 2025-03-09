@@ -7,6 +7,7 @@ export const load = (event) => {
 		sections: event.data.sections.map((s) => Scouting.PIT.Sections.Generator(s)),
 		teams: event.data.teams,
 		team: event.data.team,
-		sectionIndex: event.data.sectionIndex
+		sectionIndex: event.data.sectionIndex,
+		event: event.data.event,
 	};
 };

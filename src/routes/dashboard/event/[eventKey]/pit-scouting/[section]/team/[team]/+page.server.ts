@@ -24,12 +24,14 @@ export const load = async (event) => {
 	const team = teams.find((t) => t.tba.team_number === parseInt(event.params.team));
 	if (!team) throw redirect(ServerCode.permanentRedirect, `/status/404?url=${event.url.href}`);
 
+
 	return {
 		section: s.safe(),
 		eventKey,
 		sections: sections.map((s) => s.safe()),
 		teams: teams.map((t) => t.tba),
 		team: team.tba,
-		sectionIndex: parseInt(section)
+		sectionIndex: parseInt(section),
+		event: e.tba,
 	};
 };

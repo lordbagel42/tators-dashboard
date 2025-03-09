@@ -8,7 +8,7 @@
 	const eventKey = $derived(data.eventKey);
 	const section = $derived(data.section);
 
-	$effect(() => nav(event.key));
+	$effect(() => nav(event));
 </script>
 
 <div class="container">

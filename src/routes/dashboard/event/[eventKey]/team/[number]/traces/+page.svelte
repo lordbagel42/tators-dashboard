@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import Trace from '$lib/components/robot-display/Trace.svelte';
 	import { Scouting } from '$lib/model/scouting.js';
 	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
@@ -11,6 +11,8 @@
 	// const teams = $derived(data.teams);
 	const event = $derived(new TBAEvent(data.event));
 	const team = $derived(new TBATeam(data.team, event));
+
+	$effect(() => nav(event.tba.key));
 
 	let scoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
 

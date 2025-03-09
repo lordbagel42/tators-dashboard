@@ -8,9 +8,10 @@ export const load = async (event) => {
 	const { eventKey, section } = event.params;
 
 	const e = await Event.getEvent(eventKey);
-	if (e.isErr()) throw fail(ServerCode.notFound, {
-		message: 'Event not found',
-	});
+	if (e.isErr())
+		throw fail(ServerCode.notFound, {
+			message: 'Event not found'
+		});
 
 	const sections = (
 		await Scouting.PIT.Sections.fromProperty('eventKey', eventKey, {
@@ -29,6 +30,6 @@ export const load = async (event) => {
 		eventKey,
 		sections: sections.map((s) => s.safe()),
 		sectionIndex: parseInt(section),
-		event: e.value.tba,
+		event: e.value.tba
 	};
 };

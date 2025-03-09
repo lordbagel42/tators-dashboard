@@ -14,7 +14,6 @@
 	const sectionIndex = $derived(data.sectionIndex);
 	const event = $derived(data.event);
 
-
 	$effect(() => nav(event));
 
 	let scroller: HTMLDivElement;

@@ -3,7 +3,7 @@ export const load = (event) => {
 	return {
 		eventKey: event.data.eventKey,
 		year: Number(year),
-		event: event.data.event,
+		event: event.data.event
 	};
 };
 

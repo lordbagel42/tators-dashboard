@@ -8,6 +8,6 @@ export const load = (event) => {
 		sections: event.data.sections.map((s) => Scouting.PIT.Sections.Generator(s)),
 		year: Number(year),
 		sectionIndex: event.data.sectionIndex,
-		event: event.data.event,
+		event: event.data.event
 	};
 };

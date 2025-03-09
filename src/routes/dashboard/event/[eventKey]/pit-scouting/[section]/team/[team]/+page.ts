@@ -8,6 +8,6 @@ export const load = (event) => {
 		teams: event.data.teams,
 		team: event.data.team,
 		sectionIndex: event.data.sectionIndex,
-		event: event.data.event,
+		event: event.data.event
 	};
 };

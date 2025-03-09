@@ -4,7 +4,7 @@ import { text } from 'drizzle-orm/pg-core';
 import { Struct, StructStream } from 'drizzle-struct/back-end';
 import { createEntitlement } from '../utils/entitlements';
 import { z } from 'zod';
-import { attemptAsync } from 'ts-utils/check';
+import { attemptAsync, resolveAll } from 'ts-utils/check';
 import { DB } from '../db';
 import { eq, and } from 'drizzle-orm';
 import { Session } from './session';
@@ -388,29 +388,216 @@ export namespace Scouting {
 				).unwrap();
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
-				const [general, mech, electrical] = await Promise.all([
+				const [
+					general, 
+					// mech, 
+					// electrical
+				] = await Promise.all([
 					Sections.new({
 						name: 'General',
 						eventKey,
 						order: 0
 					}),
-					Sections.new({
-						name: 'Mechanical',
-						eventKey,
-						order: 1
-					}),
-					Sections.new({
-						name: 'Electrical',
-						eventKey,
-						order: 2
-					})
+					// Sections.new({
+					// 	name: 'Mechanical',
+					// 	eventKey,
+					// 	order: 1
+					// }),
+					// Sections.new({
+					// 	name: 'Electrical',
+					// 	eventKey,
+					// 	order: 2
+					// }),
 				]);
 
 				const genSection = general.unwrap();
-				const mechSection = mech.unwrap();
-				const electSection = electrical.unwrap();
+				// const mechSection = mech.unwrap();
+				// const electSection = electrical.unwrap();
 
 				// TODO: Write boilerplate groups/questions
+				const [
+					overviewRes,
+					strategyRes,
+					gameplayRes,
+					summaryRes,
+				] = await Promise.all([
+					Groups.new({
+						sectionId: genSection.id,
+						name: 'Overview',
+						order: 0,
+					}),
+					Groups.new({
+						sectionId: genSection.id,
+						name: 'Strategy',
+						order: 1
+					}),
+					Groups.new({
+						sectionId: genSection.id,
+						name: 'Gameplay',
+						order: 2,
+					}),
+					Groups.new({
+						sectionId: genSection.id,
+						name: 'Summary',
+						order: 3
+					}),
+				]);
+
+				const overview = overviewRes.unwrap();
+				const strategy = strategyRes.unwrap();
+				const gameplay = gameplayRes.unwrap();
+				const summary = summaryRes.unwrap();
+
+				resolveAll(
+					await Promise.all([
+						Questions.new({
+							question: 'As a team, what is your primary focus?',
+							groupId: overview.id,
+							key: 'focus',
+							description: 'What is the primary goal of the team this year?',
+							type: 'text',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question: 'What is the inspection weight?',
+							groupId: overview.id,
+							key: 'weight',
+							description: 'The inspection weight in lbs',
+							type: 'number',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question: 'What is the robot width',
+							groupId: overview.id,
+							key: 'width',
+							description: 'The robot width in inches',
+							type: 'number',
+							options: '[]',
+							order: 1,
+						}),
+						Questions.new({
+							question: 'What is the robot length',
+							groupId: overview.id,
+							key: 'length',
+							description: 'The robot length in inches',
+							type: 'number',
+							options: '[]',
+							order: 2,
+						}),
+						Questions.new({
+							question: 'What is the drive train type?',
+							groupId: overview.id,
+							key: 'drivetrain',
+							description: 'Swerve, Tank, Mecanum, etc.',
+							type: 'text',
+							options: '[]',
+							order: 3,
+						}),
+						Questions.new({
+							question: 'How much drive practice has your driver had?',
+							groupId: overview.id,
+							key: 'drivePractice',
+							description: 'In hours. Assume around 4h per regional if they answer with that.',
+							type: 'text',
+							options: '[]',
+							order: 4,
+						}),
+						Questions.new({
+							question: 'What is the programming language you use?',
+							groupId: overview.id,
+							key: 'programmingLanguage',
+							description: 'Java, C++, LabView, etc.',
+							type: 'text',
+							options: '[]',
+							order: 5,
+						}),
+
+
+
+
+						Questions.new({
+							question: 'What is your primary game strategy?',
+							groupId: strategy.id,
+							key: 'strategy',
+							description: 'What were the leading decisions made in the design process?',
+							type: 'textarea',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question: 'What are your robot\'s key strengths?',
+							groupId: strategy.id,
+							key: 'strengths',
+							description: 'What that robot can demonstrably deliver',
+							type: 'textarea',
+							options: '[]',
+							order: 1,
+						}),
+						Questions.new({
+							question: 'Are there any limitations to your robot?',
+							groupId: strategy.id,
+							key: 'limitations',
+							description: 'Any trade-offs made in the design process, or things that are not yet implemented.',
+							type: 'textarea',
+							options: '[]',
+							order: 2,
+						}),
+
+
+
+						Questions.new({
+							question: 'Describe your autonomous capabilites',
+							groupId: gameplay.id,
+							key: 'auto',
+							description: 'Are there multiple autos? What are their primary objectives?',
+							type: 'textarea',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question: 'Describe your teleop capabilites',
+							groupId: gameplay.id,
+							key: 'teleop',
+							description: 'What are your primary and secondary functionalities in teleop? Does this change between quals and elims?',
+							type: 'textarea',
+							options: '[]',
+							order: 1,
+						}),
+						Questions.new({
+							question: 'What are your endgame capabilities?',
+							groupId: gameplay.id,
+							key: 'endgame',
+							description: 'How fast they can complete the endgame tasks, and how consistently they can do so.',
+							type: 'textarea',
+							options: '[]',
+							order: 2,
+						}),
+
+
+
+
+						Questions.new({
+							question: 'What is your favorite part of the robot, or what are you most proud of?',
+							groupId: summary.id,
+							key: 'favorite',
+							description: 'This could be a mechanism, a programming feature, design choice, team dynamic, etc.',
+							type: 'textarea',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question: 'This is a question for you to answer, not to ask. What are some observations you noticed about the robot and/or the team?',
+							groupId: summary.id,
+							key: 'observations',
+							description: 'Do not ask this question to the team, this is for your own observations. Describe their attitude/dynamic, any concerns you see about their robot, etc. Feel free to leave this blank if you have nothing to say.',
+							type: 'textarea',
+							options: '[]',
+							order: 1,
+						}),
+					]),
+				);
 			});
 		};
 

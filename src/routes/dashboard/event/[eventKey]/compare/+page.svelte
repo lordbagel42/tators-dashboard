@@ -1,4 +1,5 @@
 <script lang="ts">
+	import nav from '$lib/imports/robot-display.js';
 	import { goto } from '$app/navigation';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
@@ -9,6 +10,8 @@
 	const event = $derived(data.event);
 	const selectedTeams = $derived(data.selectedTeams);
 	const teams = $derived(data.teams);
+
+	$effect(() => nav(event.tba));
 
 	let scroller: HTMLDivElement;
 	let staticY = $state(0);
@@ -36,35 +39,37 @@
 	<div class="row mb-3">
 		<div class="col">
 			<div class="d-flex align-items-center">
-                <h1>Compare Teams</h1>
-                <div class="btn-group ms-3" role="group" aria-label="View">
-                    <button type="button" class="btn btn-info me-3"
-                        onclick={() => {
-                            copy(location.href, true);
-                        }}
-                    >
-                        <i class="material-icons">share</i>
-                    </button>
-                    <input
-                        type="radio"
-                        class="btn-check"
-                        id="progress-view"
-                        autocomplete="off"
-                        checked
-                        bind:group={view}
-                        value="progress"
-                    />
-                    <label class="btn btn-outline-primary h-min" for="progress-view">Progress</label>
-                    <input
-                        type="radio"
-                        class="btn-check"
-                        id="stats-view"
-                        autocomplete="off"
-                        bind:group={view}
-                        value="stats"
-                    />
-                    <label class="btn btn-outline-primary h-min" for="stats-view">Event Stats</label>
-                </div>
+				<h1>Compare Teams</h1>
+				<div class="btn-group ms-3" role="group" aria-label="View">
+					<button
+						type="button"
+						class="btn btn-info me-3"
+						onclick={() => {
+							copy(location.href, true);
+						}}
+					>
+						<i class="material-icons">share</i>
+					</button>
+					<input
+						type="radio"
+						class="btn-check"
+						id="progress-view"
+						autocomplete="off"
+						checked
+						bind:group={view}
+						value="progress"
+					/>
+					<label class="btn btn-outline-primary h-min" for="progress-view">Progress</label>
+					<input
+						type="radio"
+						class="btn-check"
+						id="stats-view"
+						autocomplete="off"
+						bind:group={view}
+						value="stats"
+					/>
+					<label class="btn btn-outline-primary h-min" for="stats-view">Event Stats</label>
+				</div>
 			</div>
 		</div>
 	</div>

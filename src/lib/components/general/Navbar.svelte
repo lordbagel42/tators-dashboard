@@ -58,10 +58,8 @@
 					aria-expanded="false"
 					aria-label="Toggle navigation"
 				>
-				<i class="material-icons">
-					menu
-				</i>
-			</button>
+					<i class="material-icons"> menu </i>
+				</button>
 			</div>
 			<!-- <button
 				class="me-5 btn position-relative"
@@ -82,14 +80,16 @@
 	</div>
 </nav>
 
-<div class="collapse navbar-collapse position-fixed bg-dark p-3 shadow border-secondary border-1" id="navbarNav">
+<div
+	class="collapse navbar-collapse position-fixed bg-dark p-3 shadow border-secondary border-1"
+	id="navbarNav"
+>
 	<ul class="navbar-nav">
 		<li class="nav-item">
 			<a class="nav-link active" aria-current="page" href="/">Home</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a
-			>
+			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a>
 		</li>
 	</ul>
 </div>

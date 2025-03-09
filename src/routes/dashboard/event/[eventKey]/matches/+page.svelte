@@ -51,7 +51,7 @@
 
 {#snippet teamLink(teamKey: string, color: 'red' | 'blue', match: TBAMatch)}
 	<td class:table-danger={color === 'red'} class:table-primary={color === 'blue'}>
-		<a href="/dashboard/event/{data.event.key}/team/{team(teamKey)}" style="text-decoration: none;">
+		<a href="/dashboard/event/{data.event.key}/team/{team(teamKey)}/match/{match.comp_level}/{match.match_number}" style="text-decoration: none;">
 			<span
 				class="badge"
 				class:bg-danger={!findMatch(match, matchScouting.data, team(teamKey))}

@@ -129,7 +129,14 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"canvas",
-			"colors"
+			"colors",
+			"drizzle-struct",
+			"tatorscout",
+			"math",
+			"html-constructor",
+			"ts-utils",
+			"esbuild",
+			"svelte-preprocess"
 		]
 	}
 }

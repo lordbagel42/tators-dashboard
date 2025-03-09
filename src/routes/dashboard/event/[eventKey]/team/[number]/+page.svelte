@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import Card from '$lib/components/dashboard/Card.svelte';
 	import { Dashboard } from '$lib/model/dashboard';
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
@@ -16,6 +16,7 @@
 	const event = $derived(new TBAEvent(data.event));
 	const teams = $derived(data.teams.map((t) => new TBATeam(t, event)));
 	const team = $derived(new TBATeam(data.team, event));
+	$effect(() => nav(event.tba.key));
 
 	const summary = new Dashboard.Card({
 		name: 'Event Summary',

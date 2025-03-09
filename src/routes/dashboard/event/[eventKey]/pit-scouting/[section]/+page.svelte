@@ -1,9 +1,14 @@
 <!-- Team select -->
 <!-- This, eventually, is where pit location will go -->
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	const { data } = $props();
-	const { event, teams, section, eventKey } = data;
+	const teams = $derived(data.teams);
+	const event = $derived(data.event);
+	const eventKey = $derived(data.eventKey);
+	const section = $derived(data.section);
+
+	$effect(() => nav(event.key));
 </script>
 
 <div class="container">

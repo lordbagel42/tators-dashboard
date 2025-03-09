@@ -97,13 +97,17 @@
 			{#each selectedTeams as team}
 				<div class="col-md-4 mb-3">
 					<div class="card">
-						<div class="card-body" style="height: 300px;">
+						<div class="card-body">
 							<h5 class="card-title">{team.tba.team_number} | {team.tba.nickname}</h5>
+                            <div
+                                style="height: 300px;"
+                            >
 							{#if view === 'progress'}
 								<Progress {team} {event} bind:staticY />
 							{:else}
 								<TeamEventStats {team} {event} bind:staticY />
 							{/if}
+                        </div>
 						</div>
 					</div>
 				</div>

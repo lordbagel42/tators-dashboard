@@ -80,7 +80,9 @@
 
 	const findMatch = (scouting: Scouting.MatchScoutingData[], match: TBAMatch) => {
 		return scouting.find((m) => {
-			return m.data.compLevel === match.tba.comp_level && m.data.matchNumber === match.tba.match_number;
+			return (
+				m.data.compLevel === match.tba.comp_level && m.data.matchNumber === match.tba.match_number
+			);
 		});
 	};
 </script>

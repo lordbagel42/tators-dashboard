@@ -462,7 +462,7 @@ export namespace Scouting {
 							description: 'The inspection weight in lbs',
 							type: 'number',
 							options: '[]',
-							order: 0
+							order: 1
 						}),
 						Questions.new({
 							question: 'What is the robot width',
@@ -471,7 +471,7 @@ export namespace Scouting {
 							description: 'The robot width in inches',
 							type: 'number',
 							options: '[]',
-							order: 1
+							order: 2
 						}),
 						Questions.new({
 							question: 'What is the robot length',
@@ -480,7 +480,7 @@ export namespace Scouting {
 							description: 'The robot length in inches',
 							type: 'number',
 							options: '[]',
-							order: 2
+							order: 3
 						}),
 						Questions.new({
 							question: 'What is the drive train type?',
@@ -489,7 +489,7 @@ export namespace Scouting {
 							description: 'Swerve, Tank, Mecanum, etc.',
 							type: 'text',
 							options: '[]',
-							order: 3
+							order: 4
 						}),
 						Questions.new({
 							question: 'How much drive practice has your driver had?',
@@ -498,7 +498,7 @@ export namespace Scouting {
 							description: 'In hours. Assume around 4h per regional if they answer with that.',
 							type: 'text',
 							options: '[]',
-							order: 4
+							order: 5
 						}),
 						Questions.new({
 							question: 'What is the programming language you use?',
@@ -507,7 +507,7 @@ export namespace Scouting {
 							description: 'Java, C++, LabView, etc.',
 							type: 'text',
 							options: '[]',
-							order: 5
+							order: 6
 						}),
 
 						Questions.new({

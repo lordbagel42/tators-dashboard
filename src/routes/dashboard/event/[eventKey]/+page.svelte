@@ -9,22 +9,7 @@
 	const teams = $derived(data.teams);
 	const matches = $derived(data.matches);
 
-	$effect(() => nav(event.key));
-
-	$effect(() => {
-		Navbar.addSection({
-			name: `${event.name} Dashboard`,
-			priority: 1,
-			links: [
-				{
-					name: 'Matches',
-					href: `/dashboard/event/${event.key}/matches`,
-					icon: 'view_list',
-					type: 'material-icons'
-				}
-			]
-		});
-	});
+	$effect(() => nav(event));
 
 	const dashboard = $derived(
 		new Dashboard.Dashboard({

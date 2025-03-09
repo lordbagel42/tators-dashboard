@@ -12,7 +12,7 @@
 	const event = $derived(new TBAEvent(data.event));
 	const team = $derived(new TBATeam(data.team, event));
 
-	$effect(() => nav(event.tba.key));
+	$effect(() => nav(event.tba));
 
 	let scoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
 

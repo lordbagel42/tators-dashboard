@@ -12,7 +12,7 @@
 	const event = $derived(data.event);
 	const matchScouting = $derived(new DataArr(Scouting.MatchScouting, data.scouting));
 
-	$effect(() => nav(event.key));
+	$effect(() => nav(event));
 
 	$effect(() => {
 		Navbar.addSection({

@@ -15,8 +15,9 @@
 	const sectionIndex = $derived(data.sectionIndex);
 	const section = $derived(data.section);
 	const year = $derived(data.year);
+	const event = $derived(data.event);
 
-	$effect(() => nav(eventKey));
+	$effect(() => nav(event));
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 

@@ -12,8 +12,9 @@
 	const teams = $derived(data.teams);
 	const team = $derived(data.team);
 	const sectionIndex = $derived(data.sectionIndex);
+	const event = $derived(data.event);
 
-	$effect(() => nav(eventKey));
+	$effect(() => nav(event));
 
 	let scroller: HTMLDivElement;
 

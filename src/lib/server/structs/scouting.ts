@@ -451,11 +451,11 @@ export namespace Scouting {
 				resolveAll(
 					await Promise.all([
 						Questions.new({
-							question: 'As a team, what is your primary focus?',
+							question: 'What is your favorite part of the robot, or what are you most proud of?',
 							groupId: overview.id,
-							key: 'focus',
-							description: 'What is the primary goal of the team this year?',
-							type: 'text',
+							key: 'favorite',
+							description: 'This could be a mechanism, a programming feature, design choice, team dynamic, etc.',
+							type: 'textarea',
 							options: '[]',
 							order: 0,
 						}),
@@ -518,31 +518,22 @@ export namespace Scouting {
 
 
 						Questions.new({
-							question: 'What is your primary game strategy?',
-							groupId: strategy.id,
-							key: 'strategy',
-							description: 'What were the leading decisions made in the design process?',
-							type: 'textarea',
-							options: '[]',
-							order: 0,
-						}),
-						Questions.new({
 							question: 'What are your robot\'s key strengths?',
 							groupId: strategy.id,
 							key: 'strengths',
 							description: 'What that robot can demonstrably deliver',
 							type: 'textarea',
 							options: '[]',
-							order: 1,
+							order: 0,
 						}),
 						Questions.new({
-							question: 'Are there any limitations to your robot?',
+							question: 'Are there any trade-offs you made in the design process?',
 							groupId: strategy.id,
 							key: 'limitations',
-							description: 'Any trade-offs made in the design process, or things that are not yet implemented.',
+							description: 'Any design choices that were made to prioritize one aspect of the robot over another',
 							type: 'textarea',
 							options: '[]',
-							order: 2,
+							order: 1,
 						}),
 
 
@@ -578,15 +569,6 @@ export namespace Scouting {
 
 
 
-						Questions.new({
-							question: 'What is your favorite part of the robot, or what are you most proud of?',
-							groupId: summary.id,
-							key: 'favorite',
-							description: 'This could be a mechanism, a programming feature, design choice, team dynamic, etc.',
-							type: 'textarea',
-							options: '[]',
-							order: 0,
-						}),
 						Questions.new({
 							question: 'This is a question for you to answer, not to ask. What are some observations you noticed about the robot and/or the team?',
 							groupId: summary.id,

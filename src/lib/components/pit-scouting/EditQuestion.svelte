@@ -77,6 +77,7 @@
 				<option value="select">Select</option>
 				<option value="radio">Radio</option>
 				<option value="checkbox">Checkbox</option>
+				<option value="textarea">Textarea</option>
 			</select>
 		</div>
 	</div>

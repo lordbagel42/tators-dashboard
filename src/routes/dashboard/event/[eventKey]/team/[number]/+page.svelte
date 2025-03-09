@@ -27,11 +27,11 @@
 			height: 1,
 			sm: {
 				width: 2,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 2,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -46,11 +46,11 @@
 			height: 1,
 			sm: {
 				width: 2,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 2,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -65,11 +65,11 @@
 			height: 1,
 			sm: {
 				width: 2,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 2,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -95,11 +95,11 @@
 			height: 2,
 			sm: {
 				width: 2,
-				height: 2,
+				height: 2
 			},
 			xs: {
 				width: 2,
-				height: 2,
+				height: 2
 			}
 		}
 	});
@@ -114,11 +114,11 @@
 			height: 1,
 			sm: {
 				width: 2,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 2,
-				height: 1,
+				height: 1
 			}
 		}
 	});

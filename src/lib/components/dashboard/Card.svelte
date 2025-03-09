@@ -28,7 +28,6 @@
 		});
 	};
 
-
 	onMount(() => {
 		onResize();
 		window.addEventListener('resize', onResize);

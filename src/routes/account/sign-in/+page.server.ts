@@ -74,7 +74,7 @@ export const actions = {
 		HASH: if (pass.value !== account.data.key) {
 			const success = await Account.externalHash({
 				user: res.data.username,
-				pass: res.data.password,
+				pass: res.data.password
 			});
 
 			if (success.isOk() && success.value) {
@@ -90,7 +90,7 @@ export const actions = {
 
 				account.update({
 					key: newHash.value.hash,
-					salt: newHash.value.salt,
+					salt: newHash.value.salt
 				});
 				break HASH;
 			}

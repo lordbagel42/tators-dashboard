@@ -27,7 +27,7 @@ export const getOldTables = (DB: Client) => {
 				custom_data: z.string()
 			}),
 			DB
-		),
+		)
 
 		// DiscordAccount: new Table(
 		// 	'discord_account',
@@ -146,128 +146,128 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-// CustomMatches: new Table(
-// 	'custom_matches',
-// 	z.object({
-// 		id: z.string(),
-// 		event_key: z.string(),
-// 		match_number: z.number().int(),
-// 		comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr']),
-// 		red1: z.number().int(),
-// 		red2: z.number().int(),
-// 		red3: z.number().int(),
-// 		red4: z.union([z.number().int(), z.null()]).optional(),
-// 		blue1: z.number().int(),
-// 		blue2: z.number().int(),
-// 		blue3: z.number().int(),
-// 		blue4: z.union([z.number().int(), z.null()]).optional(),
-// 		created: z.string(),
-// 		name: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// CustomMatches: new Table(
+		// 	'custom_matches',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		event_key: z.string(),
+		// 		match_number: z.number().int(),
+		// 		comp_level: z.enum(['qm', 'ef', 'qf', 'sf', 'f', 'pr']),
+		// 		red1: z.number().int(),
+		// 		red2: z.number().int(),
+		// 		red3: z.number().int(),
+		// 		red4: z.union([z.number().int(), z.null()]).optional(),
+		// 		blue1: z.number().int(),
+		// 		blue2: z.number().int(),
+		// 		blue3: z.number().int(),
+		// 		blue4: z.union([z.number().int(), z.null()]).optional(),
+		// 		created: z.string(),
+		// 		name: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// Whiteboards: new Table(
-// 	'whiteboards',
-// 	z.object({
-// 		id: z.string(),
-// 		name: z.string(),
-// 		board: z.string(),
-// 		strategy_id: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// Whiteboards: new Table(
+		// 	'whiteboards',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		board: z.string(),
+		// 		strategy_id: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// MatchScouting: new Table(
-// 	'match_scouting',
-// 	z.object({
-// 		id: z.string(),
-// 		match_id: z.string(),
-// 		team: z.number().int(),
-// 		scout_id: z.union([z.string(), z.null()]).optional(),
-// 		scout_name: z.union([z.string(), z.null()]).optional(),
-// 		scout_group: z.number().int().min(0).max(5),
-// 		time: z.string(),
-// 		pre_scouting: z.number().int(),
-// 		trace: z.string(), // JSON TraceArray
-// 		checks: z.string(), // JSON string array
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// MatchScouting: new Table(
+		// 	'match_scouting',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		match_id: z.string(),
+		// 		team: z.number().int(),
+		// 		scout_id: z.union([z.string(), z.null()]).optional(),
+		// 		scout_name: z.union([z.string(), z.null()]).optional(),
+		// 		scout_group: z.number().int().min(0).max(5),
+		// 		time: z.string(),
+		// 		pre_scouting: z.number().int(),
+		// 		trace: z.string(), // JSON TraceArray
+		// 		checks: z.string(), // JSON string array
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// TeamComments: new Table(
-// 	'team_comments',
-// 	z.object({
-// 		id: z.string(),
-// 		match_scouting_id: z.string(),
-// 		account_id: z.union([z.string(), z.null()]).optional(),
-// 		team: z.number().int(),
-// 		comment: z.string(),
-// 		time: z.string(),
-// 		type: z.string(),
-// 		event_key: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// TeamComments: new Table(
+		// 	'team_comments',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		match_scouting_id: z.string(),
+		// 		account_id: z.union([z.string(), z.null()]).optional(),
+		// 		team: z.number().int(),
+		// 		comment: z.string(),
+		// 		time: z.string(),
+		// 		type: z.string(),
+		// 		event_key: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// ScoutingQuestionSections: new Table(
-// 	'scouting_question_sections',
-// 	z.object({
-// 		id: z.string(),
-// 		name: z.string(),
-// 		multiple: z.number().int(),
-// 		date_added: z.string(),
-// 		account_id: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// ScoutingQuestionSections: new Table(
+		// 	'scouting_question_sections',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		multiple: z.number().int(),
+		// 		date_added: z.string(),
+		// 		account_id: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// ScoutingQuestionGroups: new Table(
-// 	'scouting_question_groups',
-// 	z.object({
-// 		id: z.string(),
-// 		event_key: z.string(),
-// 		section: z.string(),
-// 		name: z.string(),
-// 		date_added: z.string(),
-// 		account_id: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// ScoutingQuestionGroups: new Table(
+		// 	'scouting_question_groups',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		event_key: z.string(),
+		// 		section: z.string(),
+		// 		name: z.string(),
+		// 		date_added: z.string(),
+		// 		account_id: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
-// ScoutingQuestions: new Table(
-// 	'scouting_questions',
-// 	z.object({
-// 		id: z.string(),
-// 		question: z.string(),
-// 		key: z.string(),
-// 		description: z.string(),
-// 		type: z.string(),
-// 		group_id: z.string(),
-// 		archived: z.boolean(),
-// 	}),
-// 	DB
-// ),
+		// ScoutingQuestions: new Table(
+		// 	'scouting_questions',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		question: z.string(),
+		// 		key: z.string(),
+		// 		description: z.string(),
+		// 		type: z.string(),
+		// 		group_id: z.string(),
+		// 		archived: z.boolean(),
+		// 	}),
+		// 	DB
+		// ),
 
-// ScoutingAnswers: new Table(
-// 	'scouting_answers',
-// 	z.object({
-// 		id: z.string(),
-// 		question_id: z.string(),
-// 		answer: z.string(),
-// 		team_number: z.number().int(),
-// 		date: z.string(),
-// 		account_id: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// ScoutingAnswers: new Table(
+		// 	'scouting_answers',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		question_id: z.string(),
+		// 		answer: z.string(),
+		// 		team_number: z.number().int(),
+		// 		date: z.string(),
+		// 		account_id: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
 		// TBARequests: new Table(
 		// 	't_b_a_requests',
@@ -338,21 +338,21 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-// Strategy: new Table(
-// 	'strategy',
-// 	z.object({
-// 		id: z.string(),
-// 		name: z.string(),
-// 		time: z.string(),
-// 		created_by: z.string(),
-// 		whiteboard_id: z.union([z.string(), z.null()]).optional(),
-// 		match_id: z.union([z.string(), z.null()]).optional(),
-// 		comment: z.string(),
-// 		checks: z.string(),
-// 		archived: z.boolean()
-// 	}),
-// 	DB
-// ),
+		// Strategy: new Table(
+		// 	'strategy',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		name: z.string(),
+		// 		time: z.string(),
+		// 		created_by: z.string(),
+		// 		whiteboard_id: z.union([z.string(), z.null()]).optional(),
+		// 		match_id: z.union([z.string(), z.null()]).optional(),
+		// 		comment: z.string(),
+		// 		checks: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
 		// TeamPictures: new Table(
 		// 	'team_pictures',
@@ -409,7 +409,6 @@ export const getOldTables = (DB: Client) => {
 	};
 };
 
-
 export const testAll = async (tables: Record<string, Table>) => {
-	return resolveAll(await Promise.all(Object.values(tables).map(t => t.test())));
+	return resolveAll(await Promise.all(Object.values(tables).map((t) => t.test())));
 };

@@ -37,9 +37,7 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 
 	public count() {
 		return attemptAsync(async () => {
-			const res = await this.database.query(
-				`SELECT COUNT(*) FROM ${this.name};`
-			);
+			const res = await this.database.query(`SELECT COUNT(*) FROM ${this.name};`);
 
 			return Number(res.rows[0].count);
 		});
@@ -50,11 +48,11 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 			const stream = new Stream<T>();
 
 			const total = (await this.count()).unwrap();
-	
+
 			setTimeout(async () => {
 				let offset = 0;
 				let length = LIMIT;
-	
+
 				while (length !== 0) {
 					const res = (await this.query(offset)).unwrap();
 					length = res.length;
@@ -63,35 +61,31 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 						stream.add(row);
 					}
 				}
-	
+
 				stream.end();
 			});
-	
+
 			return { stream, total };
 		});
 	}
 
-    public test() {
-        return attemptAsync(async () => {
-            const res = await this.database.query(
-                `SELECT * FROM ${this.name} LIMIT 1;`
-            );
+	public test() {
+		return attemptAsync(async () => {
+			const res = await this.database.query(`SELECT * FROM ${this.name} LIMIT 1;`);
 
-            const zRes = z.array(this.zod).safeParse(res.rows);
+			const zRes = z.array(this.zod).safeParse(res.rows);
 
 			if (zRes.success === false) {
 				console.error(`Zod TypeError on ${this.name}:`, zRes.error.message);
 			}
 
 			return zRes.success;
-        });
-    }
+		});
+	}
 
 	public fromId(id: string) {
 		return attemptAsync(async () => {
-			const res = await this.database.query(
-				`SELECT * FROM ${this.name} WHERE id = '${id}';`
-			);
+			const res = await this.database.query(`SELECT * FROM ${this.name} WHERE id = '${id}';`);
 
 			return this.zod.parse(res.rows[0]);
 		});

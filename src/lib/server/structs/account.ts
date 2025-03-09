@@ -271,9 +271,7 @@ export namespace Account {
 
 	export const hash = (password: string, salt: string) => {
 		return attempt(() => {
-			return crypto
-				.pbkdf2Sync(password, salt, 100000, 64, 'sha512')
-				.toString('hex');
+			return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
 		});
 	};
 
@@ -464,7 +462,7 @@ export namespace Account {
 		});
 	};
 
-	export const externalHash = (data: { user: string; pass: string; }) => {
+	export const externalHash = (data: { user: string; pass: string }) => {
 		return attemptAsync(async () => {
 			if (!process.env.OLD_SERVER_HOST || !process.env.OLD_SERVER_API_KEY) {
 				throw new Error('Old server host or api key not found');
@@ -477,19 +475,21 @@ export namespace Account {
 					'X-Auth-Key': process.env.OLD_SERVER_API_KEY,
 					'Content-Type': 'application/json'
 				}
-			}).then(r => r.json());
+			}).then((r) => r.json());
 
-			const { success, reason, error } = z.object({
-				success: z.boolean(),
-				reason: z.string(),
-				error: z.boolean()
-			}).parse(res);
+			const { success, reason, error } = z
+				.object({
+					success: z.boolean(),
+					reason: z.string(),
+					error: z.boolean()
+				})
+				.parse(res);
 
 			if (error) terminal.error('External hash did not work', reason);
 
 			return success;
 		});
-	}
+	};
 }
 
 // for drizzle

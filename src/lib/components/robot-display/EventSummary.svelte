@@ -71,7 +71,7 @@
 			<td>Average Velocity:</td>
 			<td>
 				{#if $scouting.length}
-					{Scouting.getAverageVelocity($scouting)}
+					{Scouting.getAverageVelocity($scouting).toFixed(2)} ft/s
 				{:else}
 					No data
 				{/if}

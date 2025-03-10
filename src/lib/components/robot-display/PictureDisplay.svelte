@@ -43,7 +43,7 @@
 		);
 
 		const unsub = teamPictures.subscribe((p) => {
-			pictures.push(...new Set(p.map((tp) => `/uploads/${tp.data.picture}`).filter(Boolean)));
+			pictures.push(...new Set(p.map((tp) => `/assets/uploads/${tp.data.picture}`).filter(Boolean)));
 		});
 
 		const off = uploadComponent.on('upload', (file) => {
@@ -73,16 +73,16 @@
 
 <div class="container-fluid h-100">
 	<div class="row h-100">
-		<div class="col-8">
+		<div class="col-8 h-100">
 			<div id="carousel-{team.tba.team_number}" class="carousel slide h-100">
-				<div class="carousel-inner">
+				<div class="carousel-inner h-100">
 					{#each pictures as picture, i}
-						<div class="carousel-item {i === 0 ? 'active' : ''}">
+						<div class="carousel-item h-100 {i === 0 ? 'active' : ''}">
 							<img
-								src="/assets{picture}"
+								src="{picture}"
 								alt="..."
-								class="d-block w-100"
-								style="object-fit: contain; height: 250px;"
+								class="d-block w-100 h-100"
+								style="object-fit: contain;"
 							/>
 						</div>
 					{/each}

@@ -456,9 +456,9 @@ export namespace Account {
 			if (!scout) throw new Error('Role not found');
 			(await Permissions.giveRole(account, scout)).unwrap();
 			// TODO: remove this for idaho in favor of real permissions
-			(Admins.new({
+			Admins.new({
 				accountId: account.id
-			}));
+			});
 			return (
 				await account.update({
 					verified: true,

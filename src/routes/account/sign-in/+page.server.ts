@@ -123,7 +123,7 @@ export const actions = {
 			: process.env.PUBLIC_DOMAIN;
 		const protocol = process.env.HTTPS === 'true' ? 'https://' : 'http://';
 		const redirectUri = `${protocol}${domain}/oauth/sign-in`;
-		console.log("Using Redirect URI:", redirectUri);
+		console.log('Using Redirect URI:', redirectUri);
 		const client = new OAuth2Client({
 			clientSecret: SECRET_OAUTH2_CLIENT_SECRET,
 			clientId: SECRET_OAUTH2_CLIENT_ID,

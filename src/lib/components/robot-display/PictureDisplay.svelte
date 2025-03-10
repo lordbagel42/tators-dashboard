@@ -43,7 +43,9 @@
 		);
 
 		const unsub = teamPictures.subscribe((p) => {
-			pictures.push(...new Set(p.map((tp) => `/assets/uploads/${tp.data.picture}`).filter(Boolean)));
+			pictures.push(
+				...new Set(p.map((tp) => `/assets/uploads/${tp.data.picture}`).filter(Boolean))
+			);
 		});
 
 		const off = uploadComponent.on('upload', (file) => {
@@ -79,7 +81,7 @@
 					{#each pictures as picture, i}
 						<div class="carousel-item h-100 {i === 0 ? 'active' : ''}">
 							<img
-								src="{picture}"
+								src={picture}
 								alt="..."
 								class="d-block w-100 h-100"
 								style="object-fit: contain;"

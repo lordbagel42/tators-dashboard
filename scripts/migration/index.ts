@@ -58,15 +58,31 @@ export default async () => {
 	resolveAll(await Promise.all(Array.from(Struct.structs).map(([, s]) => s.clear()))).unwrap();
 
 	await postBuild();
-
-	const streams: Promise<unknown>[] = [];
-
 	const accountBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const msBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const tcBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
+	const sectionBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const groupBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const questionBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const answerBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
+
+
 	const { stream: accountStream, total: accountTotal } = (await old.Accounts.all()).unwrap();
+
 	accountBar.start(accountTotal, 0);
-	streams.push(accountStream.await());
-	accountStream.pipe(async (a, i) => {
-		accountBar.update(i);
+	msBar.start(0, 0);
+	tcBar.start(0, 0);
+	sectionBar.start(0, 0);
+	groupBar.start(0, 0);
+	questionBar.start(0, 0);
+	answerBar.start(0, 0);
+
+
+
+	accountStream.pipe(async (a) => {
+		accountBar.increment();
 		const exists = (await Account.Account.fromId(a.id)).unwrap();
 		if (exists) return;
 		const res = (
@@ -128,61 +144,25 @@ export default async () => {
 		});
 	};
 
-	// const tc = await old.TeamComments.all();
-	// if (tc.isErr()) return console.error('Team comment error: ', tc.error);
 
-	// const { stream: tcStream, total: tcTotal } = tc.value;
-	// const tcBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-	// tcBar.start(tcTotal, 0);
-
-	// streams.push(tcStream.await());
-	// tcStream.pipe(async (tc,i) => {
-	// 	// console.log(tc);
-	// 	const a = (await findAccount(tc.account_id || 'unknown')).unwrap();
-	// 	console.log('a', a);
-	// 	tcBar.update(i);
-	// 	const res = (
-	// 		await Scouting.TeamComments.new({
-	// 			team: tc.team,
-	// 			comment: tc.comment,
-	// 			accountId: a.id || '',
-	// 			matchScoutingId: tc.match_scouting_id,
-	// 			type: tc.type,
-	// 			eventKey: tc.event_key,
-	// 			scoutUsername: a.username || 'unknown'
-	// 		})
-	// 	).unwrap();
-
-	// 	Logs.log({
-	// 		struct: Scouting.TeamComments.data.name,
-	// 		dataId: res.id,
-	// 		accountId: 'CLI',
-	// 		message: 'Migrated Team Comment',
-	// 		type: 'create'
-	// 	});
-	// });
-
-	const msBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-	const tcBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-	const res = await oldDB.query(`
-			SELECT 
-				accounts.username,
-				match_scouting.*,
-				matches.event_key,
-				matches.match_number,
-				matches.comp_level
-			FROM match_scouting
-			INNER JOIN matches ON match_scouting.match_id = matches.id
-			INNER JOIN accounts ON match_scouting.scout_id = accounts.id OR match_scouting.scout_name = accounts.username;
-		`);
-
-	msBar.start(res.rows.length, 0);
-	tcBar.start(0, 0);
 	let totalComments = 0;
+	const matchScoutingRes = await oldDB.query(`
+		SELECT 
+			accounts.username,
+			match_scouting.*,
+			matches.event_key,
+			matches.match_number,
+			matches.comp_level
+		FROM match_scouting
+		INNER JOIN matches ON match_scouting.match_id = matches.id
+		INNER JOIN accounts ON match_scouting.scout_id = accounts.id OR match_scouting.scout_name = accounts.username;
+	`);
+
+	msBar.setMaxListeners(matchScoutingRes.rows.length);
 
 	await Promise.all(
-		res.rows.map(async (ms, i) => {
-			msBar.update(i + 1);
+		matchScoutingRes.rows.map(async (ms) => {
+			msBar.increment();
 			const parsed = z
 				.object({
 					team: z.number().int(),
@@ -280,7 +260,246 @@ export default async () => {
 		})
 	);
 
+	matchScoutingRes.rows = [];
+
 	msBar.stop();
+	tcBar.stop();
+
+	const sections = await oldDB.query('SELECT * FROM scouting_question_sections;');
+	sectionBar.setTotal(sections.rows.length);
+
+	let totalGroups = 0;
+	let totalQuestions = 0;
+	let totalAnswers = 0;
+
+	const eventsDone = new Map<string, Scouting.PIT.SectionData[]>();
+
+	const sectionType = z.object({
+		id: z.string(),
+		name: z.string(),
+		multiple: z.number().int(),
+		date_added: z.string(),
+		account_id: z.string(),
+		archived: z.boolean()
+	});
+
+	const groupType = z.object({
+		id: z.string(),
+		event_key: z.string(),
+		section: z.string(),
+		name: z.string(),
+		date_added: z.string(),
+		account_id: z.string(),
+		archived: z.boolean()
+	});
+
+	const questionType = z.object({
+		id: z.string(),
+		question: z.string(),
+		key: z.string(),
+		description: z.string(),
+		type: z.string(),
+		group_id: z.string(),
+		archived: z.boolean(),
+	});
+
+	const answerType = z.object({
+		id: z.string(),
+		question_id: z.string(),
+		answer: z.string(),
+		team_number: z.number().int(),
+		date: z.string(),
+		account_id: z.string(),
+		archived: z.boolean()
+	});
+
+	const generateSections = async (eventKey: string) => {
+		const has = eventsDone.get(eventKey);
+		if (has) return has;
+		const res = await Promise.all(sections.rows.map(async (s: z.infer<typeof sectionType>, i) => {
+			const sect = (await Scouting.PIT.Sections.new({
+				eventKey,
+				name: s.name,
+				order: i,
+			})).unwrap();
+
+			Logs.log({
+				struct: Scouting.PIT.Sections.data.name,
+				dataId: sect.data.id,
+				accountId: 'CLI',
+				message: 'Migrated Section',
+				type: 'create'
+			});
+
+			return sect;
+		}))
+		eventsDone.set(eventKey, res);
+		return res;
+	};
+
+	await Promise.all(sections.rows.map(async (sect) => {
+		sectionBar.increment();
+		const parsed = 
+			sectionType
+			.safeParse(sect);
+
+		if (!parsed.success) return console.error(parsed.error);
+
+		const groups = await oldDB.query(`
+			SELECT * FROM scouting_question_groups WHERE section = '${sect.id}';
+		`);
+
+		totalGroups += groups.rows.length;
+		groupBar.setTotal(totalGroups);
+
+		return Promise.all(groups.rows.map(async (g, i) => {
+			groupBar.increment();
+			const parsed = groupType.safeParse(g);
+			if (!parsed.success) return console.error(parsed.error);
+
+			const questions = await oldDB.query(`
+				SELECT * FROM scouting_questions WHERE group_id = '${g.id}';
+			`);
+
+			if (!questions.rows.length) return;
+
+			totalQuestions += questions.rows.length;
+			questionBar.setTotal(totalQuestions);
+
+			const sections = (await generateSections(g.event_key)).find((s) => s.data.name === sect.name);
+			if (!sections) return console.error('Section not found, this should not happen');
+
+			const group = (await Scouting.PIT.Groups.new({
+				name: g.name,
+				sectionId: sections.data.id,
+				order: i,
+			})).unwrap();
+
+			Logs.log({
+				struct: Scouting.PIT.Groups.data.name,
+				dataId: group.data.id,
+				accountId: 'CLI',
+				message: 'Migrated Group',
+				type: 'create'
+			});
+
+			return Promise.all(questions.rows.map(async (q, i) => {
+				questionBar.increment();
+				const parsed = questionType.safeParse(q);
+				if (!parsed.success) return console.error(parsed.error);
+
+				const answers = await oldDB.query(`
+					SELECT * FROM scouting_answers WHERE question_id = '${q.id}';
+				`);
+
+				totalAnswers += answers.rows.length;
+				answerBar.setTotal(totalAnswers);
+
+				const question = (await Scouting.PIT.Questions.new({
+					question: q.question,
+					key: q.key,
+					description: q.description,
+					type: q.type,
+					groupId: group.data.id,
+					order: i,
+					options: '[]',
+				})).unwrap();
+
+				Logs.log({
+					struct: Scouting.PIT.Questions.data.name,
+					dataId: question.data.id,
+					accountId: 'CLI',
+					message: 'Migrated Question',
+					type: 'create'
+				});
+
+				return Promise.all(answers.rows.map(async (a) => {
+					answerBar.increment();
+					const parsed = answerType.safeParse(a);
+					if (!parsed.success) return console.error(parsed.error);
+
+					const account = (await findAccount(a.account_id)).unwrap();
+
+					const res = (await Scouting.PIT.Answers.new({
+						questionId: question.data.id,
+						team: a.team_number,
+						answer: a.answer,
+						accountId: account.id || '',
+					})).unwrap();
+
+					Logs.log({
+						struct: Scouting.PIT.Answers.data.name,
+						dataId: res.id,
+						accountId: 'CLI',
+						message: 'Migrated Answer',
+						type: 'create'
+					});
+				}));
+			}));
+		}));
+	}));
+
+	eventsDone.clear();
+	sections.rows = [];
+
+	// cleanup
+	await Scouting.PIT.Sections.all({
+		type: 'stream',
+	}).pipe(async s => {
+		const groups = (await Scouting.PIT.Groups.fromProperty('sectionId', s.id, {
+			type: 'stream'
+		}).await()).unwrap();
+		let groupCount = groups.length;
+
+		if (!groupCount) (await s.delete()).unwrap();
+
+
+		await Promise.all(groups.map(async g => {
+			const questions = (await Scouting.PIT.Questions.fromProperty('groupId', g.id, {
+				type: 'stream'
+			}).await()).unwrap();
+
+			let questionCount = questions.length;
+
+			if (!questionCount) {
+				groupCount--;
+				(await g.delete()).unwrap();
+				if (!groupCount) (await s.delete()).unwrap();
+			}
+
+			await Promise.all(questions.map(async q => {
+				const answers = (await Scouting.PIT.Answers.fromProperty('questionId', q.id, {
+					type: 'stream'
+				}).await()).unwrap();
+
+				let answerCount = answers.length;
+
+				if (!answerCount) {
+					questionCount--;
+					(await q.delete()).unwrap();
+					if (!questionCount) {
+						groupCount--;
+						(await g.delete()).unwrap();
+						if (!groupCount) (await s.delete()).unwrap();
+					}
+				}
+
+				await Promise.all(answers.map(async a => {
+					answerCount--;
+					(await a.delete()).unwrap();
+					if (!answerCount) {
+						questionCount--;
+						(await q.delete()).unwrap();
+						if (!questionCount) {
+							groupCount--;
+							(await g.delete()).unwrap();
+							if (!groupCount) (await s.delete()).unwrap();
+						}
+					}
+				}));
+			}));
+		}));
+	});
 
 	// listen for enter to exit
 	await prompt({

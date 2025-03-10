@@ -6,21 +6,24 @@
 	import { onMount } from 'svelte';
 	import { TraceSchema, type TraceArray } from 'tatorscout/trace';
 	import rangeSlider from 'range-slider-input';
-	import type { Writable } from 'svelte/store';
+	import { writable, type Writable } from 'svelte/store';
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
 		event: TBAEvent;
-		focus: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
+		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
 	}
 
-	const { scouting, event, focus }: Props = $props();
+	const {
+		scouting,
+		event,
+		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all')
+	}: Props = $props();
 
 	let target: HTMLCanvasElement;
 	// let canvas: Canvas|undefined = $state(undefined);
 	let matchCanvas: MatchCanvas | undefined = $state(undefined);
 	let slider: HTMLDivElement;
-
 
 	onMount(() => {
 		const ctx = target.getContext('2d');
@@ -48,23 +51,23 @@
 			}
 		});
 
-		const sub = focus.subscribe(f => {
+		const sub = focus.subscribe((f) => {
 			switch (f) {
 				case 'auto':
 					// matchCanvas?.auto();
-					s.value([0, 15 * 4])
+					s.value([0, 15 * 4]);
 					break;
 				case 'teleop':
 					// matchCanvas?.teleop();
-					s.value([15 * 4, 135 * 4])
+					s.value([15 * 4, 135 * 4]);
 					break;
 				case 'endgame':
 					// matchCanvas?.endgame();
-					s.value([135 * 4, matchCanvas?.trace.length || 0])
+					s.value([135 * 4, matchCanvas?.trace.length || 0]);
 					break;
 				case 'all':
 					// matchCanvas?.reset();
-					s.value([0, matchCanvas?.trace.length || 0])
+					s.value([0, matchCanvas?.trace.length || 0]);
 					break;
 			}
 		});
@@ -85,7 +88,7 @@
             aspect-ratio: 2 / 1;
             display: block;
         "
-		class="mb-3"
+			class="mb-3"
 		></canvas>
 		<div bind:this={slider}></div>
 	</div>

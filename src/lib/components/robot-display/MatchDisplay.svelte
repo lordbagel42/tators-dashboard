@@ -6,6 +6,7 @@
 	import type { Focus } from '$lib/types/robot-display';
 	import Trace from './Trace.svelte';
 	import { TBAEvent, TBATeam, TBAMatch } from '$lib/utils/tba';
+	import { writable } from 'svelte/store';
 
 	interface Props {
 		match: TBAMatch;

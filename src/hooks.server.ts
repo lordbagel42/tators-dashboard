@@ -66,7 +66,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.startsWith('/test') &&
 		!event.url.pathname.startsWith('/favicon.ico') &&
 		!event.url.pathname.startsWith('/robots.txt') &&
-		!event.url.pathname.startsWith('/oauth')
+		!event.url.pathname.startsWith('/oauth') &&
+		!event.url.pathname.startsWith('/tba')
 	) {
 		session.value.update({
 			prevUrl: event.url.pathname

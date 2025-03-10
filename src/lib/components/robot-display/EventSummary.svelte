@@ -69,7 +69,7 @@
 		</tr>
 		<tr>
 			<td>Average Velocity:</td>
-			<td>
+			<td class="ws-nowrap">
 				{#if $scouting.length}
 					{Scouting.getAverageVelocity($scouting).toFixed(2)} ft/s
 				{:else}
@@ -91,7 +91,7 @@
 		</tr>
 		<tr>
 			<td>Average Seconds Not Moving:</td>
-			<td>{averageSecondsNotMoving}</td>
+			<td>{averageSecondsNotMoving.toFixed(2)}s</td>
 		</tr>
 		<!-- <tr>
 			<td>Drivebase:</td>

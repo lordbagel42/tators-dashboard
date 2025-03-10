@@ -47,16 +47,16 @@
 						<h5>{label}</h5>
 						<div class="scroll-x mb-1">
 							<div class="chart-container">
-								<EventSummary 
+								<EventSummary
 									labels={Object.entries(row.data)
 										.sort((a, b) => b[1][i] - a[1][i])
-										.map(v => v[0])}
+										.map((v) => v[0])}
 									datasets={[
 										{
 											label,
 											data: Object.entries(row.data)
-											.sort((a, b) => b[1][i] - a[1][i])
-											.map(v => v[1][i])
+												.sort((a, b) => b[1][i] - a[1][i])
+												.map((v) => v[1][i])
 										}
 									]}
 								/>
@@ -70,9 +70,9 @@
 </DB>
 
 <style>
-    .chart-container {
-        min-width: 1500px !important;
-        width: 100vw;
-        height: 100%;
-    }
+	.chart-container {
+		min-width: 1500px !important;
+		width: 100vw;
+		height: 100%;
+	}
 </style>

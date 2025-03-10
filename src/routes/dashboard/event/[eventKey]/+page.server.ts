@@ -16,9 +16,11 @@ export const load = async (event) => {
 	if (teams.isErr()) throw fail(ServerCode.internalServerError);
 	if (matches.isErr()) throw fail(ServerCode.internalServerError);
 
-	const scouting = (await Scouting.MatchScouting.fromProperty('eventKey', event.params.eventKey, {
-		type: 'stream',
-	}).await()).unwrap();
+	const scouting = (
+		await Scouting.MatchScouting.fromProperty('eventKey', event.params.eventKey, {
+			type: 'stream'
+		}).await()
+	).unwrap();
 
 	const teamTraces: {
 		number: number;
@@ -26,70 +28,70 @@ export const load = async (event) => {
 			trace: TraceArray;
 			alliance: 'red' | 'blue';
 		}[];
-	}[] = teams.value.map(t => ({
+	}[] = teams.value.map((t) => ({
 		number: t.tba.team_number,
-		traces: scouting.filter(s => s.data.team === t.tba.team_number).map(s => ({
-			trace: TraceSchema.parse(JSON.parse(s.data.trace)) as TraceArray,
-			alliance: s.data.alliance === 'red' ? 'red' : 'blue'
-
-		}))
+		traces: scouting
+			.filter((s) => s.data.team === t.tba.team_number)
+			.map((s) => ({
+				trace: TraceSchema.parse(JSON.parse(s.data.trace)) as TraceArray,
+				alliance: s.data.alliance === 'red' ? 'red' : 'blue'
+			}))
 	}));
 
-    const data: {
+	const data: {
 		number: number;
 		data: {
 			title: string;
 			labels: string[];
 			data: number[];
 		}[];
-	}[] = teamTraces.map(t => {
+	}[] = teamTraces.map((t) => {
 		try {
 			return {
 				number: t.number,
-				data: Trace.yearInfo[
-					e.value.tba.year as keyof typeof Trace.yearInfo
-				]?.summarize(t.traces) || []
+				data:
+					Trace.yearInfo[e.value.tba.year as keyof typeof Trace.yearInfo]?.summarize(t.traces) || []
 			};
 		} catch (error) {
-		console.error(error);
+			console.error(error);
 			return {
 				number: t.number,
 				data: []
 			};
 		}
-    });
-    const summaries: {
-        labels: string[];
-        title: string;
-        data: {
-            [key: number]: number[];
-        };
-    }[] = [];
+	});
+	const summaries: {
+		labels: string[];
+		title: string;
+		data: {
+			[key: number]: number[];
+		};
+	}[] = [];
 
-    const [team] = data;
+	const [team] = data;
 
-    if (team) {
-        summaries.push(
-            ...team.data.map(d => ({
-                title: d.title,
-                labels: d.labels,
-                data: {}
-            }))
-        );
-    }
+	if (team) {
+		summaries.push(
+			...team.data.map((d) => ({
+				title: d.title,
+				labels: d.labels,
+				data: {}
+			}))
+		);
+	}
 
-    for (const team of data) {
-        for (const d of team.data) {
-            const found = summaries.find(r => r.title === d.title);
-            if (!found) continue;
-            found.data[team.number] = d.data;
-        }
-    }
+	for (const team of data) {
+		for (const d of team.data) {
+			const found = summaries.find((r) => r.title === d.title);
+			if (!found) continue;
+			found.data[team.number] = d.data;
+		}
+	}
 
 	return {
 		event: e.value.tba,
 		teams: teams.value.map((t) => t.tba),
 		matches: matches.value.map((m) => m.tba),
-		summaries,
+		summaries
 	};
 };

@@ -12,12 +12,12 @@
 	const sections = Navbar.getSections();
 
 	export const hide = () => {
-		import('bootstrap').then(bs => {
-			document.querySelectorAll('.offcanvas').forEach(oc => {
+		import('bootstrap').then((bs) => {
+			document.querySelectorAll('.offcanvas').forEach((oc) => {
 				console.log(oc);
 				bs.Offcanvas.getOrCreateInstance(oc).hide();
-				
-				document.querySelectorAll('.offcanvas-backdrop').forEach(oc => {
+
+				document.querySelectorAll('.offcanvas-backdrop').forEach((oc) => {
 					oc.remove();
 				});
 			});

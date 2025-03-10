@@ -45,6 +45,8 @@ export namespace Scouting {
 		}
 	});
 
+	export type MatchScoutingData = typeof MatchScouting.sample;
+
 	MatchScouting.queryListen('from-team', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
 		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();

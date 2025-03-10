@@ -5,17 +5,25 @@
 	import { Canvas } from 'canvas/canvas';
 	import { onMount } from 'svelte';
 	import { TraceSchema, type TraceArray } from 'tatorscout/trace';
+	import rangeSlider from 'range-slider-input';
+	import { writable, type Writable } from 'svelte/store';
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
 		event: TBAEvent;
+		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
 	}
 
-	const { scouting, event }: Props = $props();
+	const {
+		scouting,
+		event,
+		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all')
+	}: Props = $props();
 
 	let target: HTMLCanvasElement;
 	// let canvas: Canvas|undefined = $state(undefined);
 	let matchCanvas: MatchCanvas | undefined = $state(undefined);
+	let slider: HTMLDivElement;
 
 	onMount(() => {
 		const ctx = target.getContext('2d');
@@ -28,9 +36,45 @@
 			matchCanvas.animate();
 			matchCanvas.canvas.height = 500;
 			matchCanvas.canvas.width = 1000;
-			// matchCanvas.canvas.ctx.canvas.style.height = "150px";
-			// matchCanvas.canvas.ctx.canvas.style.width = "300px";
+		} else {
+			console.error(trace.error);
 		}
+
+		const s = rangeSlider(slider, {
+			max: matchCanvas?.trace.length || 0,
+			step: 1,
+			min: 0,
+			value: [0, matchCanvas?.trace.length || 0],
+			onInput: ([min, max]) => {
+				console.log('Input', min, max);
+				matchCanvas?.between(min, max);
+			}
+		});
+
+		const sub = focus.subscribe((f) => {
+			switch (f) {
+				case 'auto':
+					// matchCanvas?.auto();
+					s.value([0, 15 * 4]);
+					break;
+				case 'teleop':
+					// matchCanvas?.teleop();
+					s.value([15 * 4, 135 * 4]);
+					break;
+				case 'endgame':
+					// matchCanvas?.endgame();
+					s.value([135 * 4, matchCanvas?.trace.length || 0]);
+					break;
+				case 'all':
+					// matchCanvas?.reset();
+					s.value([0, matchCanvas?.trace.length || 0]);
+					break;
+			}
+		});
+
+		return () => {
+			sub();
+		};
 	});
 </script>
 
@@ -44,6 +88,8 @@
             aspect-ratio: 2 / 1;
             display: block;
         "
+			class="mb-3"
 		></canvas>
+		<div bind:this={slider}></div>
 	</div>
 </div>

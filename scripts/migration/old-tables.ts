@@ -198,76 +198,76 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-		TeamComments: new Table(
-			'team_comments',
+		// TeamComments: new Table(
+		// 	'team_comments',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		match_scouting_id: z.string(),
+		// 		account_id: z.union([z.string(), z.null()]).optional(),
+		// 		team: z.number().int(),
+		// 		comment: z.string(),
+		// 		time: z.string(),
+		// 		type: z.string(),
+		// 		event_key: z.string(),
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// )
+
+		ScoutingQuestionSections: new Table(
+			'scouting_question_sections',
 			z.object({
 				id: z.string(),
-				match_scouting_id: z.string(),
-				account_id: z.union([z.string(), z.null()]).optional(),
-				team: z.number().int(),
-				comment: z.string(),
-				time: z.string(),
-				type: z.string(),
+				name: z.string(),
+				multiple: z.number().int(),
+				date_added: z.string(),
+				account_id: z.string(),
+				archived: z.boolean()
+			}),
+			DB
+		),
+
+		ScoutingQuestionGroups: new Table(
+			'scouting_question_groups',
+			z.object({
+				id: z.string(),
 				event_key: z.string(),
+				section: z.string(),
+				name: z.string(),
+				date_added: z.string(),
+				account_id: z.string(),
+				archived: z.boolean()
+			}),
+			DB
+		),
+
+		ScoutingQuestions: new Table(
+			'scouting_questions',
+			z.object({
+				id: z.string(),
+				question: z.string(),
+				key: z.string(),
+				description: z.string(),
+				type: z.string(),
+				group_id: z.string(),
+				archived: z.boolean()
+			}),
+			DB
+		),
+
+		ScoutingAnswers: new Table(
+			'scouting_answers',
+			z.object({
+				id: z.string(),
+				question_id: z.string(),
+				answer: z.string(),
+				team_number: z.number().int(),
+				date: z.string(),
+				account_id: z.string(),
 				archived: z.boolean()
 			}),
 			DB
 		)
-
-		// ScoutingQuestionSections: new Table(
-		// 	'scouting_question_sections',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		name: z.string(),
-		// 		multiple: z.number().int(),
-		// 		date_added: z.string(),
-		// 		account_id: z.string(),
-		// 		archived: z.boolean()
-		// 	}),
-		// 	DB
-		// ),
-
-		// ScoutingQuestionGroups: new Table(
-		// 	'scouting_question_groups',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		event_key: z.string(),
-		// 		section: z.string(),
-		// 		name: z.string(),
-		// 		date_added: z.string(),
-		// 		account_id: z.string(),
-		// 		archived: z.boolean()
-		// 	}),
-		// 	DB
-		// ),
-
-		// ScoutingQuestions: new Table(
-		// 	'scouting_questions',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		question: z.string(),
-		// 		key: z.string(),
-		// 		description: z.string(),
-		// 		type: z.string(),
-		// 		group_id: z.string(),
-		// 		archived: z.boolean(),
-		// 	}),
-		// 	DB
-		// ),
-
-		// ScoutingAnswers: new Table(
-		// 	'scouting_answers',
-		// 	z.object({
-		// 		id: z.string(),
-		// 		question_id: z.string(),
-		// 		answer: z.string(),
-		// 		team_number: z.number().int(),
-		// 		date: z.string(),
-		// 		account_id: z.string(),
-		// 		archived: z.boolean()
-		// 	}),
-		// 	DB
-		// ),
 
 		// TBARequests: new Table(
 		// 	't_b_a_requests',

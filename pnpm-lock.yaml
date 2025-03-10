@@ -146,6 +146,9 @@ importers:
       proper-lockfile:
         specifier: ^4.1.2
         version: 4.1.2
+      range-slider-input:
+        specifier: ^2.4.4
+        version: 2.4.4
       svelte-filepond:
         specifier: ^0.2.2
         version: 0.2.2(filepond@4.32.7)
@@ -3794,6 +3797,9 @@ packages:
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
+
+  range-slider-input@2.4.4:
+    resolution: {integrity: sha512-AbbDCz1g2FDwXUFIMgkBALqJZ4AGSiYQuUEwWmOWrbrT57zdG5OesIV3TjQ4W5D0EMUlR1S0rHI6dqla9wucMQ==}
 
   raw-body@2.5.2:
     resolution: {integrity: sha512-8zGqypfENjCIqGhgXToC8aB2r7YrBX+AQAfIPs/Mlk+BtPTztOvTS01NRW/3Eh60J+a48lt8qsCzirQ6loCVfA==}
@@ -8297,6 +8303,8 @@ snapshots:
   random-bytes@1.0.0: {}
 
   range-parser@1.2.1: {}
+
+  range-slider-input@2.4.4: {}
 
   raw-body@2.5.2:
     dependencies:

@@ -4,7 +4,7 @@ import { Container } from 'canvas/container';
 import { Path } from 'canvas/path';
 import { Circle } from 'canvas/circle';
 import { Img } from 'canvas/image';
-import type { TraceArray, Action } from 'tatorscout/trace';
+import { type TraceArray, type Action, Trace } from 'tatorscout/trace';
 import type { Focus } from '$lib/types/robot-display';
 
 const generateAction = (x: number, y: number, action: Action, color: string) => {
@@ -60,13 +60,15 @@ export class MatchCanvas {
 	public readonly canvas: Canvas;
 	private readonly container = new Container();
 	private readonly background: Img;
+	public readonly trace: TraceArray;
 
 	constructor(
-		public readonly trace: TraceArray,
+		trace: TraceArray,
 		public readonly year: number,
 		public readonly ctx: CanvasRenderingContext2D
 	) {
-		this.max = trace.length;
+		this.trace = Trace.expand(trace);
+		this.max = this.trace.length;
 		this.canvas = new Canvas(ctx);
 		this.canvas.ratio = 2;
 		// this.canvas.adaptable = true;
@@ -119,21 +121,21 @@ export class MatchCanvas {
 	}
 
 	between(min: number, max: number) {
-		this.min = min * 4;
-		this.max = max * 4;
+		this.min = min;
+		this.max = max;
 		this.setFilter();
 	}
 
 	auto() {
-		this.between(0, 15);
+		this.between(0, 15 * 4);
 	}
 
 	teleop() {
-		this.between(15, 135);
+		this.between(15 * 4, 135 * 4);
 	}
 
 	endgame() {
-		this.between(135, 150);
+		this.between(135 * 4, this.trace.length);
 	}
 
 	hideActions() {

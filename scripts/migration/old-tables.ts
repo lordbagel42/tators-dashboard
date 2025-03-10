@@ -250,7 +250,7 @@ export const getOldTables = (DB: Client) => {
 				description: z.string(),
 				type: z.string(),
 				group_id: z.string(),
-				archived: z.boolean(),
+				archived: z.boolean()
 			}),
 			DB
 		),
@@ -267,7 +267,7 @@ export const getOldTables = (DB: Client) => {
 				archived: z.boolean()
 			}),
 			DB
-		),
+		)
 
 		// TBARequests: new Table(
 		// 	't_b_a_requests',

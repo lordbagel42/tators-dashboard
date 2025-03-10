@@ -64,7 +64,7 @@
 			field: 'type',
 			filter: 'agTextColumnFilter',
 			filterParams: typeFilterparams
-		},
+		}
 		// {
 		// 	headerName: 'Match',
 		// 	field: 'matchNumber',

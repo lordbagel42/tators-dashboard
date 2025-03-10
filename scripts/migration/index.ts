@@ -67,8 +67,6 @@ export default async () => {
 	const questionBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 	const answerBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
-
-
 	const { stream: accountStream, total: accountTotal } = (await old.Accounts.all()).unwrap();
 
 	accountBar.start(accountTotal, 0);
@@ -78,8 +76,6 @@ export default async () => {
 	groupBar.start(0, 0);
 	questionBar.start(0, 0);
 	answerBar.start(0, 0);
-
-
 
 	accountStream.pipe(async (a) => {
 		accountBar.increment();
@@ -143,7 +139,6 @@ export default async () => {
 			return { username, id };
 		});
 	};
-
 
 	let totalComments = 0;
 	const matchScoutingRes = await oldDB.query(`
@@ -300,7 +295,7 @@ export default async () => {
 		description: z.string(),
 		type: z.string(),
 		group_id: z.string(),
-		archived: z.boolean(),
+		archived: z.boolean()
 	});
 
 	const answerType = z.object({
@@ -316,189 +311,218 @@ export default async () => {
 	const generateSections = async (eventKey: string) => {
 		const has = eventsDone.get(eventKey);
 		if (has) return has;
-		const res = await Promise.all(sections.rows.map(async (s: z.infer<typeof sectionType>, i) => {
-			const sect = (await Scouting.PIT.Sections.new({
-				eventKey,
-				name: s.name,
-				order: i,
-			})).unwrap();
+		const res = await Promise.all(
+			sections.rows.map(async (s: z.infer<typeof sectionType>, i) => {
+				const sect = (
+					await Scouting.PIT.Sections.new({
+						eventKey,
+						name: s.name,
+						order: i
+					})
+				).unwrap();
 
-			Logs.log({
-				struct: Scouting.PIT.Sections.data.name,
-				dataId: sect.data.id,
-				accountId: 'CLI',
-				message: 'Migrated Section',
-				type: 'create'
-			});
+				Logs.log({
+					struct: Scouting.PIT.Sections.data.name,
+					dataId: sect.data.id,
+					accountId: 'CLI',
+					message: 'Migrated Section',
+					type: 'create'
+				});
 
-			return sect;
-		}))
+				return sect;
+			})
+		);
 		eventsDone.set(eventKey, res);
 		return res;
 	};
 
-	await Promise.all(sections.rows.map(async (sect) => {
-		sectionBar.increment();
-		const parsed = 
-			sectionType
-			.safeParse(sect);
+	await Promise.all(
+		sections.rows.map(async (sect) => {
+			sectionBar.increment();
+			const parsed = sectionType.safeParse(sect);
 
-		if (!parsed.success) return console.error(parsed.error);
+			if (!parsed.success) return console.error(parsed.error);
 
-		const groups = await oldDB.query(`
+			const groups = await oldDB.query(`
 			SELECT * FROM scouting_question_groups WHERE section = '${sect.id}';
 		`);
 
-		totalGroups += groups.rows.length;
-		groupBar.setTotal(totalGroups);
+			totalGroups += groups.rows.length;
+			groupBar.setTotal(totalGroups);
 
-		return Promise.all(groups.rows.map(async (g, i) => {
-			groupBar.increment();
-			const parsed = groupType.safeParse(g);
-			if (!parsed.success) return console.error(parsed.error);
+			return Promise.all(
+				groups.rows.map(async (g, i) => {
+					groupBar.increment();
+					const parsed = groupType.safeParse(g);
+					if (!parsed.success) return console.error(parsed.error);
 
-			const questions = await oldDB.query(`
+					const questions = await oldDB.query(`
 				SELECT * FROM scouting_questions WHERE group_id = '${g.id}';
 			`);
 
-			if (!questions.rows.length) return;
+					if (!questions.rows.length) return;
 
-			totalQuestions += questions.rows.length;
-			questionBar.setTotal(totalQuestions);
+					totalQuestions += questions.rows.length;
+					questionBar.setTotal(totalQuestions);
 
-			const sections = (await generateSections(g.event_key)).find((s) => s.data.name === sect.name);
-			if (!sections) return console.error('Section not found, this should not happen');
+					const sections = (await generateSections(g.event_key)).find(
+						(s) => s.data.name === sect.name
+					);
+					if (!sections) return console.error('Section not found, this should not happen');
 
-			const group = (await Scouting.PIT.Groups.new({
-				name: g.name,
-				sectionId: sections.data.id,
-				order: i,
-			})).unwrap();
+					const group = (
+						await Scouting.PIT.Groups.new({
+							name: g.name,
+							sectionId: sections.data.id,
+							order: i
+						})
+					).unwrap();
 
-			Logs.log({
-				struct: Scouting.PIT.Groups.data.name,
-				dataId: group.data.id,
-				accountId: 'CLI',
-				message: 'Migrated Group',
-				type: 'create'
-			});
+					Logs.log({
+						struct: Scouting.PIT.Groups.data.name,
+						dataId: group.data.id,
+						accountId: 'CLI',
+						message: 'Migrated Group',
+						type: 'create'
+					});
 
-			return Promise.all(questions.rows.map(async (q, i) => {
-				questionBar.increment();
-				const parsed = questionType.safeParse(q);
-				if (!parsed.success) return console.error(parsed.error);
+					return Promise.all(
+						questions.rows.map(async (q, i) => {
+							questionBar.increment();
+							const parsed = questionType.safeParse(q);
+							if (!parsed.success) return console.error(parsed.error);
 
-				const answers = await oldDB.query(`
+							const answers = await oldDB.query(`
 					SELECT * FROM scouting_answers WHERE question_id = '${q.id}';
 				`);
 
-				totalAnswers += answers.rows.length;
-				answerBar.setTotal(totalAnswers);
+							totalAnswers += answers.rows.length;
+							answerBar.setTotal(totalAnswers);
 
-				const question = (await Scouting.PIT.Questions.new({
-					question: q.question,
-					key: q.key,
-					description: q.description,
-					type: q.type,
-					groupId: group.data.id,
-					order: i,
-					options: '[]',
-				})).unwrap();
+							const question = (
+								await Scouting.PIT.Questions.new({
+									question: q.question,
+									key: q.key,
+									description: q.description,
+									type: q.type,
+									groupId: group.data.id,
+									order: i,
+									options: '[]'
+								})
+							).unwrap();
 
-				Logs.log({
-					struct: Scouting.PIT.Questions.data.name,
-					dataId: question.data.id,
-					accountId: 'CLI',
-					message: 'Migrated Question',
-					type: 'create'
-				});
+							Logs.log({
+								struct: Scouting.PIT.Questions.data.name,
+								dataId: question.data.id,
+								accountId: 'CLI',
+								message: 'Migrated Question',
+								type: 'create'
+							});
 
-				return Promise.all(answers.rows.map(async (a) => {
-					answerBar.increment();
-					const parsed = answerType.safeParse(a);
-					if (!parsed.success) return console.error(parsed.error);
+							return Promise.all(
+								answers.rows.map(async (a) => {
+									answerBar.increment();
+									const parsed = answerType.safeParse(a);
+									if (!parsed.success) return console.error(parsed.error);
 
-					const account = (await findAccount(a.account_id)).unwrap();
+									const account = (await findAccount(a.account_id)).unwrap();
 
-					const res = (await Scouting.PIT.Answers.new({
-						questionId: question.data.id,
-						team: a.team_number,
-						answer: a.answer,
-						accountId: account.id || '',
-					})).unwrap();
+									const res = (
+										await Scouting.PIT.Answers.new({
+											questionId: question.data.id,
+											team: a.team_number,
+											answer: a.answer,
+											accountId: account.id || ''
+										})
+									).unwrap();
 
-					Logs.log({
-						struct: Scouting.PIT.Answers.data.name,
-						dataId: res.id,
-						accountId: 'CLI',
-						message: 'Migrated Answer',
-						type: 'create'
-					});
-				}));
-			}));
-		}));
-	}));
+									Logs.log({
+										struct: Scouting.PIT.Answers.data.name,
+										dataId: res.id,
+										accountId: 'CLI',
+										message: 'Migrated Answer',
+										type: 'create'
+									});
+								})
+							);
+						})
+					);
+				})
+			);
+		})
+	);
 
 	eventsDone.clear();
 	sections.rows = [];
 
 	// cleanup
 	await Scouting.PIT.Sections.all({
-		type: 'stream',
-	}).pipe(async s => {
-		const groups = (await Scouting.PIT.Groups.fromProperty('sectionId', s.id, {
-			type: 'stream'
-		}).await()).unwrap();
+		type: 'stream'
+	}).pipe(async (s) => {
+		const groups = (
+			await Scouting.PIT.Groups.fromProperty('sectionId', s.id, {
+				type: 'stream'
+			}).await()
+		).unwrap();
 		let groupCount = groups.length;
 
 		if (!groupCount) (await s.delete()).unwrap();
 
+		await Promise.all(
+			groups.map(async (g) => {
+				const questions = (
+					await Scouting.PIT.Questions.fromProperty('groupId', g.id, {
+						type: 'stream'
+					}).await()
+				).unwrap();
 
-		await Promise.all(groups.map(async g => {
-			const questions = (await Scouting.PIT.Questions.fromProperty('groupId', g.id, {
-				type: 'stream'
-			}).await()).unwrap();
+				let questionCount = questions.length;
 
-			let questionCount = questions.length;
-
-			if (!questionCount) {
-				groupCount--;
-				(await g.delete()).unwrap();
-				if (!groupCount) (await s.delete()).unwrap();
-			}
-
-			await Promise.all(questions.map(async q => {
-				const answers = (await Scouting.PIT.Answers.fromProperty('questionId', q.id, {
-					type: 'stream'
-				}).await()).unwrap();
-
-				let answerCount = answers.length;
-
-				if (!answerCount) {
-					questionCount--;
-					(await q.delete()).unwrap();
-					if (!questionCount) {
-						groupCount--;
-						(await g.delete()).unwrap();
-						if (!groupCount) (await s.delete()).unwrap();
-					}
+				if (!questionCount) {
+					groupCount--;
+					(await g.delete()).unwrap();
+					if (!groupCount) (await s.delete()).unwrap();
 				}
 
-				await Promise.all(answers.map(async a => {
-					answerCount--;
-					(await a.delete()).unwrap();
-					if (!answerCount) {
-						questionCount--;
-						(await q.delete()).unwrap();
-						if (!questionCount) {
-							groupCount--;
-							(await g.delete()).unwrap();
-							if (!groupCount) (await s.delete()).unwrap();
+				await Promise.all(
+					questions.map(async (q) => {
+						const answers = (
+							await Scouting.PIT.Answers.fromProperty('questionId', q.id, {
+								type: 'stream'
+							}).await()
+						).unwrap();
+
+						let answerCount = answers.length;
+
+						if (!answerCount) {
+							questionCount--;
+							(await q.delete()).unwrap();
+							if (!questionCount) {
+								groupCount--;
+								(await g.delete()).unwrap();
+								if (!groupCount) (await s.delete()).unwrap();
+							}
 						}
-					}
-				}));
-			}));
-		}));
+
+						await Promise.all(
+							answers.map(async (a) => {
+								answerCount--;
+								(await a.delete()).unwrap();
+								if (!answerCount) {
+									questionCount--;
+									(await q.delete()).unwrap();
+									if (!questionCount) {
+										groupCount--;
+										(await g.delete()).unwrap();
+										if (!groupCount) (await s.delete()).unwrap();
+									}
+								}
+							})
+						);
+					})
+				);
+			})
+		);
 	});
 
 	// listen for enter to exit

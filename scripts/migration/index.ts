@@ -215,7 +215,7 @@ export default async () => {
 					t[0] === null ? 0 : t[0],
 					t[1] === null ? 0 : t[1],
 					t[2] === null ? 0 : t[2],
-					t[3] === null ? 0 : t[3].toString()
+					t[3] === null ? 0 : t[3] === '0' ? 0 : t[3]
 				]);
 
 			const a = (await findAccount(ms.username || '')).unwrap();

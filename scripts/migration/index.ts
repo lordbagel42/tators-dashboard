@@ -492,9 +492,7 @@ export default async () => {
 							}).await()
 						).unwrap();
 
-						let answerCount = answers.length;
-
-						if (!answerCount) {
+						if (!answers.length) {
 							questionCount--;
 							(await q.delete()).unwrap();
 							if (!questionCount) {
@@ -503,22 +501,6 @@ export default async () => {
 								if (!groupCount) (await s.delete()).unwrap();
 							}
 						}
-
-						await Promise.all(
-							answers.map(async (a) => {
-								answerCount--;
-								(await a.delete()).unwrap();
-								if (!answerCount) {
-									questionCount--;
-									(await q.delete()).unwrap();
-									if (!questionCount) {
-										groupCount--;
-										(await g.delete()).unwrap();
-										if (!groupCount) (await s.delete()).unwrap();
-									}
-								}
-							})
-						);
 					})
 				);
 			})

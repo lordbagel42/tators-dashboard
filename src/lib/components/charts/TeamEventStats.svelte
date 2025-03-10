@@ -138,6 +138,7 @@
 				let max = 0;
 				for (let i = 0; i < labels.length; i++) {
 					const sum = datasets.reduce((acc, d) => acc + d.data[i], 0);
+					if (sum === Infinity) continue;
 					max = Math.max(max, sum);
 				}
 				staticY = Math.max(staticY || 0, max);
@@ -148,7 +149,7 @@
 							y: {
 								beginAtZero: true,
 								stacked: true,
-								max: staticY
+								max: staticY ? staticY : undefined
 							},
 							x: {
 								stacked: true

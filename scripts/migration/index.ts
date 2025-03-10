@@ -70,19 +70,22 @@ export default async () => {
 		const exists = (await Account.Account.fromId(a.id)).unwrap();
 		if (exists) return;
 		const res = (
-			await Account.Account.new({
-				username: a.username,
-				email: a.email,
-				key: a.key,
-				salt: a.salt,
-				picture: a.picture || '/',
-				verified: false,
-				firstName: a.first_name,
-				lastName: a.last_name,
-				verification: ''
-			}, {
-				'source': 'migration',
-			})
+			await Account.Account.new(
+				{
+					username: a.username,
+					email: a.email,
+					key: a.key,
+					salt: a.salt,
+					picture: a.picture || '/',
+					verified: false,
+					firstName: a.first_name,
+					lastName: a.last_name,
+					verification: ''
+				},
+				{
+					source: 'migration'
+				}
+			)
 		).unwrap();
 
 		if (a.verified) (await Account.verify(res)).unwrap();
@@ -125,8 +128,6 @@ export default async () => {
 		});
 	};
 
-
-
 	// const tc = await old.TeamComments.all();
 	// if (tc.isErr()) return console.error('Team comment error: ', tc.error);
 
@@ -161,7 +162,6 @@ export default async () => {
 	// 	});
 	// });
 
-
 	const msBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 	const tcBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 	const res = await oldDB.query(`
@@ -180,42 +180,47 @@ export default async () => {
 	tcBar.start(0, 0);
 	let totalComments = 0;
 
-	await Promise.all(res.rows.map(async (ms, i) => {
-		msBar.update(i + 1);
-		const parsed = z.object({
-			team: z.number().int(),
-			scout_group: z.number().int(),
-			time: z.string(),
-			trace: z.string(),
-			checks: z.string(),
-			scout_name: z.string(),
-			username: z.string().optional(),
-			pre_scouting: z.number().int(),
-			event_key: z.string(),
-			match_number: z.number().int(),
-			comp_level: z.string(),
-		}).safeParse(ms);
+	await Promise.all(
+		res.rows.map(async (ms, i) => {
+			msBar.update(i + 1);
+			const parsed = z
+				.object({
+					team: z.number().int(),
+					scout_group: z.number().int(),
+					time: z.string(),
+					trace: z.string(),
+					checks: z.string(),
+					scout_name: z.string(),
+					username: z.string().optional(),
+					pre_scouting: z.number().int(),
+					event_key: z.string(),
+					match_number: z.number().int(),
+					comp_level: z.string()
+				})
+				.safeParse(ms);
 
-		if (!parsed.success) return console.error(parsed.error);
+			if (!parsed.success) return console.error(parsed.error);
 
-		const trace = z.array(z.tuple([
-			z.number().nullable(),
-			z.number().nullable(),
-			z.number().nullable(),
-			z.union([z.number(), z.string()]).nullable(),
-		])).parse(JSON.parse(parsed.data.trace))
-		.map(t => ([
-			t[0] === null ? 0 : t[0],
-			t[1] === null ? 0 : t[1],
-			t[2] === null ? 0 : t[2],
-			t[3] === null ? 0 : t[3].toString()
-		]));
+			const trace = z
+				.array(
+					z.tuple([
+						z.number().nullable(),
+						z.number().nullable(),
+						z.number().nullable(),
+						z.union([z.number(), z.string()]).nullable()
+					])
+				)
+				.parse(JSON.parse(parsed.data.trace))
+				.map((t) => [
+					t[0] === null ? 0 : t[0],
+					t[1] === null ? 0 : t[1],
+					t[2] === null ? 0 : t[2],
+					t[3] === null ? 0 : t[3].toString()
+				]);
 
-		const a =
-			(await findAccount(ms.username || '')).unwrap();
+			const a = (await findAccount(ms.username || '')).unwrap();
 
-		const dataRes = (
-			await Scouting.MatchScouting.new({
+			const dataRes = await Scouting.MatchScouting.new({
 				compLevel: ms.comp_level,
 				eventKey: ms.event_key,
 				matchNumber: ms.match_number,
@@ -228,50 +233,52 @@ export default async () => {
 				checks: ms.checks,
 				scoutUsername: a.username || '',
 				alliance: '' // TODO: Calculate alliance
-			})
-		);
+			});
 
-		if (dataRes.isErr()) return;
-
-		Logs.log({
-			struct: Scouting.MatchScouting.data.name,
-			dataId: dataRes.value.id,
-			accountId: 'CLI',
-			message: 'Migrated Match Scouting',
-			type: 'create'
-		});
-
-		const comments = await oldDB.query(`
-			SELECT * FROM team_comments WHERE match_scouting_id = '${ms.id}';	
-		`);
-
-		totalComments += comments.rows.length;
-		tcBar.setTotal(totalComments);
-
-		return Promise.all(comments.rows.map(async c => {
-			const res = (
-				await Scouting.TeamComments.new({
-					team: c.team,
-					comment: c.comment,
-					accountId: a.id || '',
-					matchScoutingId: dataRes.value.id,
-					type: c.type,
-					eventKey: c.event_key,
-					scoutUsername: a.username || 'unknown'
-				})
-			).unwrap();
+			if (dataRes.isErr()) return;
 
 			Logs.log({
-				struct: Scouting.TeamComments.data.name,
-				dataId: res.id,
+				struct: Scouting.MatchScouting.data.name,
+				dataId: dataRes.value.id,
 				accountId: 'CLI',
-				message: 'Migrated Team Comment',
+				message: 'Migrated Match Scouting',
 				type: 'create'
 			});
 
-			tcBar.increment();
-		}));
-	}));
+			const comments = await oldDB.query(`
+			SELECT * FROM team_comments WHERE match_scouting_id = '${ms.id}';	
+		`);
+
+			totalComments += comments.rows.length;
+			tcBar.setTotal(totalComments);
+
+			return Promise.all(
+				comments.rows.map(async (c) => {
+					const res = (
+						await Scouting.TeamComments.new({
+							team: c.team,
+							comment: c.comment,
+							accountId: a.id || '',
+							matchScoutingId: dataRes.value.id,
+							type: c.type,
+							eventKey: c.event_key,
+							scoutUsername: a.username || 'unknown'
+						})
+					).unwrap();
+
+					Logs.log({
+						struct: Scouting.TeamComments.data.name,
+						dataId: res.id,
+						accountId: 'CLI',
+						message: 'Migrated Team Comment',
+						type: 'create'
+					});
+
+					tcBar.increment();
+				})
+			);
+		})
+	);
 
 	msBar.stop();
 

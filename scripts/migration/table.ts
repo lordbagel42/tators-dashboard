@@ -28,9 +28,7 @@ export class Table<T extends Record<string, unknown> = Record<string, unknown>> 
 	public query(offset: number) {
 		return attemptAsync(async () => {
 			const squeal = `SELECT * FROM "${this.name}" LIMIT ${LIMIT} OFFSET ${offset};`;
-			const res = await this.database.query(
-				squeal,
-			);
+			const res = await this.database.query(squeal);
 			return z.array(this.zod).parse(res.rows);
 		});
 	}

@@ -38,7 +38,7 @@
 			</div>
 
 			{#each summaries as row, k}
-				<div class="row mb-5">
+				<div class="mb-5">
 					{#if k !== 0}
 						<hr />
 					{/if}

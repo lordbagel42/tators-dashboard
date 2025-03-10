@@ -6,7 +6,10 @@
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
-	const { eventKey } = data;
+	const event = $derived(data.event);
+	const eventKey = $derived(event.key);
+
+	$effect(() => nav(event));
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 
 	onMount(() => {

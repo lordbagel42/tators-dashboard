@@ -65,20 +65,14 @@
 			filter: 'agTextColumnFilter',
 			filterParams: typeFilterparams
 		},
-		{
-			headerName: 'Match',
-			field: 'matchNumber',
-			filter: 'agNumberColumnFilter'
-		}
+		// {
+		// 	headerName: 'Match',
+		// 	field: 'matchNumber',
+		// 	filter: 'agNumberColumnFilter'
+		// }
 	];
 
-	// DEV ONLY
-	// const rows = Array.from({ length: 5000 }, (_, index) => ({
-	// 	account: faker.person.fullName(),
-	// 	type: faker.helpers.arrayElement(['positive', 'constructive', 'neutral']),
-	// 	comment: faker.lorem.paragraph(),
-	// 	match: index + 1
-	// }));
+	let render = $state(0);
 
 	onMount(() => {
 		comments = Scouting.TeamComments.query(
@@ -89,17 +83,26 @@
 				satisfies: (c) => c.data.team === team && c.data.eventKey === event
 			}
 		);
+
+		render++;
+
+		return comments.subscribe(() => {
+			// Yes, this is a hack. I don't want to do the right way when this works.
+			render++;
+		});
 	});
 </script>
 
 <div class="h-85 w-100">
-	<Grid
-		columnDefs={columns}
-		rowData={$comments.map((c) => c.data)}
-		gridClasses="table table-striped"
-		filterEnable={true}
-		filterClasses=""
-	/>
+	{#key render}
+		<Grid
+			columnDefs={columns}
+			rowData={$comments.map((c) => c.data)}
+			gridClasses="table table-striped"
+			filterEnable={true}
+			filterClasses=""
+		/>
+	{/key}
 </div>
 
 <style>

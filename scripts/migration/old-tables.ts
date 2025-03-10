@@ -180,23 +180,23 @@ export const getOldTables = (DB: Client) => {
 		// 	DB
 		// ),
 
-		MatchScouting: new Table(
-			'match_scouting',
-			z.object({
-				id: z.string(),
-				match_id: z.string(),
-				team: z.number().int(),
-				scout_id: z.union([z.string(), z.null()]).optional(),
-				scout_name: z.union([z.string(), z.null()]).optional(),
-				scout_group: z.number().int(),
-				time: z.string(),
-				pre_scouting: z.number().int(),
-				trace: z.string(), // JSON TraceArray
-				checks: z.string(), // JSON string array
-				archived: z.boolean()
-			}),
-			DB
-		),
+		// MatchScouting: new Table(
+		// 	'match_scouting',
+		// 	z.object({
+		// 		id: z.string(),
+		// 		match_id: z.string(),
+		// 		team: z.number().int(),
+		// 		scout_id: z.union([z.string(), z.null()]).optional(),
+		// 		scout_name: z.union([z.string(), z.null()]).optional(),
+		// 		scout_group: z.number().int(),
+		// 		time: z.string(),
+		// 		pre_scouting: z.number().int(),
+		// 		trace: z.string(), // JSON TraceArray
+		// 		checks: z.string(), // JSON string array
+		// 		archived: z.boolean()
+		// 	}),
+		// 	DB
+		// ),
 
 		TeamComments: new Table(
 			'team_comments',

@@ -162,9 +162,8 @@ export default async () => {
 	// });
 
 
-	const msMap = new Map<string, string>();
-
 	const msBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+	const tcBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 	const res = await oldDB.query(`
 			SELECT 
 				accounts.username,
@@ -178,6 +177,8 @@ export default async () => {
 		`);
 
 	msBar.start(res.rows.length, 0);
+	tcBar.start(0, 0);
+	let totalComments = 0;
 
 	await Promise.all(res.rows.map(async (ms, i) => {
 		msBar.update(i + 1);
@@ -232,8 +233,6 @@ export default async () => {
 
 		if (dataRes.isErr()) return;
 
-		msMap.set(ms.id, dataRes.value.data.id);
-
 		Logs.log({
 			struct: Scouting.MatchScouting.data.name,
 			dataId: dataRes.value.id,
@@ -241,6 +240,37 @@ export default async () => {
 			message: 'Migrated Match Scouting',
 			type: 'create'
 		});
+
+		const comments = await oldDB.query(`
+			SELECT * FROM team_comments WHERE match_scouting_id = '${ms.id}';	
+		`);
+
+		totalComments += comments.rows.length;
+		tcBar.setTotal(totalComments);
+
+		return Promise.all(comments.rows.map(async c => {
+			const res = (
+				await Scouting.TeamComments.new({
+					team: c.team,
+					comment: c.comment,
+					accountId: a.id || '',
+					matchScoutingId: dataRes.value.id,
+					type: c.type,
+					eventKey: c.event_key,
+					scoutUsername: a.username || 'unknown'
+				})
+			).unwrap();
+
+			Logs.log({
+				struct: Scouting.TeamComments.data.name,
+				dataId: res.id,
+				accountId: 'CLI',
+				message: 'Migrated Team Comment',
+				type: 'create'
+			});
+
+			tcBar.increment();
+		}));
 	}));
 
 	msBar.stop();

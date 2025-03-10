@@ -28,7 +28,7 @@
 				class="
 					navbar-brand
 				"
-				href="/home">{title}</a
+				href="/">{title}</a
 			>
 		</div>
 		<div class="end d-flex align-items-center">

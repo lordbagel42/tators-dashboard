@@ -121,11 +121,13 @@ export const actions = {
 		const domain = String(process.env.PUBLIC_DOMAIN).includes('localhost')
 			? `${process.env.PUBLIC_DOMAIN}:${process.env.PORT}`
 			: process.env.PUBLIC_DOMAIN;
+		const protocol = process.env.HTTPS === 'true' ? 'https://' : 'http://';
+		const redirectUri = `${protocol}${domain}/oauth/sign-in`;
+		console.log("Using Redirect URI:", redirectUri);
 		const client = new OAuth2Client({
 			clientSecret: SECRET_OAUTH2_CLIENT_SECRET,
 			clientId: SECRET_OAUTH2_CLIENT_ID,
-			redirectUri:
-				process.env.HTTPS === 'true' ? 'https://' : 'http://' + domain + '/account/oauth/sign-in'
+			redirectUri
 		});
 		// log(client);
 		const authorizeUrl = client.generateAuthUrl({

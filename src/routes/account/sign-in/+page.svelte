@@ -89,7 +89,7 @@
 			</form>
 		</div>
 		<div class="row mb-3">
-			<!-- <div class="col">
+			<div class="col">
 				<form action="?/OAuth2" method="POST">
 					<button class="gsi-material-button">
 						<div class="gsi-material-button-state"></div>
@@ -126,7 +126,7 @@
 						</div>
 					</button>
 				</form>
-			</div> -->
+			</div>
 			<div class="col">
 				<button class="btn btn-secondary" onclick={requestPasswordReset}>
 					Request Password Reset

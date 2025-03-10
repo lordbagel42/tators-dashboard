@@ -1,4 +1,3 @@
-import '$lib/server/index';
 import { Account } from '$lib/server/structs/account';
 import { Session } from '$lib/server/structs/session';
 import '$lib/server/structs/permissions';
@@ -64,7 +63,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.startsWith('/status') &&
 		!event.url.pathname.startsWith('/sse') &&
 		!event.url.pathname.startsWith('/struct') &&
-		!event.url.pathname.startsWith('/test')
+		!event.url.pathname.startsWith('/test') &&
+		!event.url.pathname.startsWith('/favicon.ico') && 
+		!event.url.pathname.startsWith('/robots.txt') &&
+		!event.url.pathname.startsWith('/oauth')
 	) {
 		session.value.update({
 			prevUrl: event.url.pathname

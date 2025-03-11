@@ -162,7 +162,8 @@ class SSE {
 		return fetch('/sse/ping', {
 			body: JSON.stringify({
 				now: Date.now() // to measure latency
-			})
+			}),
+			method: 'POST'
 		}).then((res) => res.ok);
 	}
 

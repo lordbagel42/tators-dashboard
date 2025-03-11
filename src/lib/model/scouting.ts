@@ -1,4 +1,4 @@
-import { Struct, type StructData, type DataArr } from 'drizzle-struct/front-end';
+import { Struct, type StructData, type DataArr, type StructDataVersion } from 'drizzle-struct/front-end';
 import { sse } from '../utils/sse';
 import { browser } from '$app/environment';
 import { attempt, attemptAsync } from 'ts-utils/check';
@@ -31,12 +31,20 @@ export namespace Scouting {
 
 	export type MatchScoutingData = StructData<typeof MatchScouting.data.structure>;
 	export type MatchScoutingArr = DataArr<typeof MatchScouting.data.structure>;
+	export type MatchScoutingHistory = StructDataVersion<typeof MatchScouting.data.structure>;
 
 	export const getAverageVelocity = (data: MatchScoutingData[]) => {
 		return Trace.velocity.average(
 			data.map((d) => TraceSchema.parse(JSON.parse(d.data.trace || '[]'))).flat() as TraceArray
 		);
 	};
+
+	export const getArchivedMatches = (team: number, eventKey: string) => {
+		return MatchScouting.query('archived-matches', { team, eventKey }, { 
+			asStream: false,
+			satisfies: d => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived,
+		});
+	}
 
 	export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
 		return attempt(() => {

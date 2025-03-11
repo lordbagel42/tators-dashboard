@@ -77,6 +77,38 @@ export namespace Scouting {
 		return stream;
 	});
 
+	MatchScouting.queryListen('archived-matches', async(event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
+			return new Error('Not entitled');
+
+		const { team, eventKey } = z
+			.object({
+				team: z.number(),
+				eventKey: z.string()
+			})
+			.parse(data);
+
+		const stream = new StructStream(MatchScouting);
+
+		setTimeout(async () => {
+			const matchScouting = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, eventKey), eq(MatchScouting.table.archived, true))
+				);
+
+			for (let i = 0; i < matchScouting.length; i++) {
+				stream.add(MatchScouting.Generator(matchScouting[i]));
+			}
+
+			stream.end();
+		});
+
+		return stream;
+	});
+
 	export const getMatchScouting = (data: {
 		eventKey: string;
 		match: number;

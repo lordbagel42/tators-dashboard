@@ -3,14 +3,15 @@
 	import type { BootstrapColor } from 'colors/color';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 	import { capitalize, fromCamelCase } from 'ts-utils/text';
+	import { z } from 'zod';
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
 	}
 
 	const { scouting }: Props = $props();
-	let checkArr = $state(new DataArr(Scouting.MatchScouting, []));
 	let checks: string[] = $state([]);
 
 	const checkColors: {
@@ -27,13 +28,17 @@
 		default: 'secondary'
 	};
 
-	onMount(async () => {
-		checkArr = Scouting.MatchScouting.fromProperty('checks', String(scouting.data.id), false);
-
-		// now what
+	onMount(() => {
+		return scouting.subscribe((data) => {
+			try {
+				const c = data.checks || '[]';
+				checks = z.array(z.string()).parse(JSON.parse(c));
+				// checks.set(parsed);
+			} catch (error) {
+				console.error(error);
+			}
+		});
 	});
-
-	console.log(checkArr);
 </script>
 
 <div class="row mb-3">
@@ -45,7 +50,7 @@
 			</li>
 		{/each}
 	</ul>
-	{#if checks.length === 0}
+	{#if !checks.length}
 		<p class="text-muted text-center">No checks available.</p>
 	{/if}
 </div>

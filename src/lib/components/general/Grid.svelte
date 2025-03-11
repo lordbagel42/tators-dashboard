@@ -37,11 +37,17 @@
 		gridClasses: string;
 		filterEnable: boolean;
 		filterClasses: string;
-		additionalOptions: Partial<GridOptions>;
+		additionalOptions?: Partial<GridOptions>;
 	}
 
-	let { columnDefs, rowData, gridClasses, filterEnable, filterClasses, additionalOptions }: Props =
-		$props();
+	let {
+		columnDefs,
+		rowData,
+		gridClasses,
+		filterEnable,
+		filterClasses,
+		additionalOptions = {}
+	}: Props = $props();
 
 	// Create a custom dark theme using Theming API
 	const darkTheme = themeQuartz.withParams({

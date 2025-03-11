@@ -48,7 +48,7 @@ export default (event: TBAEvent) => {
 				name: 'Archived Matches',
 				href: `/dashboard/event/${event.key}/archived-matches`,
 				icon: 'archive',
-				type: 'material-icons',
+				type: 'material-icons'
 			}
 		]
 	});

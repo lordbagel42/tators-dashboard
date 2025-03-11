@@ -65,11 +65,13 @@ export namespace Scouting {
 		setTimeout(async () => {
 			const matchScouting = await DB.select()
 				.from(MatchScouting.table)
-				.where(and(
-					eq(MatchScouting.table.team, team),
-					eq(MatchScouting.table.eventKey, eventKey),
-					eq(MatchScouting.table.archived, false)
-				));
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, eventKey),
+						eq(MatchScouting.table.archived, false)
+					)
+				);
 
 			for (let i = 0; i < matchScouting.length; i++) {
 				stream.add(MatchScouting.Generator(matchScouting[i]));
@@ -117,17 +119,17 @@ export namespace Scouting {
 		return stream;
 	});
 
-	MatchScouting.on('archive', match => {
+	MatchScouting.on('archive', (match) => {
 		TeamComments.fromProperty('matchScoutingId', match.id, {
-			type: 'stream',
-		}).pipe(d => d.setArchive(true));
+			type: 'stream'
+		}).pipe((d) => d.setArchive(true));
 	});
 
-	MatchScouting.on('restore', match => {
+	MatchScouting.on('restore', (match) => {
 		TeamComments.fromProperty('matchScoutingId', match.id, {
 			type: 'stream',
-			includeArchived: true,
-		}).pipe(d => d.setArchive(false));
+			includeArchived: true
+		}).pipe((d) => d.setArchive(false));
 	});
 
 	export const getMatchScouting = (data: {
@@ -145,7 +147,7 @@ export namespace Scouting {
 						eq(MatchScouting.table.matchNumber, data.match),
 						eq(MatchScouting.table.team, data.team),
 						eq(MatchScouting.table.compLevel, data.compLevel),
-						eq(MatchScouting.table.archived, false),
+						eq(MatchScouting.table.archived, false)
 					)
 				);
 
@@ -158,11 +160,13 @@ export namespace Scouting {
 		return attemptAsync(async () => {
 			const res = await DB.select()
 				.from(MatchScouting.table)
-				.where(and(
-					eq(MatchScouting.table.team, team), 
-					eq(MatchScouting.table.eventKey, event),
-					eq(MatchScouting.table.archived, false),
-				));
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, event),
+						eq(MatchScouting.table.archived, false)
+					)
+				);
 
 			return res.map((r) => MatchScouting.Generator(r));
 		});

@@ -29,17 +29,17 @@
 				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">{match.data.compLevel} {match.data.matchNumber}</h5>
-						<Trace scouting={match} {event}/>
-						<button type="button" class="btn btn-success"
+						<Trace scouting={match} {event} />
+						<button
+							type="button"
+							class="btn btn-success"
 							onclick={async () => {
 								if (await confirm('Restore this match?')) {
 									match.setArchive(false);
 								}
 							}}
 						>
-							<i class="material-icons">
-								restore_from_trash
-							</i>
+							<i class="material-icons"> restore_from_trash </i>
 							Restore
 						</button>
 					</div>

@@ -45,7 +45,11 @@
 						class="btn btn-warning"
 						type="button"
 						onclick={async () => {
-							if (await confirm('Are you sure you want to archive this scouting data? (It can still be restored)')) {
+							if (
+								await confirm(
+									'Are you sure you want to archive this scouting data? (It can still be restored)'
+								)
+							) {
 								scouting?.setArchive(true);
 							}
 						}}
@@ -65,23 +69,25 @@
 							Unknown date
 						{/if}
 						<Trace {scouting} {event} />
-						<button 
-							type="button" 
+						<button
+							type="button"
 							class="btn btn-success"
 							onclick={async () => {
-								if (await confirm('Restore this version? This will store the current state as a new version and revert.')) {
+								if (
+									await confirm(
+										'Restore this version? This will store the current state as a new version and revert.'
+									)
+								) {
 									version.restore();
 								}
 							}}
 						>
-							<i class="material-icons">
-								update
-							</i>
+							<i class="material-icons"> update </i>
 							Restore Version
 						</button>
 					</div>
 				{/each}
-			</div>		
+			</div>
 		{/if}
 	{:else}
 		<div class="row mb-3">

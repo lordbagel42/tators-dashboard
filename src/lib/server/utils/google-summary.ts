@@ -7,6 +7,12 @@ import { Trace, TraceSchema, type TraceArray } from "tatorscout/trace";
 import terminal from "./terminal";
 import { DB } from "../db";
 import { and, eq } from "drizzle-orm";
+import type { RequestEvent } from "@sveltejs/kit";
+
+export const auth = (event: RequestEvent) => {
+    const key = event.request.headers.get('X-Auth-Key');
+    return key === process.env.WEBHOOK_AUTH_KEY;
+}
 
 type ColType = number | string | undefined | void;
 export const summarize = async (eventKey: string) => {
@@ -210,7 +216,6 @@ export const summarize = async (eventKey: string) => {
         return t;
     });
 };
-
 
 class Table {
     public readonly columns: Column<ColType>[] = [];

@@ -37,9 +37,11 @@
 		gridClasses: string;
 		filterEnable: boolean;
 		filterClasses: string;
+		additionalOptions: Partial<GridOptions>;
 	}
 
-	let { columnDefs, rowData, gridClasses, filterEnable, filterClasses }: Props = $props();
+	let { columnDefs, rowData, gridClasses, filterEnable, filterClasses, additionalOptions }: Props =
+		$props();
 
 	// Create a custom dark theme using Theming API
 	const darkTheme = themeQuartz.withParams({
@@ -77,7 +79,8 @@
 			},
 			pagination: true,
 			paginationPageSize: 10,
-			paginationPageSizeSelector: [10, 20, 50]
+			paginationPageSizeSelector: [10, 20, 50],
+			...additionalOptions
 
 			// autoSizeStrategy: {
 			// 	type: 'fitGridWidth'

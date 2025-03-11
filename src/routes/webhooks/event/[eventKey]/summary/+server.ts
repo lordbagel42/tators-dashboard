@@ -14,7 +14,9 @@ export const GET = async (event) => {
         error: res.error.message,
     });
 
-    return new Response(JSON.stringify(res.value), {
+    return new Response(JSON.stringify({
+        summary: res.value,
+    }), {
         status: 200,
         headers: {
             'Content-Type': 'application/json',

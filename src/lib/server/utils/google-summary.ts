@@ -7,11 +7,17 @@ import { Trace, TraceSchema, type TraceArray } from "tatorscout/trace";
 import terminal from "./terminal";
 import { DB } from "../db";
 import { and, eq } from "drizzle-orm";
-import type { RequestEvent } from "@sveltejs/kit";
+import { fail, type RequestEvent } from "@sveltejs/kit";
+import { ServerCode } from "ts-utils/status";
 
 export const auth = (event: RequestEvent) => {
     const key = event.request.headers.get('X-Auth-Key');
-    return key === process.env.WEBHOOK_AUTH_KEY;
+    if (key !== process.env.WEBHOOK_AUTH_KEY) {
+        console.error('Unauthorized webhook ping event', key, process.env.WEBHOOK_AUTH_KEY);
+        throw fail(ServerCode.unauthorized, {
+            message: 'Unauthorized',
+        });
+    }
 }
 
 type ColType = number | string | undefined | void;
@@ -33,35 +39,46 @@ export const summarize = async (eventKey: string) => {
         };
 
         const getScores = async (team: Team) => {
-            const traces = await getAllTraces(team);
-            return traces.map(t => Trace.score.parse2025(t.trace, t.match.data.alliance as 'red' | 'blue'));
+            try {
+                const traces = await getAllTraces(team);
+                if (!traces) throw new Error('No traces found');
+                return traces.map(t => Trace.score.parse2025(t.trace, (t.match.data.alliance || 'red') as 'red' | 'blue'));
+            } catch (error) {
+                terminal.error(`Error pulling scores for team ${team.tba.team_number}`, error);
+                throw error;
+            }
         };
 
         const getPitScouting = async (requestedQuestion: string, team: Team) => {
-            const res = await DB.select()
-                .from(Scouting.PIT.Questions.table)
-                .innerJoin(Scouting.PIT.Groups.table, eq(Scouting.PIT.Groups.table.id, Scouting.PIT.Questions.table.groupId))
-                .innerJoin(Scouting.PIT.Sections.table, eq(Scouting.PIT.Sections.table.id, Scouting.PIT.Groups.table.sectionId))
-                .where(and(
-                    eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
-                    eq(Scouting.PIT.Sections.table.eventKey, event.tba.key),
-                ));
-
-            const questions = res.map(r => Scouting.PIT.Questions.Generator(r.pit_questions));
-
-            const regex = new RegExp(requestedQuestion, 'i');
-            const question = questions.find(q => regex.test(q.data.question));
-            if (!question) return undefined;
-
-            const [answer] = await DB.select()
-                .from(Scouting.PIT.Answers.table)
-                .where(and(
-                    eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
-                    eq(Scouting.PIT.Answers.table.questionId, question.id),
-                ));
-
-            if (answer) return Scouting.PIT.Answers.Generator(answer);
-            return undefined;
+            try {
+                const res = await DB.select()
+                    .from(Scouting.PIT.Questions.table)
+                    .innerJoin(Scouting.PIT.Groups.table, eq(Scouting.PIT.Groups.table.id, Scouting.PIT.Questions.table.groupId))
+                    .innerJoin(Scouting.PIT.Sections.table, eq(Scouting.PIT.Sections.table.id, Scouting.PIT.Groups.table.sectionId))
+                    .innerJoin(Scouting.PIT.Answers.table, eq(Scouting.PIT.Answers.table.questionId, Scouting.PIT.Questions.table.id))
+                    .where(and(
+                        eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
+                        eq(Scouting.PIT.Sections.table.eventKey, event.tba.key),
+                    ));
+    
+                const questions = res.map(r => Scouting.PIT.Questions.Generator(r.pit_questions));
+    
+                const question = questions.find(q => q.data.key === requestedQuestion);
+                if (!question) return undefined;
+    
+                const [answer] = await DB.select()
+                    .from(Scouting.PIT.Answers.table)
+                    .where(and(
+                        eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
+                        eq(Scouting.PIT.Answers.table.questionId, question.id),
+                    ));
+    
+                if (answer) return Scouting.PIT.Answers.Generator(answer);
+                return undefined;
+            } catch (error) {
+                terminal.error(`Error pulling pitscouting for team: ${team}`, error);
+                throw error;
+            }
         };
 
         const yearBreakdown = Trace.score.yearBreakdown[2025];
@@ -70,7 +87,6 @@ export const summarize = async (eventKey: string) => {
         t.column('Team Number', t => t.tba.team_number);
         t.column('Team Name', t => t.tba.nickname || 'unkown');
         t.column('Rank', t => t.getStatus().then(s => s.unwrap()?.qual?.ranking.rank));
-        // t.column('Rank Points', t => t.getStatus().then(s => s.unwrap()?.qual?.ranking.rank));
         t.column('Average velocity', async t => {
             const matchScouting = (await Scouting.getTeamScouting(t.tba.team_number, eventKey)).unwrap();
             return $Math.average(
@@ -86,19 +102,27 @@ export const summarize = async (eventKey: string) => {
             return matchScouting.map(s => z.array(z.string()).parse(JSON.parse(s.data.checks))).flat().join('\n ');
         });
         t.column('Weight', async t => {
-            const pitScouting = await getPitScouting('weight', t);
+            const pitScouting = await getPitScouting('robot_weight', t);
             return pitScouting?.data.answer;
         });
         t.column('Height', async t => {
-            const pitScouting = await getPitScouting('height', t);
+            const pitScouting = await getPitScouting('robot_height', t);
             return pitScouting?.data.answer;
         });
         t.column('Width', async t => {
-            const pitScouting = await getPitScouting('width', t);
+            const pitScouting = await getPitScouting('robot_width', t);
             return pitScouting?.data.answer;
         });
         t.column('Length', async t => {
-            const pitScouting = await getPitScouting('length', t);
+            const pitScouting = await getPitScouting('robot_length', t);
+            return pitScouting?.data.answer;
+        });
+        t.column('Drivetrain', async t => {
+            const pitScouting = await getPitScouting('robot_drivetrain', t);
+            return pitScouting?.data.answer;
+        });
+        t.column('Driver Practice', async t => {
+            const pitScouting = await getPitScouting('robot_drive_practice', t);
             return pitScouting?.data.answer;
         });
         t.column('Average Score Contribution', async t => {
@@ -234,16 +258,18 @@ class Table {
         return attemptAsync(async () => {
             const event = (await Event.getEvent(this.name)).unwrap();
             const teams = (await event.getTeams()).unwrap();
-            return await Promise.all(teams.map(async t => {
+            return [
+                this.columns.map(c => c.name),
+                ...await Promise.all(teams.map(async t => {
                 return Promise.all(this.columns.map(async c => {
                     try {
                         return await c.fn(t);
                     } catch (error) {
-                        terminal.error('Error serializing column', { column: c.name, error });
+                        terminal.error('Error serializing column', JSON.stringify({ column: c.name, error }));
                         return 'Error';
                     }
                 }));
-            }));
+            }))];
         });
     }
 }

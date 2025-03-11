@@ -1,4 +1,3 @@
-import '$lib/server/index';
 import { Account } from '$lib/server/structs/account';
 import { Session } from '$lib/server/structs/session';
 import '$lib/server/structs/permissions';
@@ -9,6 +8,7 @@ import '$lib/server/structs/FIRST';
 import '$lib/server/structs/scouting';
 import '$lib/server/structs/strategy';
 import '$lib/server/structs/TBA';
+import '$lib/server/structs/potato';
 import { type Handle } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 import { env } from '$env/dynamic/private';
@@ -63,7 +63,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		!event.url.pathname.startsWith('/status') &&
 		!event.url.pathname.startsWith('/sse') &&
 		!event.url.pathname.startsWith('/struct') &&
-		!event.url.pathname.startsWith('/test')
+		!event.url.pathname.startsWith('/test') &&
+		!event.url.pathname.startsWith('/favicon.ico') &&
+		!event.url.pathname.startsWith('/robots.txt') &&
+		!event.url.pathname.startsWith('/oauth') &&
+		!event.url.pathname.startsWith('/tba')
 	) {
 		session.value.update({
 			prevUrl: event.url.pathname

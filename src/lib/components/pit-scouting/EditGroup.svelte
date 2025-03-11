@@ -54,7 +54,7 @@
 				</button>
 				<button
 					type="button"
-					class="btn-danger"
+					class="btn btn-danger"
 					onclick={async () => {
 						const res = await confirm('Are you sure you want to delete this group?');
 						if (res) group.delete();

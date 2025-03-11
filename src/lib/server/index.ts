@@ -6,7 +6,7 @@ import { getEntitlementNames } from './utils/entitlements';
 import type { Entitlement } from '$lib/types/entitlements';
 import { openStructs } from './cli/struct';
 
-const postBuild = async () => {
+export const postBuild = async () => {
 	const exists = (await Universes.Universe.fromId('2122')).unwrap();
 	if (!exists) {
 		await Universes.Universe.new(
@@ -29,7 +29,7 @@ const postBuild = async () => {
 		);
 	}
 
-	Permissions.Role.fromProperty('name', 'Admin', {
+	await Permissions.Role.fromProperty('name', 'Admin', {
 		type: 'single'
 	}).then(async (hasAdmin) => {
 		const res = await getEntitlementNames();
@@ -55,7 +55,7 @@ const postBuild = async () => {
 		(await admin.setStatic(true)).unwrap();
 	});
 
-	Permissions.Role.fromProperty('name', 'Member', {
+	await Permissions.Role.fromProperty('name', 'Member', {
 		type: 'single'
 	}).then(async (hasMember) => {
 		if (hasMember.isErr() || hasMember.value) return;

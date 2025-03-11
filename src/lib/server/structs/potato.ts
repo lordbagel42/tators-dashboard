@@ -102,7 +102,7 @@ export namespace Potato {
 
 	Scouting.MatchScouting.on('create', async (s) => {
 		const p = await getPotato(s.data.scoutId);
-		if (p.isErr()) return console.error(p.error);
+		if (p.isErr()) return;
 
 		let levels = LevelUpMap.scouting;
 
@@ -119,14 +119,14 @@ export namespace Potato {
 
 	Scouting.PIT.Answers.on('create', async (a) => {
 		const p = await getPotato(a.data.accountId);
-		if (p.isErr()) return console.error(p.error);
+		if (p.isErr()) return;
 
 		giveLevels(p.value, LevelUpMap.pit);
 	});
 
 	FIRST.TeamPictures.on('create', async (pic) => {
 		const p = await getPotato(pic.data.accountId);
-		if (p.isErr()) return console.error(p.error);
+		if (p.isErr()) return;
 
 		giveLevels(p.value, LevelUpMap.teamPicture);
 	});
@@ -176,4 +176,4 @@ export namespace Potato {
 	});
 }
 
-export const _potato = Potato.Friend;
+export const _potato = Potato.Friend.table;

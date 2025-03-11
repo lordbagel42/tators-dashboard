@@ -19,6 +19,7 @@
 	const value = writable<string[]>([]);
 	let options: string[] = $state([]);
 	let self = $state(Account.self);
+	let disabled = $state(true);
 
 	$effect(() => {
 		const res = Scouting.PIT.parseOptions(question);
@@ -69,6 +70,7 @@
 			});
 			retrieveAnswer();
 		}
+		disabled = true;
 	};
 </script>
 
@@ -76,116 +78,138 @@
 	<h5>{$question.question}</h5>
 	<p class="text-muted mb-2">{$question.description}</p>
 	<pre>{$question.key}</pre>
-
-	{#if $question.type === 'text'}
-		<input
-			type="text"
-			class="form-control"
-			placeholder="Enter a value..."
-			value={$value[0] || ''}
-			onchange={(e) => {
-				value.set([e.currentTarget.value]);
-				updateAnswer();
-			}}
-		/>
-	{:else if $question.type === 'number'}
-		<input
-			type="number"
-			class="form-control"
-			placeholder="Enter a number..."
-			value={$value[0] || ''}
-			onchange={(e) => {
-				value.set([e.currentTarget.value]);
-				updateAnswer();
-			}}
-		/>
-	{:else if $question.type === 'boolean'}
-		<input
-			type="radio"
-			id="{$question.id}-yes"
-			class="btn-check"
-			autocomplete="off"
-			checked={$value.includes('yes')}
-			onclick={() => {
-				value.set(['yes']);
-				updateAnswer();
-			}}
-		/>
-		<label class="btn btn-outline-success" for="{$question.id}-yes">Yes</label>
-		<input
-			type="radio"
-			id="{$question.id}-no"
-			class="btn-check"
-			autocomplete="off"
-			checked={$value.includes('no')}
-			onclick={() => {
-				value.set(['no']);
-				updateAnswer();
-			}}
-		/>
-		<label class="btn btn-outline-danger" for="{$question.id}-no">No</label>
-	{:else if $question.type === 'checkbox'}
-		<p>
-			<small class="text-muted"> Select one or more of the following options: </small>
-		</p>
-		{#each options as option}
+	<div class="d-flex justify-content-between">
+		{#if $question.type === 'text'}
 			<input
-				type="checkbox"
-				id="{$question.id}-{option}"
-				class="btn-check"
-				autocomplete="off"
-				checked={$value.includes(option)}
-				onclick={() => {
-					if ($value.includes(option)) {
-						// value = value.filter((v) => v !== option);
-						value.update((v) => v.filter((v) => v !== option));
-					} else {
-						// value = [...value, option];
-						value.update((v) => [...v, option]);
-					}
+				type="text"
+				class="form-control"
+				placeholder="Enter a value..."
+				value={$value[0] || ''}
+				oninput={() => (disabled = false)}
+				onchange={(e) => {
+					value.set([e.currentTarget.value]);
 					updateAnswer();
 				}}
 			/>
-			<label class="btn btn-outline-primary" for="{$question.id}-{option}"
-				>{capitalize(option)}</label
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
+		{:else if $question.type === 'textarea'}
+			<textarea
+				class="form-control"
+				placeholder="Enter a value..."
+				oninput={() => (disabled = false)}
+				onchange={(e) => {
+					value.set([e.currentTarget.value]);
+					updateAnswer();
+				}}>{$value[0] || ''}</textarea
 			>
-		{/each}
-	{:else if $question.type === 'radio'}
-		<p>
-			<small class="text-muted"> Select one of the following options: </small>
-		</p>
-		{#each options as option}
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
+		{:else if $question.type === 'number'}
+			<input
+				type="number"
+				class="form-control"
+				placeholder="Enter a number..."
+				oninput={() => (disabled = false)}
+				value={$value[0] || ''}
+				onchange={(e) => {
+					value.set([e.currentTarget.value]);
+					updateAnswer();
+				}}
+			/>
+			<button type="button" class="ms-3 btn btn-success" {disabled}>
+				<i class="material-icons">save</i>
+			</button>
+		{:else if $question.type === 'boolean'}
 			<input
 				type="radio"
-				id="{$question.id}-{option}"
-				name={$question.id}
+				id="{$question.id}-yes"
 				class="btn-check"
 				autocomplete="off"
-				checked={$value.includes(option)}
+				checked={$value.includes('yes')}
 				onclick={() => {
-					// value = [option];
-					value.set([option]);
+					value.set(['yes']);
 					updateAnswer();
 				}}
 			/>
-			<label class="btn btn-outline-primary" for="{$question.id}-{option}"
-				>{capitalize(option)}</label
-			>
-		{/each}
-	{:else if $question.type === 'select'}
-		<select
-			class="form-select"
-			onchange={(e) => {
-				console.log('Select', e);
-				// value = [e.currentTarget.value];
-				value.set([e.currentTarget.value]);
-				updateAnswer();
-			}}
-		>
-			<option disabled selected>Select a Value...</option>
+			<label class="btn btn-outline-success" for="{$question.id}-yes">Yes</label>
+			<input
+				type="radio"
+				id="{$question.id}-no"
+				class="btn-check"
+				autocomplete="off"
+				checked={$value.includes('no')}
+				onclick={() => {
+					value.set(['no']);
+					updateAnswer();
+				}}
+			/>
+			<label class="btn btn-outline-danger" for="{$question.id}-no">No</label>
+		{:else if $question.type === 'checkbox'}
+			<p>
+				<small class="text-muted"> Select one or more of the following options: </small>
+			</p>
 			{#each options as option}
-				<option value={option} selected={$value.includes(option)}>{option}</option>
+				<input
+					type="checkbox"
+					id="{$question.id}-{option}"
+					class="btn-check"
+					autocomplete="off"
+					checked={$value.includes(option)}
+					onclick={() => {
+						if ($value.includes(option)) {
+							// value = value.filter((v) => v !== option);
+							value.update((v) => v.filter((v) => v !== option));
+						} else {
+							// value = [...value, option];
+							value.update((v) => [...v, option]);
+						}
+						updateAnswer();
+					}}
+				/>
+				<label class="btn btn-outline-primary" for="{$question.id}-{option}"
+					>{capitalize(option)}</label
+				>
 			{/each}
-		</select>
-	{/if}
+		{:else if $question.type === 'radio'}
+			<p>
+				<small class="text-muted"> Select one of the following options: </small>
+			</p>
+			{#each options as option}
+				<input
+					type="radio"
+					id="{$question.id}-{option}"
+					name={$question.id}
+					class="btn-check"
+					autocomplete="off"
+					checked={$value.includes(option)}
+					onclick={() => {
+						// value = [option];
+						value.set([option]);
+						updateAnswer();
+					}}
+				/>
+				<label class="btn btn-outline-primary" for="{$question.id}-{option}"
+					>{capitalize(option)}</label
+				>
+			{/each}
+		{:else if $question.type === 'select'}
+			<select
+				class="form-select"
+				onchange={(e) => {
+					console.log('Select', e);
+					// value = [e.currentTarget.value];
+					value.set([e.currentTarget.value]);
+					updateAnswer();
+				}}
+			>
+				<option disabled selected>Select a Value...</option>
+				{#each options as option}
+					<option value={option} selected={$value.includes(option)}>{option}</option>
+				{/each}
+			</select>
+		{/if}
+	</div>
 </div>

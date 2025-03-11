@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import { Scouting } from '$lib/model/scouting';
 	import { alert, confirm, prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
@@ -8,7 +8,11 @@
 	import { TBAEvent } from '$lib/utils/tba.js';
 
 	const { data } = $props();
-	const { eventKey, year } = data;
+	const eventKey = $derived(data.eventKey);
+	const year = $derived(data.year);
+	const event = $derived(data.event);
+
+	$effect(() => nav(event));
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 
@@ -19,18 +23,13 @@
 
 	const addSection = async () => {
 		const name = await prompt('Section Name');
-		console.log(name);
 		if (!name) return;
-
-		console.log('Adding section', name);
 
 		const res = await Scouting.PIT.Sections.new({
 			name,
 			order: $sections.length,
 			eventKey
 		});
-
-		console.log(res);
 	};
 
 	const copy = async () => {

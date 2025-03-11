@@ -4,7 +4,7 @@ import path from 'path';
 import { Permissions } from '$lib/server/structs/permissions';
 import { ServerCode } from 'ts-utils/status';
 
-const UPLOAD_DIR = path.resolve('static/uploads');
+const UPLOAD_DIR = path.resolve(process.cwd(), './static/uploads');
 
 export async function POST(event) {
 	if (!event.locals.account) throw fail(ServerCode.unauthorized);

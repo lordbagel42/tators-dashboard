@@ -1,12 +1,15 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import { page } from '$app/state';
 	import { Scouting } from '$lib/model/scouting';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 
 	const { data } = $props();
-	const { eventKey } = data;
+	const event = $derived(data.event);
+	const eventKey = $derived(event.key);
+
+	$effect(() => nav(event));
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 
 	onMount(() => {

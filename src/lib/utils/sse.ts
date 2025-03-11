@@ -55,9 +55,10 @@ class SSE {
 			Requests.setMeta('sse', this.uuid);
 			const source = new EventSource(`/sse/init/${this.uuid}`);
 
-			source.addEventListener('error', (e) => console.error('Error:', e));
+			source.addEventListener('error', (e) => console.error('SSE Error:', e));
 
 			const onConnect = () => {
+				console.log('SSE Connected');
 				this.emit('connect', undefined);
 			};
 

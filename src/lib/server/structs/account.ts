@@ -20,7 +20,7 @@ export namespace Account {
 		name: 'account',
 		structure: {
 			username: text('username').notNull().unique(),
-			key: text('key').notNull().unique(),
+			key: text('key').notNull(),
 			salt: text('salt').notNull(),
 			firstName: text('first_name').notNull(),
 			lastName: text('last_name').notNull(),
@@ -35,24 +35,26 @@ export namespace Account {
 		safes: ['key', 'salt', 'verification']
 	});
 
-	Account.on('create', async (account) => {
-		const verification = account.data.verification;
-		const link = await Email.createLink('/admin/verifiy/' + verification);
-		if (link.isErr()) return terminal.error(link.error);
-		const admins = await getAdmins();
-		if (admins.isErr()) return terminal.error(admins.error);
-		const res = await Email.send({
-			type: 'new-user',
-			data: {
-				verification: link.value,
-				username: account.data.username
-			},
-			subject: `New User Registered ${account.data.username}`,
-			to: admins.value.map((a) => a.data.email)
-		});
+	// Account.on('create', async (account) => {
+	// 	const source = account.metadata.get('source');
+	// 	if (source === 'migration') return console.log('Migration account, skipping email');
+	// 	const verification = account.data.verification;
+	// 	const link = await Email.createLink('/admin/verifiy/' + verification);
+	// 	if (link.isErr()) return terminal.error(link.error);
+	// 	const admins = await getAdmins();
+	// 	if (admins.isErr()) return terminal.error(admins.error);
+	// 	const res = await Email.send({
+	// 		type: 'new-user',
+	// 		data: {
+	// 			verification: link.value,
+	// 			username: account.data.username
+	// 		},
+	// 		subject: `New User Registered ${account.data.username}`,
+	// 		to: admins.value.map((a) => a.data.email)
+	// 	});
 
-		if (res.isErr()) return terminal.error(res.error);
-	});
+	// 	if (res.isErr()) return terminal.error(res.error);
+	// });
 
 	Account.queryListen('universe-members', async (event, data) => {
 		const session = (await Session.getSession(event)).unwrap();
@@ -264,14 +266,14 @@ export namespace Account {
 	export const newHash = (password: string) => {
 		return attempt(() => {
 			const salt = crypto.randomBytes(32).toString('hex');
-			const hash = crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
-			return { hash, salt };
+			const key = hash(password, salt).unwrap();
+			return { hash: key, salt };
 		});
 	};
 
 	export const hash = (password: string, salt: string) => {
 		return attempt(() => {
-			return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+			return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
 		});
 	};
 
@@ -453,12 +455,45 @@ export namespace Account {
 			).unwrap();
 			if (!scout) throw new Error('Role not found');
 			(await Permissions.giveRole(account, scout)).unwrap();
+			// TODO: remove this for idaho in favor of real permissions
+			Admins.new({
+				accountId: account.id
+			});
 			return (
 				await account.update({
 					verified: true,
 					verification: ''
 				})
 			).unwrap();
+		});
+	};
+
+	export const externalHash = (data: { user: string; pass: string }) => {
+		return attemptAsync(async () => {
+			if (!process.env.OLD_SERVER_HOST || !process.env.OLD_SERVER_API_KEY) {
+				throw new Error('Old server host or api key not found');
+			}
+
+			const res = await fetch(process.env.OLD_SERVER_HOST + '/account/test-hash', {
+				body: JSON.stringify(data),
+				method: 'GET',
+				headers: {
+					'X-Auth-Key': process.env.OLD_SERVER_API_KEY,
+					'Content-Type': 'application/json'
+				}
+			}).then((r) => r.json());
+
+			const { success, reason, error } = z
+				.object({
+					success: z.boolean(),
+					reason: z.string(),
+					error: z.boolean()
+				})
+				.parse(res);
+
+			if (error) terminal.error('External hash did not work', reason);
+
+			return success;
 		});
 	};
 }

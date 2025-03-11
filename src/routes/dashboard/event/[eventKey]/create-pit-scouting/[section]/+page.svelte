@@ -1,8 +1,8 @@
 <script lang="ts">
-	import '$lib/imports/robot-display.js';
+	import nav from '$lib/imports/robot-display.js';
 	import EditSection from '$lib/components/pit-scouting/EditSection.svelte';
 	import { Scouting } from '$lib/model/scouting';
-	import { prompt, select } from '$lib/utils/prompts';
+	import { notify, prompt, select } from '$lib/utils/prompts';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
@@ -15,18 +15,31 @@
 	const sectionIndex = $derived(data.sectionIndex);
 	const section = $derived(data.section);
 	const year = $derived(data.year);
+	const event = $derived(data.event);
+
+	$effect(() => nav(event));
 
 	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 
 	onMount(() => {
 		sections = Scouting.PIT.Sections.fromProperty('eventKey', page.params.eventKey, false);
+		// sections.filter(s => true);
 		sections.sort((a, b) => Number(a.data.order) - Number(b.data.order));
 	});
 </script>
 
 <div class="container">
 	<div class="row mb-3">
-		<h2>Pitscouting</h2>
+		<div class="mt-3 d-flex justify-content-between">
+			<h2>Pitscouting</h2>
+			<!-- This button doesn't do anything except force the user to escape from inputs -->
+			<!-- 
+				title="This button doesn't technically do anything. To save, all you have to do is click out of your input fields. This button is just here to give you something to click on." -->
+			<button type="button" class="btn btn-success">
+				<i class="material-icons">save</i>
+				Save
+			</button>
+		</div>
 	</div>
 	<div class="row mb-3">
 		<div class="card">

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import type { TBAEvent, TBATeam } from 'tatorscout/tba';
 	import DateInput from '../forms/DateInput.svelte';
 	import { onMount } from 'svelte';
-	import { TBATeam as T, TBAEvent as E } from '$lib/utils/tba';
+	import { TBATeam, TBAEvent } from '$lib/utils/tba';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { Scouting } from '$lib/model/scouting';
 
@@ -26,7 +25,7 @@
 	let averageSecondsNotMoving = $state(0);
 
 	onMount(() => {
-		new T(team, new E(event)).getStatus().then((s) => {
+		team.getStatus().then((s) => {
 			if (s.isErr()) return console.error(s.error);
 			rank = s.value.qual?.ranking.rank ?? 0;
 			const { wins, losses, ties } = s.value.qual?.ranking.record ?? {
@@ -38,12 +37,12 @@
 			played = wins + losses + ties;
 		});
 
-		scouting = Scouting.scoutingFromTeam(team.team_number, event.key);
+		scouting = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 
 		return scouting.subscribe((s) => {
-			const autoRes = Scouting.averageAutoScore(s, event.year);
-			const teleRes = Scouting.averageTeleopScore(s, event.year);
-			const endRes = Scouting.averageEndgameScore(s, event.year);
+			const autoRes = Scouting.averageAutoScore(s, event.tba.year);
+			const teleRes = Scouting.averageTeleopScore(s, event.tba.year);
+			const endRes = Scouting.averageEndgameScore(s, event.tba.year);
 			const secondsRes = Scouting.averageSecondsNotMoving(s);
 
 			auto = autoRes.isErr() ? 0 : autoRes.value;
@@ -70,9 +69,9 @@
 		</tr>
 		<tr>
 			<td>Average Velocity:</td>
-			<td>
+			<td class="ws-nowrap">
 				{#if $scouting.length}
-					{Scouting.getAverageVelocity($scouting)}
+					{Scouting.getAverageVelocity($scouting).toFixed(2)} ft/s
 				{:else}
 					No data
 				{/if}
@@ -92,7 +91,7 @@
 		</tr>
 		<tr>
 			<td>Average Seconds Not Moving:</td>
-			<td>{averageSecondsNotMoving}</td>
+			<td>{averageSecondsNotMoving.toFixed(2)}s</td>
 		</tr>
 		<!-- <tr>
 			<td>Drivebase:</td>

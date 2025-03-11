@@ -260,66 +260,83 @@ export const handleEvent =
 					return error(new DataError(struct, 'Invalid Read type'));
 			}
 
-			let readable: ReadableStream;
+			// let readable: ReadableStream;
+
+			let json: string;
 
 			if (account) {
-				readable = new ReadableStream({
-					start(controller) {
-						streamer.on('end', () => {
-							// console.log('end');
-							controller.enqueue('end\n\n');
-							controller.close();
-						});
+				const data = (await streamer.await()).unwrap();
+				json = JSON.stringify(await Promise.all(data.map(async d => {
+					if (runBypass(d)) return d.safe();
+					const [res] = (await Permissions.filterAction(roles, [d], PropertyAction.Read)).unwrap();
+					return res;
+				})).filter(Boolean));
+				// readable = new ReadableStream({
+				// 	start(controller) {
+				// 		streamer.on('end', () => {
+				// 			// console.log('end');
+				// 			controller.enqueue('end\n\n');
+				// 			controller.close();
+				// 		});
 
-						if (runBypass()) {
-							setTimeout(() => {
-								streamer.pipe((d) => controller.enqueue(`${encode(JSON.stringify(d.safe()))}\n\n`));
-							});
-							return;
-						}
-						const stream = Permissions.filterActionPipeline(
-							account,
-							roles,
-							streamer as any,
-							PropertyAction.Read,
-							bypass
-						);
-						stream.pipe((d) => {
-							// console.log('Sending:', d);
-							controller.enqueue(`${encode(JSON.stringify(d))}\n\n`);
-						});
-					},
-					cancel() {
-						streamer.off('end');
-						streamer.off('data');
-						streamer.off('error');
-					}
-				});
+				// 		if (runBypass()) {
+				// 			setTimeout(() => {
+				// 				streamer.pipe((d) => controller.enqueue(`${encode(JSON.stringify(d.safe()))}\n\n`));
+				// 			});
+				// 			return;
+				// 		}
+				// 		const stream = Permissions.filterActionPipeline(
+				// 			account,
+				// 			roles,
+				// 			streamer as any,
+				// 			PropertyAction.Read,
+				// 			bypass
+				// 		);
+				// 		stream.pipe((d) => {
+				// 			// console.log('Sending:', d);
+				// 			controller.enqueue(`${encode(JSON.stringify(d))}\n\n`);
+				// 		});
+				// 	},
+				// 	cancel() {
+				// 		streamer.off('end');
+				// 		streamer.off('data');
+				// 		streamer.off('error');
+				// 	}
+				// });
 			} else if (struct.data.name === 'test') {
-				readable = new ReadableStream({
-					start(controller) {
-						streamer.on('end', () => {
-							// console.log('end');
-							controller.enqueue('end\n\n');
-							controller.close();
-						});
+				const data = (await streamer.await()).unwrap();
+				json = JSON.stringify(data.map(d => d.data));
+				// readable = new ReadableStream({
+				// 	start(controller) {
+				// 		streamer.on('end', () => {
+				// 			// console.log('end');
+				// 			controller.enqueue('end\n\n');
+				// 			controller.close();
+				// 		});
 
-						streamer.pipe((d) => controller.enqueue(`${encode(JSON.stringify(d.data))}\n\n`));
-					},
-					cancel() {
-						streamer.off('end');
-						streamer.off('data');
-						streamer.off('error');
-					}
-				});
+				// 		streamer.pipe((d) => controller.enqueue(`${encode(JSON.stringify(d.data))}\n\n`));
+				// 	},
+				// 	cancel() {
+				// 		streamer.off('end');
+				// 		streamer.off('data');
+				// 		streamer.off('error');
+				// 	}
+				// });
 			} else {
 				return error(new StructError(struct, 'Not logged in'));
 			}
 
-			return new Response(readable, {
+			// return new Response(readable, {
+			// 	status: 200,
+			// 	headers: {
+			// 		'Content-Type': 'text/event-stream'
+			// 	}
+			// });
+
+			return new Response(json, {
 				status: 200,
 				headers: {
-					'Content-Type': 'text/event-stream'
+					'Content-Type': 'application/json',
 				}
 			});
 		}

@@ -65,7 +65,11 @@ export namespace Scouting {
 		setTimeout(async () => {
 			const matchScouting = await DB.select()
 				.from(MatchScouting.table)
-				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, eventKey)));
+				.where(and(
+					eq(MatchScouting.table.team, team),
+					eq(MatchScouting.table.eventKey, eventKey),
+					eq(MatchScouting.table.archived, false)
+				));
 
 			for (let i = 0; i < matchScouting.length; i++) {
 				stream.add(MatchScouting.Generator(matchScouting[i]));
@@ -77,7 +81,7 @@ export namespace Scouting {
 		return stream;
 	});
 
-	MatchScouting.queryListen('archived-matches', async(event, data) => {
+	MatchScouting.queryListen('archived-matches', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
 		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
 		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
@@ -96,7 +100,11 @@ export namespace Scouting {
 			const matchScouting = await DB.select()
 				.from(MatchScouting.table)
 				.where(
-					and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, eventKey), eq(MatchScouting.table.archived, true))
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, eventKey),
+						eq(MatchScouting.table.archived, true)
+					)
 				);
 
 			for (let i = 0; i < matchScouting.length; i++) {
@@ -107,6 +115,19 @@ export namespace Scouting {
 		});
 
 		return stream;
+	});
+
+	MatchScouting.on('archive', match => {
+		TeamComments.fromProperty('matchScoutingId', match.id, {
+			type: 'stream',
+		}).pipe(d => d.setArchive(true));
+	});
+
+	MatchScouting.on('restore', match => {
+		TeamComments.fromProperty('matchScoutingId', match.id, {
+			type: 'stream',
+			includeArchived: true,
+		}).pipe(d => d.setArchive(false));
 	});
 
 	export const getMatchScouting = (data: {
@@ -123,7 +144,8 @@ export namespace Scouting {
 						eq(MatchScouting.table.eventKey, data.eventKey),
 						eq(MatchScouting.table.matchNumber, data.match),
 						eq(MatchScouting.table.team, data.team),
-						eq(MatchScouting.table.compLevel, data.compLevel)
+						eq(MatchScouting.table.compLevel, data.compLevel),
+						eq(MatchScouting.table.archived, false),
 					)
 				);
 
@@ -136,7 +158,11 @@ export namespace Scouting {
 		return attemptAsync(async () => {
 			const res = await DB.select()
 				.from(MatchScouting.table)
-				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, event)));
+				.where(and(
+					eq(MatchScouting.table.team, team), 
+					eq(MatchScouting.table.eventKey, event),
+					eq(MatchScouting.table.archived, false),
+				));
 
 			return res.map((r) => MatchScouting.Generator(r));
 		});
@@ -451,7 +477,7 @@ export namespace Scouting {
 						name: 'Electrical',
 						eventKey,
 						order: 2
-					}),
+					})
 				]);
 
 				const genSection = general.unwrap();
@@ -482,10 +508,7 @@ export namespace Scouting {
 					})
 				]);
 
-				const [
-					eProtectedRes,
-					eOverviewRes,
-				] = await Promise.all([
+				const [eProtectedRes, eOverviewRes] = await Promise.all([
 					Groups.new({
 						sectionId: electSection.id,
 						name: 'Protected',
@@ -495,7 +518,7 @@ export namespace Scouting {
 						sectionId: electSection.id,
 						name: 'Electrical Overview',
 						order: 1
-					}),
+					})
 				]);
 
 				const overview = overviewRes.unwrap();
@@ -504,7 +527,6 @@ export namespace Scouting {
 				const summary = summaryRes.unwrap();
 				const eOverview = eOverviewRes.unwrap();
 				const eProtected = eProtectedRes.unwrap();
-				
 
 				resolveAll(
 					await Promise.all([
@@ -662,69 +684,76 @@ export namespace Scouting {
 
 						// Electrical
 						Questions.new({
-							question:  'Is the main breaker protected?',
+							question: 'Is the main breaker protected?',
 							type: 'boolean',
 							groupId: eProtected.id,
 							key: 'breaker_secure',
-							description: 'If the main breaker could be hit by a game piece or another robot, please mark as no.',
+							description:
+								'If the main breaker could be hit by a game piece or another robot, please mark as no.',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
-							question:  'Is the RoboRIO protected?',
+							question: 'Is the RoboRIO protected?',
 							type: 'boolean',
 							groupId: eProtected.id,
 							key: 'roborio_secure',
-							description: 'If the RoboRIO could have potential failures due to game pieces, other robots, or pieces of metal, please mark as no.',
+							description:
+								'If the RoboRIO could have potential failures due to game pieces, other robots, or pieces of metal, please mark as no.',
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
 						Questions.new({
-							question:  'Is the battery secure?',
+							question: 'Is the battery secure?',
 							type: 'boolean',
 							groupId: eProtected.id,
 							key: 'battery_secure',
-							description: 'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							description:
+								'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
 
 						Questions.new({
-							question:  'Is the robot\'s electrical system generally accessible?',
+							question: "Is the robot's electrical system generally accessible?",
 							type: 'boolean',
 							groupId: eOverview.id,
 							key: 'electrical_access',
-							description: 'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							description:
+								'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
 							options: '[]',
-							order: 0,
+							order: 0
 						}),
 						Questions.new({
-							question:  'Please rate the overall cleanliness of the electrical system',
+							question: 'Please rate the overall cleanliness of the electrical system',
 							type: 'number',
 							groupId: eOverview.id,
 							key: 'electrical_cleanliness',
-							description: 'Rate between 1 and 10, 1 being a rat\'s nest and 10 being a professional wiring job.',
+							description:
+								"Rate between 1 and 10, 1 being a rat's nest and 10 being a professional wiring job.",
 							options: '[]',
-							order: 1,
+							order: 1
 						}),
 						Questions.new({
-							question:  'Overall, how well do you think the electrical system is integrated into the robot?',
+							question:
+								'Overall, how well do you think the electrical system is integrated into the robot?',
 							type: 'number',
 							groupId: eOverview.id,
 							key: 'electrical_rating',
 							description: 'Rate between 1 and 10, 1 being terrible and 10 being perfect.',
 							options: '[]',
-							order: 2,
+							order: 2
 						}),
 						Questions.new({
-							question:  'Due to what you\'ve seen, do you think this robot is a SpecTator?',
+							question: "Due to what you've seen, do you think this robot is a SpecTator?",
 							type: 'boolean',
 							groupId: eOverview.id,
 							key: 'electrical_spectator',
-							description: 'If you believe the electrical system could have significant issues during a match, please mark as yes.',
+							description:
+								'If you believe the electrical system could have significant issues during a match, please mark as yes.',
 							options: '[]',
-							order: 3,
-						}),
+							order: 3
+						})
 					])
 				);
 			});

@@ -1,4 +1,9 @@
-import { Struct, type StructData, type DataArr, type StructDataVersion } from 'drizzle-struct/front-end';
+import {
+	Struct,
+	type StructData,
+	type DataArr,
+	type StructDataVersion
+} from 'drizzle-struct/front-end';
 import { sse } from '../utils/sse';
 import { browser } from '$app/environment';
 import { attempt, attemptAsync } from 'ts-utils/check';
@@ -40,11 +45,15 @@ export namespace Scouting {
 	};
 
 	export const getArchivedMatches = (team: number, eventKey: string) => {
-		return MatchScouting.query('archived-matches', { team, eventKey }, { 
-			asStream: false,
-			satisfies: d => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived,
-		});
-	}
+		return MatchScouting.query(
+			'archived-matches',
+			{ team, eventKey },
+			{
+				asStream: false,
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived
+			}
+		);
+	};
 
 	export const averageAutoScore = (data: MatchScoutingData[], year: number) => {
 		return attempt(() => {
@@ -116,7 +125,7 @@ export namespace Scouting {
 			{ team, eventKey },
 			{
 				asStream: false,
-				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived
 			}
 		);
 	};

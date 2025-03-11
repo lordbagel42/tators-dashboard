@@ -43,6 +43,12 @@ export default (event: TBAEvent) => {
 				href: `/dashboard/event/${event.key}/compare`,
 				icon: 'compare',
 				type: 'material-icons'
+			},
+			{
+				name: 'Archived Matches',
+				href: `/dashboard/event/${event.key}/archived-matches`,
+				icon: 'archive',
+				type: 'material-icons',
 			}
 		]
 	});

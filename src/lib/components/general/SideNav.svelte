@@ -14,18 +14,28 @@
 	export const hide = () => {
 		import('bootstrap').then((bs) => {
 			document.querySelectorAll('.offcanvas').forEach((oc) => {
-				console.log(oc);
-				bs.Offcanvas.getOrCreateInstance(oc).hide();
+				const instance = bs.Offcanvas.getOrCreateInstance(oc);
+				instance.hide();
+			});
 
-				document.querySelectorAll('.offcanvas-backdrop').forEach((oc) => {
-					oc.remove();
-				});
+			// Ensure body scrolling is restored
+			document.body.style.overflow = '';
+			document.body.classList.remove('offcanvas-open');
+
+			// Remove any lingering backdrops
+			document.querySelectorAll('.offcanvas-backdrop').forEach((backdrop) => {
+				backdrop.remove();
 			});
 		});
 	};
 
 	onMount(() => {
 		hide();
+		document.addEventListener('hidden.bs.offcanvas', () => {
+			document.body.style.overflow = '';
+			document.body.style.paddingRight = '';
+			document.body.classList.remove('offcanvas-open');
+		});
 	});
 </script>
 

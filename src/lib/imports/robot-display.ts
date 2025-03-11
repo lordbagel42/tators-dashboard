@@ -28,6 +28,9 @@ export default (event: TBAEvent) => {
 		priority: 0
 	});
 
+	const section = Navbar.getSections().data.find((s) => s.priority === 1);
+	if (section) Navbar.removeSection(section);
+
 	Navbar.addSection({
 		name: `${event.name} Dashboard`,
 		priority: 1,

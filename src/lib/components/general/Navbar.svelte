@@ -49,18 +49,18 @@
 						<li><a class="dropdown-item" href="/account/sign-out">Sign Out</a></li>
 					{/if}
 				</ul>
-				<button
-					class="btn px-2"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarNav"
-					aria-controls="navbarNav"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
-				>
-					<i class="material-icons"> menu </i>
-				</button>
 			</div>
+			<button
+				class="btn px-2"
+				type="button"
+				data-bs-toggle="collapse"
+				data-bs-target="#navbarNav"
+				aria-controls="navbarNav"
+				aria-expanded="false"
+				aria-label="Toggle navigation"
+			>
+				<i class="material-icons"> menu </i>
+			</button>
 			<!-- <button
 				class="me-5 btn position-relative"
 				type="button"
@@ -90,6 +90,9 @@
 		</li>
 		<li class="nav-item">
 			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link active ws-nowrap" aria-current="page" href="https://app.tatorscout.org">Remote App</a>
 		</li>
 	</ul>
 </div>

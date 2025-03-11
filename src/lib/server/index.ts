@@ -5,8 +5,22 @@ import { Permissions } from '$lib/server/structs/permissions';
 import { getEntitlementNames } from './utils/entitlements';
 import type { Entitlement } from '$lib/types/entitlements';
 import { openStructs } from './cli/struct';
+import backup from '../../../scripts/backup';
+import { sleepUntil } from 'ts-utils/sleep';
+
+const backupCycle = () => {
+	if (!process.env.BACKUP_INTERVAL) return;
+	const interval = parseInt(process.env.BACKUP_INTERVAL);
+	if (isNaN(interval)) return console.error('Invalid BACKUP_INTERVAL');
+	const run = () => {
+		backup('automatic');
+		sleepUntil(run, new Date(Date.now() + interval));
+	};
+	run();
+};
 
 export const postBuild = async () => {
+	backupCycle();
 	const exists = (await Universes.Universe.fromId('2122')).unwrap();
 	if (!exists) {
 		await Universes.Universe.new(

@@ -31,7 +31,7 @@ export namespace Session {
 			userAgent: text('user_agent').notNull(),
 			requests: integer('requests').notNull(),
 			prevUrl: text('prev_url').notNull(),
-			latency: integer('latency').notNull().default(0),
+			latency: integer('latency').notNull().default(0)
 		},
 		frontend: false
 	});
@@ -51,7 +51,7 @@ export namespace Session {
 						userAgent: '',
 						requests: 0,
 						prevUrl: '',
-						latency: 0,
+						latency: 0
 					})
 				).unwrap();
 

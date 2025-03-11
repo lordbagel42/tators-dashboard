@@ -193,18 +193,17 @@ export const handleEvent =
 
 			let streamer: StructStream<typeof struct.data.structure, typeof struct.data.name>;
 			const type = parsed.data.type;
-			console.log(type);
 			switch (type) {
 				case 'all':
 					streamer = struct.all({
 						type: 'stream',
-						wait: event.request.locals.session.data.latency + 1,
+						wait: event.request.locals.session.data.latency + 1
 					});
 					break;
 				case 'archived':
 					streamer = struct.archived({
 						type: 'stream',
-						wait: event.request.locals.session.data.latency + 1,
+						wait: event.request.locals.session.data.latency + 1
 					});
 					break;
 				case 'from-id':
@@ -238,7 +237,7 @@ export const handleEvent =
 						if (!safe.success) return error(new DataError(struct, 'Invalid Read property'));
 						streamer = struct.fromProperty(safe.data.key, safe.data.value as any, {
 							type: 'stream',
-							wait: event.request.locals.session.data.latency + 1,
+							wait: event.request.locals.session.data.latency + 1
 						});
 					}
 					break;
@@ -253,7 +252,7 @@ export const handleEvent =
 						if (!safe.success) return error(new DataError(struct, 'Invalid Read universe'));
 						streamer = struct.fromProperty('universe', safe.data.universe, {
 							type: 'stream',
-							wait: event.request.locals.session.data.latency + 1,
+							wait: event.request.locals.session.data.latency + 1
 						});
 					}
 					break;

@@ -161,7 +161,7 @@ class SSE {
 	private ping() {
 		return fetch('/sse/ping', {
 			body: JSON.stringify({
-				now: Date.now(), // to measure latency
+				now: Date.now() // to measure latency
 			})
 		}).then((res) => res.ok);
 	}

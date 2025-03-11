@@ -14,16 +14,24 @@ export default async (name?: string) => {
 		await fs.promises.mkdir(BACKUP_DIR, { recursive: true });
 	}
 
-	(await openStructs()).unwrap();
-	(await Struct.buildAll(DB)).unwrap();
+	try {
+		(await openStructs()).unwrap();
+		(await Struct.buildAll(DB)).unwrap();
+	} catch (error) {
+		if (error instanceof Error) {
+			if (!error.message.includes('already been built')) {
+				throw error;
+			}
+		}
+	}
 
 	if (!name) {
 		name =
-		(
-			await prompt({
-				message: 'Enter the name of the backup'
-			})
-		).unwrap() || 'unnamed';
+			(
+				await prompt({
+					message: 'Enter the name of the backup'
+				})
+			).unwrap() || 'unnamed';
 	}
 
 	const promises: Promise<unknown>[] = [];

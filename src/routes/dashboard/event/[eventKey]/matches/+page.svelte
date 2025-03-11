@@ -14,21 +14,6 @@
 
 	$effect(() => nav(event));
 
-	$effect(() => {
-		Navbar.addSection({
-			name: `${event.name} Dashboard`,
-			priority: 1,
-			links: [
-				{
-					name: `${event.key} Dashboard`,
-					href: `/dashboard/event/${event.key}`,
-					icon: 'event',
-					type: 'material-icons'
-				}
-			]
-		});
-	});
-
 	const team = (teamKey: string) => {
 		return Number(teamKey.substring(3));
 	};

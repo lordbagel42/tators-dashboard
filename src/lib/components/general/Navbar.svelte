@@ -92,7 +92,9 @@
 			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a>
 		</li>
 		<li class="nav-item">
-			<a class="nav-link active ws-nowrap" aria-current="page" href="https://app.tatorscout.org">Remote App</a>
+			<a class="nav-link active ws-nowrap" aria-current="page" href="https://app.tatorscout.org"
+				>Remote App</a
+			>
 		</li>
 	</ul>
 </div>

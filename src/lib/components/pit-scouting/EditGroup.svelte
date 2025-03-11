@@ -57,9 +57,11 @@
 					class="btn btn-danger"
 					onclick={async () => {
 						const res = await confirm('Are you sure you want to delete this group?');
-						if (!res) return;;
-						if ($questions.filter(q => !q.data.canUpdate).length) {
-							const res = await confirm('It looks as though there are questions in this group that are not supposed to be updated or deleted. Are you sure you want to delete this group? This may cause issues with other parts of the app.');
+						if (!res) return;
+						if ($questions.filter((q) => !q.data.canUpdate).length) {
+							const res = await confirm(
+								'It looks as though there are questions in this group that are not supposed to be updated or deleted. Are you sure you want to delete this group? This may cause issues with other parts of the app.'
+							);
 							if (!res) return;
 						}
 						group.delete();
@@ -121,7 +123,9 @@
 									const res = await confirm('Are you sure you want to delete this question?');
 									if (!res) return;
 									if (!question.data.canUpdate) {
-										const res = await confirm('This question is not supposed to be updated or deleted. Are you sure you want to delete this question? This may cause issues with other parts of the app.');
+										const res = await confirm(
+											'This question is not supposed to be updated or deleted. Are you sure you want to delete this question? This may cause issues with other parts of the app.'
+										);
 										if (!res) return;
 									}
 									question.delete();

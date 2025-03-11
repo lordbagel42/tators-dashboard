@@ -266,11 +266,19 @@ export const handleEvent =
 
 			if (account) {
 				const data = (await streamer.await()).unwrap();
-				json = JSON.stringify(await Promise.all(data.map(async d => {
-					if (runBypass(d)) return d.safe();
-					const [res] = (await Permissions.filterAction(roles, [d], PropertyAction.Read)).unwrap();
-					return res;
-				})).filter(Boolean));
+				json = JSON.stringify(
+					(
+						await Promise.all(
+							data.map(async (d) => {
+								if (runBypass(d)) return d.safe();
+								const [res] = (
+									await Permissions.filterAction(roles, [d], PropertyAction.Read)
+								).unwrap();
+								return res;
+							})
+						)
+					).filter(Boolean)
+				);
 				// readable = new ReadableStream({
 				// 	start(controller) {
 				// 		streamer.on('end', () => {
@@ -305,7 +313,7 @@ export const handleEvent =
 				// });
 			} else if (struct.data.name === 'test') {
 				const data = (await streamer.await()).unwrap();
-				json = JSON.stringify(data.map(d => d.data));
+				json = JSON.stringify(data.map((d) => d.data));
 				// readable = new ReadableStream({
 				// 	start(controller) {
 				// 		streamer.on('end', () => {
@@ -336,7 +344,7 @@ export const handleEvent =
 			return new Response(json, {
 				status: 200,
 				headers: {
-					'Content-Type': 'application/json',
+					'Content-Type': 'application/json'
 				}
 			});
 		}

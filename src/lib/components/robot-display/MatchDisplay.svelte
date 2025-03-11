@@ -8,6 +8,7 @@
 	import { TBAEvent, TBATeam, TBAMatch } from '$lib/utils/tba';
 	import { writable } from 'svelte/store';
 	import MatchComments from './MatchComments.svelte';
+	import Checks from './Checks.svelte';
 
 	interface Props {
 		match: TBAMatch;
@@ -23,8 +24,8 @@
 <div class="container-fluid">
 	<div class="row mb-3">
 		{#if scouting}
-			<!-- <Checks {scouting} /> -->
 			<MatchComments {scouting} />
+			<Checks {scouting} />
 			<Trace {scouting} {event} />
 		{:else}
 			<div class="col-12">

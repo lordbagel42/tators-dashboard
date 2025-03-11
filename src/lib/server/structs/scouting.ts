@@ -401,30 +401,30 @@ export namespace Scouting {
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
 				const [
-					general
+					general,
 					// mech,
-					// electrical
+					electrical
 				] = await Promise.all([
 					Sections.new({
 						name: 'General',
 						eventKey,
 						order: 0
-					})
+					}),
 					// Sections.new({
 					// 	name: 'Mechanical',
 					// 	eventKey,
 					// 	order: 1
 					// }),
-					// Sections.new({
-					// 	name: 'Electrical',
-					// 	eventKey,
-					// 	order: 2
-					// }),
+					Sections.new({
+						name: 'Electrical',
+						eventKey,
+						order: 2
+					}),
 				]);
 
 				const genSection = general.unwrap();
 				// const mechSection = mech.unwrap();
-				// const electSection = electrical.unwrap();
+				const electSection = electrical.unwrap();
 
 				// TODO: Write boilerplate groups/questions
 				const [overviewRes, strategyRes, gameplayRes, summaryRes] = await Promise.all([
@@ -450,10 +450,29 @@ export namespace Scouting {
 					})
 				]);
 
+				const [
+					eProtectedRes,
+					eOverviewRes,
+				] = await Promise.all([
+					Groups.new({
+						sectionId: electSection.id,
+						name: 'Protected',
+						order: 0
+					}),
+					Groups.new({
+						sectionId: electSection.id,
+						name: 'Electrical Overview',
+						order: 1
+					}),
+				]);
+
 				const overview = overviewRes.unwrap();
 				const strategy = strategyRes.unwrap();
 				const gameplay = gameplayRes.unwrap();
 				const summary = summaryRes.unwrap();
+				const eOverview = eOverviewRes.unwrap();
+				const eProtected = eProtectedRes.unwrap();
+				
 
 				resolveAll(
 					await Promise.all([
@@ -607,7 +626,73 @@ export namespace Scouting {
 							type: 'textarea',
 							options: '[]',
 							order: 1
-						})
+						}),
+
+						// Electrical
+						Questions.new({
+							question:  'Is the main breaker protected?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'breaker_secure',
+							description: 'If the main breaker could be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question:  'Is the RoboRIO protected?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'roborio_secure',
+							description: 'If the RoboRIO could have potential failures due to game pieces, other robots, or pieces of metal, please mark as no.',
+							options: '[]',
+							order: 1,
+						}),
+						Questions.new({
+							question:  'Is the battery secure?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'battery_secure',
+							description: 'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 1,
+						}),
+
+						Questions.new({
+							question:  'Is the robot\'s electrical system generally accessible?',
+							type: 'boolean',
+							groupId: eOverview.id,
+							key: 'electrical_access',
+							description: 'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 0,
+						}),
+						Questions.new({
+							question:  'Please rate the overall cleanliness of the electrical system',
+							type: 'number',
+							groupId: eOverview.id,
+							key: 'electrical_cleanliness',
+							description: 'Rate between 1 and 10, 1 being a rat\'s nest and 10 being a professional wiring job.',
+							options: '[]',
+							order: 1,
+						}),
+						Questions.new({
+							question:  'Overall, how well do you think the electrical system is integrated into the robot?',
+							type: 'number',
+							groupId: eOverview.id,
+							key: 'electrical_rating',
+							description: 'Rate between 1 and 10, 1 being terrible and 10 being perfect.',
+							options: '[]',
+							order: 2,
+						}),
+						Questions.new({
+							question:  'Due to what you\'ve seen, do you think this robot is a SpecTator?',
+							type: 'boolean',
+							groupId: eOverview.id,
+							key: 'electrical_spectator',
+							description: 'If you believe the electrical system could have significant issues during a match, please mark as yes.',
+							options: '[]',
+							order: 3,
+						}),
 					])
 				);
 			});

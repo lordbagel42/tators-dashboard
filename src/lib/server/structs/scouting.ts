@@ -45,6 +45,8 @@ export namespace Scouting {
 		}
 	});
 
+	export type MatchScoutingData = typeof MatchScouting.sample;
+
 	MatchScouting.queryListen('from-team', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
 		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
@@ -95,6 +97,16 @@ export namespace Scouting {
 
 			if (!res) return undefined;
 			return MatchScouting.Generator(res);
+		});
+	};
+
+	export const getTeamScouting = (team: number, event: string) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, event)));
+
+			return res.map((r) => MatchScouting.Generator(r));
 		});
 	};
 
@@ -455,51 +467,76 @@ export namespace Scouting {
 							options: '[]',
 							order: 0
 						}),
-						Questions.new({
-							question: 'What is the inspection weight?',
-							groupId: overview.id,
-							key: 'weight',
-							description: 'The inspection weight in lbs',
-							type: 'number',
-							options: '[]',
-							order: 1
-						}),
-						Questions.new({
-							question: 'What is the robot width',
-							groupId: overview.id,
-							key: 'width',
-							description: 'The robot width in inches',
-							type: 'number',
-							options: '[]',
-							order: 2
-						}),
-						Questions.new({
-							question: 'What is the robot length',
-							groupId: overview.id,
-							key: 'length',
-							description: 'The robot length in inches',
-							type: 'number',
-							options: '[]',
-							order: 3
-						}),
-						Questions.new({
-							question: 'What is the drive train type?',
-							groupId: overview.id,
-							key: 'drivetrain',
-							description: 'Swerve, Tank, Mecanum, etc.',
-							type: 'text',
-							options: '[]',
-							order: 4
-						}),
-						Questions.new({
-							question: 'How much drive practice has your driver had?',
-							groupId: overview.id,
-							key: 'drivePractice',
-							description: 'In hours. Assume around 4h per regional if they answer with that.',
-							type: 'text',
-							options: '[]',
-							order: 5
-						}),
+						Questions.new(
+							{
+								question: 'What is the inspection weight?',
+								groupId: overview.id,
+								key: 'robot_weight',
+								description: 'The inspection weight in lbs',
+								type: 'number',
+								options: '[]',
+								order: 1
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the robot width',
+								groupId: overview.id,
+								key: 'robot_width',
+								description: 'The robot width in inches',
+								type: 'number',
+								options: '[]',
+								order: 2
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the robot length',
+								groupId: overview.id,
+								key: 'robot_length',
+								description: 'The robot length in inches',
+								type: 'number',
+								options: '[]',
+								order: 3
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the drive train type?',
+								groupId: overview.id,
+								key: 'robot_drivetrain',
+								description: 'Swerve, Tank, Mecanum, etc.',
+								type: 'text',
+								options: '[]',
+								order: 4
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'How much drive practice has your driver had?',
+								groupId: overview.id,
+								key: 'robot_drive_practice',
+								description: 'In hours. Assume around 4h per regional if they answer with that.',
+								type: 'text',
+								options: '[]',
+								order: 5
+							},
+							{
+								static: true
+							}
+						),
 						Questions.new({
 							question: 'What is the programming language you use?',
 							groupId: overview.id,

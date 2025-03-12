@@ -49,13 +49,33 @@
 								<div class="chart-container">
 									<EventSummary
 										labels={Object.entries(row.data)
-											.sort((a, b) => b[1][i] - a[1][i])
+											.sort((a, b) => {
+												const A = a[1][i];
+												const B = b[1][i];
+												if (isNaN(A)) {
+													return 1;
+												}
+												if (isNaN(B)) {
+													return -1;
+												}
+												return B - A;
+											})
 											.map((v) => v[0])}
 										datasets={[
 											{
 												label,
 												data: Object.entries(row.data)
-													.sort((a, b) => b[1][i] - a[1][i])
+													.sort((a, b) => {
+														const A = a[1][i];
+														const B = b[1][i];
+														if (isNaN(A)) {
+															return 1;
+														}
+														if (isNaN(B)) {
+															return -1;
+														}
+														return B - A;
+													})
 													.map((v) => v[1][i])
 											}
 										]}

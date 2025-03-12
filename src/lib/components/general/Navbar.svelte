@@ -46,8 +46,7 @@
 					style="
 					position: fixed;
 					top: 52px;
-					left: 1 !important;
-					right: 0 !important;
+					left: calc(100% - 160px);
 					width:	min-content;
 				"
 				>
@@ -73,8 +72,7 @@
 					style="
 					position: fixed;
 					top: 52px;
-					left: 1 !important;
-					right: 0 !important;
+					left: calc(100% - 160px);
 					width:	min-content;
 				"
 				>

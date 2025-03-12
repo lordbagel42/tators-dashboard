@@ -50,8 +50,7 @@
 				};
 
 				const average = (numbers: number[]) => {
-					if (!numbers.length) return 0;
-					return M.average(numbers.filter((n) => !isNaN(n)));
+					return numbers.reduce((acc, n) => acc + n, 0) / numbers.length;
 				};
 
 				const datasets = [

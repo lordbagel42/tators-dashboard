@@ -143,7 +143,7 @@ class SSE {
 				toReturn.disconnect();
 				toReturn.disconnect = connect();
 			}
-		}, 10000);
+		}, 10 * 1000); // 10 seconds
 		this.ping().then((res) => {
 			if (!res) {
 				toReturn.disconnect();

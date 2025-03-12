@@ -52,9 +52,6 @@
 			<Trace {scouting} {event} />
 		</div>
 		<div class="row mb-3">
-			<MatchActions {scouting} />
-		</div>
-		<div class="row mb-3">
 			<div class="col-12">
 				<div class="btn-group" role="group">
 					<button

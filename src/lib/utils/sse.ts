@@ -164,7 +164,10 @@ class SSE {
 				now: Date.now() // to measure latency
 			}),
 			method: 'POST'
-		}).then((res) => res.ok);
+		}).then((res) => {
+			res.text().then(console.log)
+			return res.ok;
+		});
 	}
 
 	private stop = false;

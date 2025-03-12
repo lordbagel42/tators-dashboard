@@ -1,3 +1,4 @@
+import { text } from '@sveltejs/kit';
 import { z } from 'zod';
 
 export const POST = async (event) => {
@@ -6,5 +7,5 @@ export const POST = async (event) => {
 	event.locals.session.update({
 		latency: diff
 	});
-	return new Response('pong');
+	return text(`Ping: ${diff}`)
 };

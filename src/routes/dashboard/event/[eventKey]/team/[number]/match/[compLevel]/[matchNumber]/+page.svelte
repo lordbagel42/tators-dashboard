@@ -90,7 +90,10 @@
 								title="YouTube video player"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
-								class="w-100 mb-0 h-100"
+								class="w-100 mb-0"
+								style="
+									height: 200px;
+								"
 							></iframe>
 						{/if}
 					</div>

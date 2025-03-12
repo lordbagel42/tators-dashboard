@@ -7,7 +7,8 @@
 	import Trace from './Trace.svelte';
 	import { TBAEvent, TBATeam, TBAMatch } from '$lib/utils/tba';
 	import { writable } from 'svelte/store';
-	import { confirm } from '$lib/utils/prompts';
+	import MatchComments from './MatchComments.svelte';
+	import Checks from './Checks.svelte';
 	import { dateTime } from 'ts-utils/clock';
 
 	interface Props {
@@ -35,6 +36,12 @@
 
 <div class="container-fluid">
 	{#if scouting}
+		<div class="row mb-3">
+			<MatchComments {scouting} />
+		</div>
+		<div class="row mb-3">
+			<Checks {scouting} />
+		</div>
 		<div class="row mb-3">
 			<Trace {scouting} {event} />
 		</div>

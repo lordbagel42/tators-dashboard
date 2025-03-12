@@ -6,6 +6,12 @@ import { z } from 'zod';
 import { Requests } from './requests';
 import { Random } from 'ts-utils/math';
 
+const latency = {
+	average: 0,
+	history: [] as number[],
+	latest: 0,
+};
+
 class SSE {
 	public uuid = Random.uuid();
 	public readonly emitter = new EventEmitter();
@@ -159,13 +165,26 @@ class SSE {
 	}
 
 	private ping() {
+		const now = Date.now();
 		return fetch('/sse/ping', {
 			body: JSON.stringify({
-				now: Date.now() // to measure latency
+				latency: latency.latest
 			}),
 			method: 'POST'
 		}).then((res) => {
-			res.text().then(console.log)
+			const ping = Math.abs(Date.now() - now);
+			if (!latency.history.length) {
+				this.ping(); // ping again to get a more accurate latency
+			}
+			if (latency.history.length > 100) {
+				latency.history.shift();
+			}
+			latency.history.push(ping);
+			latency.latest = ping;
+			latency.average = latency.history.reduce((a, b) => a + b, 0) / latency.history.length;
+			Object.assign(window, {
+				latency
+			});
 			return res.ok;
 		});
 	}

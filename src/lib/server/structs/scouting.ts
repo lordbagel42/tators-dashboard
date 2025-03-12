@@ -45,6 +45,8 @@ export namespace Scouting {
 		}
 	});
 
+	export type MatchScoutingData = typeof MatchScouting.sample;
+
 	MatchScouting.queryListen('from-team', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
 		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
@@ -63,7 +65,13 @@ export namespace Scouting {
 		setTimeout(async () => {
 			const matchScouting = await DB.select()
 				.from(MatchScouting.table)
-				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.eventKey, eventKey)));
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, eventKey),
+						eq(MatchScouting.table.archived, false)
+					)
+				);
 
 			for (let i = 0; i < matchScouting.length; i++) {
 				stream.add(MatchScouting.Generator(matchScouting[i]));
@@ -73,6 +81,55 @@ export namespace Scouting {
 		});
 
 		return stream;
+	});
+
+	MatchScouting.queryListen('archived-matches', async (event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
+			return new Error('Not entitled');
+
+		const { team, eventKey } = z
+			.object({
+				team: z.number(),
+				eventKey: z.string()
+			})
+			.parse(data);
+
+		const stream = new StructStream(MatchScouting);
+
+		setTimeout(async () => {
+			const matchScouting = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, eventKey),
+						eq(MatchScouting.table.archived, true)
+					)
+				);
+
+			for (let i = 0; i < matchScouting.length; i++) {
+				stream.add(MatchScouting.Generator(matchScouting[i]));
+			}
+
+			stream.end();
+		});
+
+		return stream;
+	});
+
+	MatchScouting.on('archive', (match) => {
+		TeamComments.fromProperty('matchScoutingId', match.id, {
+			type: 'stream'
+		}).pipe((d) => d.setArchive(true));
+	});
+
+	MatchScouting.on('restore', (match) => {
+		TeamComments.fromProperty('matchScoutingId', match.id, {
+			type: 'stream',
+			includeArchived: true
+		}).pipe((d) => d.setArchive(false));
 	});
 
 	export const getMatchScouting = (data: {
@@ -89,12 +146,29 @@ export namespace Scouting {
 						eq(MatchScouting.table.eventKey, data.eventKey),
 						eq(MatchScouting.table.matchNumber, data.match),
 						eq(MatchScouting.table.team, data.team),
-						eq(MatchScouting.table.compLevel, data.compLevel)
+						eq(MatchScouting.table.compLevel, data.compLevel),
+						eq(MatchScouting.table.archived, false)
 					)
 				);
 
 			if (!res) return undefined;
 			return MatchScouting.Generator(res);
+		});
+	};
+
+	export const getTeamScouting = (team: number, event: string) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.eventKey, event),
+						eq(MatchScouting.table.archived, false)
+					)
+				);
+
+			return res.map((r) => MatchScouting.Generator(r));
 		});
 	};
 
@@ -389,30 +463,30 @@ export namespace Scouting {
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
 				const [
-					general
+					general,
 					// mech,
-					// electrical
+					electrical
 				] = await Promise.all([
 					Sections.new({
 						name: 'General',
 						eventKey,
 						order: 0
-					})
+					}),
 					// Sections.new({
 					// 	name: 'Mechanical',
 					// 	eventKey,
 					// 	order: 1
 					// }),
-					// Sections.new({
-					// 	name: 'Electrical',
-					// 	eventKey,
-					// 	order: 2
-					// }),
+					Sections.new({
+						name: 'Electrical',
+						eventKey,
+						order: 2
+					})
 				]);
 
 				const genSection = general.unwrap();
 				// const mechSection = mech.unwrap();
-				// const electSection = electrical.unwrap();
+				const electSection = electrical.unwrap();
 
 				// TODO: Write boilerplate groups/questions
 				const [overviewRes, strategyRes, gameplayRes, summaryRes] = await Promise.all([
@@ -438,10 +512,25 @@ export namespace Scouting {
 					})
 				]);
 
+				const [eProtectedRes, eOverviewRes] = await Promise.all([
+					Groups.new({
+						sectionId: electSection.id,
+						name: 'Protected',
+						order: 0
+					}),
+					Groups.new({
+						sectionId: electSection.id,
+						name: 'Electrical Overview',
+						order: 1
+					})
+				]);
+
 				const overview = overviewRes.unwrap();
 				const strategy = strategyRes.unwrap();
 				const gameplay = gameplayRes.unwrap();
 				const summary = summaryRes.unwrap();
+				const eOverview = eOverviewRes.unwrap();
+				const eProtected = eProtectedRes.unwrap();
 
 				resolveAll(
 					await Promise.all([
@@ -455,51 +544,76 @@ export namespace Scouting {
 							options: '[]',
 							order: 0
 						}),
-						Questions.new({
-							question: 'What is the inspection weight?',
-							groupId: overview.id,
-							key: 'weight',
-							description: 'The inspection weight in lbs',
-							type: 'number',
-							options: '[]',
-							order: 1
-						}),
-						Questions.new({
-							question: 'What is the robot width',
-							groupId: overview.id,
-							key: 'width',
-							description: 'The robot width in inches',
-							type: 'number',
-							options: '[]',
-							order: 2
-						}),
-						Questions.new({
-							question: 'What is the robot length',
-							groupId: overview.id,
-							key: 'length',
-							description: 'The robot length in inches',
-							type: 'number',
-							options: '[]',
-							order: 3
-						}),
-						Questions.new({
-							question: 'What is the drive train type?',
-							groupId: overview.id,
-							key: 'drivetrain',
-							description: 'Swerve, Tank, Mecanum, etc.',
-							type: 'text',
-							options: '[]',
-							order: 4
-						}),
-						Questions.new({
-							question: 'How much drive practice has your driver had?',
-							groupId: overview.id,
-							key: 'drivePractice',
-							description: 'In hours. Assume around 4h per regional if they answer with that.',
-							type: 'text',
-							options: '[]',
-							order: 5
-						}),
+						Questions.new(
+							{
+								question: 'What is the inspection weight?',
+								groupId: overview.id,
+								key: 'robot_weight',
+								description: 'The inspection weight in lbs',
+								type: 'number',
+								options: '[]',
+								order: 1
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the robot width',
+								groupId: overview.id,
+								key: 'robot_width',
+								description: 'The robot width in inches',
+								type: 'number',
+								options: '[]',
+								order: 2
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the robot length',
+								groupId: overview.id,
+								key: 'robot_length',
+								description: 'The robot length in inches',
+								type: 'number',
+								options: '[]',
+								order: 3
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'What is the drive train type?',
+								groupId: overview.id,
+								key: 'robot_drivetrain',
+								description: 'Swerve, Tank, Mecanum, etc.',
+								type: 'text',
+								options: '[]',
+								order: 4
+							},
+							{
+								static: true
+							}
+						),
+						Questions.new(
+							{
+								question: 'How much drive practice has your driver had?',
+								groupId: overview.id,
+								key: 'robot_drive_practice',
+								description: 'In hours. Assume around 4h per regional if they answer with that.',
+								type: 'text',
+								options: '[]',
+								order: 5
+							},
+							{
+								static: true
+							}
+						),
 						Questions.new({
 							question: 'What is the programming language you use?',
 							groupId: overview.id,
@@ -570,6 +684,79 @@ export namespace Scouting {
 							type: 'textarea',
 							options: '[]',
 							order: 1
+						}),
+
+						// Electrical
+						Questions.new({
+							question: 'Is the main breaker protected?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'breaker_secure',
+							description:
+								'If the main breaker could be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 0
+						}),
+						Questions.new({
+							question: 'Is the RoboRIO protected?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'roborio_secure',
+							description:
+								'If the RoboRIO could have potential failures due to game pieces, other robots, or pieces of metal, please mark as no.',
+							options: '[]',
+							order: 1
+						}),
+						Questions.new({
+							question: 'Is the battery secure?',
+							type: 'boolean',
+							groupId: eProtected.id,
+							key: 'battery_secure',
+							description:
+								'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 1
+						}),
+
+						Questions.new({
+							question: "Is the robot's electrical system generally accessible?",
+							type: 'boolean',
+							groupId: eOverview.id,
+							key: 'electrical_access',
+							description:
+								'If the battery could fall out or be hit by a game piece or another robot, please mark as no.',
+							options: '[]',
+							order: 0
+						}),
+						Questions.new({
+							question: 'Please rate the overall cleanliness of the electrical system',
+							type: 'number',
+							groupId: eOverview.id,
+							key: 'electrical_cleanliness',
+							description:
+								"Rate between 1 and 10, 1 being a rat's nest and 10 being a professional wiring job.",
+							options: '[]',
+							order: 1
+						}),
+						Questions.new({
+							question:
+								'Overall, how well do you think the electrical system is integrated into the robot?',
+							type: 'number',
+							groupId: eOverview.id,
+							key: 'electrical_rating',
+							description: 'Rate between 1 and 10, 1 being terrible and 10 being perfect.',
+							options: '[]',
+							order: 2
+						}),
+						Questions.new({
+							question: "Due to what you've seen, do you think this robot is a SpecTator?",
+							type: 'boolean',
+							groupId: eOverview.id,
+							key: 'electrical_spectator',
+							description:
+								'If you believe the electrical system could have significant issues during a match, please mark as yes.',
+							options: '[]',
+							order: 3
 						})
 					])
 				);

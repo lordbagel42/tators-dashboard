@@ -143,7 +143,13 @@ class SSE {
 				toReturn.disconnect();
 				toReturn.disconnect = connect();
 			}
-		}, 10000);
+		}, 10 * 1000); // 10 seconds
+		this.ping().then((res) => {
+			if (!res) {
+				toReturn.disconnect();
+				toReturn.disconnect = connect();
+			}
+		});
 		// connect();
 		return toReturn;
 	}
@@ -153,7 +159,15 @@ class SSE {
 	}
 
 	private ping() {
-		return fetch('/sse/ping').then((res) => res.ok);
+		return fetch('/sse/ping', {
+			body: JSON.stringify({
+				now: Date.now() // to measure latency
+			}),
+			method: 'POST'
+		}).then((res) => {
+			res.text().then(console.log)
+			return res.ok;
+		});
 	}
 
 	private stop = false;

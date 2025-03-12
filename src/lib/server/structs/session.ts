@@ -2,8 +2,6 @@ import { attemptAsync } from 'ts-utils/check';
 import { Struct } from 'drizzle-struct/back-end';
 import { integer, text } from 'drizzle-orm/pg-core';
 import { Account } from './account';
-import { Permissions } from './permissions';
-import { Universes } from './universe';
 
 const { PUBLIC_DOMAIN, SESSION_DURATION } = process.env;
 
@@ -32,7 +30,8 @@ export namespace Session {
 			ip: text('ip').notNull(),
 			userAgent: text('user_agent').notNull(),
 			requests: integer('requests').notNull(),
-			prevUrl: text('prev_url').notNull()
+			prevUrl: text('prev_url').notNull(),
+			latency: integer('latency').notNull().default(0)
 		},
 		frontend: false
 	});
@@ -41,7 +40,8 @@ export namespace Session {
 
 	export const getSession = (event: RequestEvent) => {
 		return attemptAsync(async () => {
-			const id = event.cookies.get('ssid');
+			// TODO: will eventually split domain later once we use the same cookie id as session id upon creation
+			const id = event.cookies.get('ssid:' + PUBLIC_DOMAIN);
 
 			const create = async () => {
 				const session = (
@@ -50,11 +50,12 @@ export namespace Session {
 						ip: '',
 						userAgent: '',
 						requests: 0,
-						prevUrl: ''
+						prevUrl: '',
+						latency: 0
 					})
 				).unwrap();
 
-				event.cookies.set('ssid', session.id, {
+				event.cookies.set('ssid:' + PUBLIC_DOMAIN, session.id, {
 					httpOnly: false,
 					domain: PUBLIC_DOMAIN ?? '',
 					path: '/',

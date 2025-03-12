@@ -84,7 +84,7 @@
 						}
 					},
 					responsive: true,
-					maintainAspectRatio: false,
+					maintainAspectRatio: false
 				}
 			});
 

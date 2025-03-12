@@ -4,9 +4,9 @@ import { z } from 'zod';
 export const POST = async (event) => {
 	const { latency } = z.object({ latency: z.number() }).parse(await event.request.json());
 	event.locals.session.update({
-		latency: latency,
+		latency: latency
 	});
 	return new Response('Pong', {
-		status: 200,
+		status: 200
 	});
 };

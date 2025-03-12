@@ -9,7 +9,7 @@ import { Random } from 'ts-utils/math';
 const latency = {
 	average: 0,
 	history: [] as number[],
-	latest: 0,
+	latest: 0
 };
 
 class SSE {

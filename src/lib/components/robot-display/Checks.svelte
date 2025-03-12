@@ -41,7 +41,7 @@
 	});
 </script>
 
-<div class="row mb-3">
+<div>
 	<h5 class="text-center">Checks</h5>
 	<ul class="list-group">
 		{#each checks as check (check)}

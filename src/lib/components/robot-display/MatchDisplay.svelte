@@ -9,6 +9,7 @@
 	import { writable } from 'svelte/store';
 	import MatchComments from './MatchComments.svelte';
 	import Checks from './Checks.svelte';
+	import { dateTime } from 'ts-utils/clock';
 
 	interface Props {
 		match: TBAMatch;
@@ -34,10 +35,14 @@
 </script>
 
 <div class="container-fluid">
-	<div class="row mb-3">
-		{#if scouting}
+	{#if scouting}
+		<div class="row mb-3">
 			<MatchComments {scouting} />
+		</div>
+		<div class="row mb-3">
 			<Checks {scouting} />
+		</div>
+		<div class="row mb-3">
 			<Trace {scouting} {event} />
 		</div>
 		<div class="row mb-3">

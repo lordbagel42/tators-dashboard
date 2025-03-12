@@ -84,12 +84,7 @@
 						}
 					},
 					responsive: true,
-					maintainAspectRatio: false,
-					// plugins: {
-					// 	legend: {
-					// 		display: false
-					// 	}
-					// }
+					maintainAspectRatio: false
 				}
 			});
 

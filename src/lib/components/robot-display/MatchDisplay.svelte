@@ -10,6 +10,7 @@
 	import MatchComments from './MatchComments.svelte';
 	import Checks from './Checks.svelte';
 	import { dateTime } from 'ts-utils/clock';
+	import MatchActions from './MatchActions.svelte';
 
 	interface Props {
 		match: TBAMatch;
@@ -44,6 +45,9 @@
 		</div>
 		<div class="row mb-3">
 			<Trace {scouting} {event} />
+		</div>
+		<div class="row mb-3">
+			<MatchActions {scouting} />
 		</div>
 		<div class="row mb-3">
 			<div class="col-12">

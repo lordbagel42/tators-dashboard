@@ -168,7 +168,7 @@ class SSE {
 		const now = Date.now();
 		return fetch('/sse/ping', {
 			body: JSON.stringify({
-				latency: latency.latest
+				latency: latency.latest ?? 0
 			}),
 			method: 'POST'
 		}).then((res) => {

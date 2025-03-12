@@ -7,5 +7,5 @@ export const POST = async (event) => {
 	event.locals.session.update({
 		latency: diff
 	});
-	return text(`Ping: ${diff}`)
+	return text(`Ping: ${diff}`);
 };

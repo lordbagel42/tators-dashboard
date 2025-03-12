@@ -165,7 +165,7 @@ class SSE {
 			}),
 			method: 'POST'
 		}).then((res) => {
-			res.text().then(console.log)
+			res.text().then(console.log);
 			return res.ok;
 		});
 	}

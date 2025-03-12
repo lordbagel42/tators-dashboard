@@ -40,7 +40,12 @@
 			<MatchComments {scouting} />
 		</div>
 		<div class="row mb-3">
-			<Checks {scouting} />
+			<div class="col-md-6">
+				<Checks {scouting} />
+			</div>
+			<div class="col-md-6">
+				<MatchActions {scouting} />
+			</div>
 		</div>
 		<div class="row mb-3">
 			<Trace {scouting} {event} />

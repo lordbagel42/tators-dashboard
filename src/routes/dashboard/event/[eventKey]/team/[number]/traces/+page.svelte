@@ -16,14 +16,13 @@
 	const teams = $derived(data.teams);
 	const event = $derived(data.event);
 	const team = $derived(data.team);
+	const scoutingArr = $derived(data.scouting);
 
 	$effect(() => nav(event.tba));
 
-	let scoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
 
 	$effect(() => {
 		if (!browser) return;
-		scoutingArr = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 	});
 
 	let modal: Modal;
@@ -47,6 +46,45 @@
 					inline: 'center'
 				})
 			);
+		}
+	});
+
+	onMount(() => {
+		const offNew = Scouting.MatchScouting.on('new', s => {
+			if (s.data.team === team.tba.team_number && s.data.eventKey === event.tba.key) {
+				scoutingArr.add(s);
+			}
+		});
+
+		const offRestore = Scouting.MatchScouting.on('restore', s => {
+			if (s.data.team === team.tba.team_number && s.data.eventKey === event.tba.key) {
+				scoutingArr.add(s);
+			}
+		});
+
+		const offDelete = Scouting.MatchScouting.on('delete', s => {
+			if (s.data.team === team.tba.team_number && s.data.eventKey === event.tba.key) {
+				scoutingArr.remove(s);
+			}
+		});
+
+		const offArchive = Scouting.MatchScouting.on('archive', s => {
+			if (s.data.team === team.tba.team_number && s.data.eventKey === event.tba.key) {
+				scoutingArr.remove(s);
+			}
+		});
+
+		const offUpdate = Scouting.MatchScouting.on('update', s => {
+			if (s.data.team === team.tba.team_number && s.data.eventKey === event.tba.key) {
+				scoutingArr.inform();
+			}
+		});
+
+		return () => {
+			offNew();
+			offDelete();
+			offArchive();
+			offUpdate();
 		}
 	});
 </script>

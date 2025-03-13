@@ -3,24 +3,39 @@ import * as TBA from '$lib/server/utils/tba';
 import { redirect, fail } from '@sveltejs/kit';
 import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
 import { ServerCode } from 'ts-utils/status';
+import terminal from '$lib/server/utils/terminal';
 
 export const load = async (event) => {
 	if (!event.locals.account) throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
 	const e = await TBA.Event.getEvent(event.params.eventKey);
 	if (e.isErr()) {
-		throw redirect(ServerCode.temporaryRedirect, `/404?url${event.url.href}`);
+		terminal.error(e.error);
+		throw fail(ServerCode.internalServerError);
 	}
 
 	const [teams, matches] = await Promise.all([e.value.getTeams(), e.value.getMatches()]);
 
-	if (teams.isErr()) throw fail(ServerCode.internalServerError);
-	if (matches.isErr()) throw fail(ServerCode.internalServerError);
+	if (teams.isErr()) {
+		terminal.error(teams.error);
+		throw fail(ServerCode.internalServerError);
+	}
+	if (matches.isErr()) {
+		terminal.error(matches.error);
+		throw fail(ServerCode.internalServerError);
+	}
 
-	const scouting = (
+	const scoutingRes = (
 		await Scouting.MatchScouting.fromProperty('eventKey', event.params.eventKey, {
 			type: 'stream'
 		}).await()
-	).unwrap();
+	);
+
+	if (scoutingRes.isErr()) {
+		terminal.error(scoutingRes.error);
+		throw fail(ServerCode.internalServerError);
+	}
+
+	const scouting = scoutingRes.value;
 
 	const teamTraces: {
 		number: number;

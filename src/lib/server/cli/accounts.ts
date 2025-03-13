@@ -6,6 +6,7 @@ import terminal from '../utils/terminal';
 import { Logs } from '../structs/log';
 import { attemptAsync } from 'ts-utils/check';
 import { Permissions } from '../structs/permissions';
+import backup from '../../../../scripts/backup';
 
 export const selectAccount = async (filter?: (account: Account.AccountData) => boolean) => {
 	return attemptAsync(async () => {
@@ -33,6 +34,7 @@ export const selectAccount = async (filter?: (account: Account.AccountData) => b
 
 export default new Folder('Accounts', 'Edit accounts', '👤', [
 	new Action('Reset Verification', 'Resets all account verification status',  '👤', async () => {
+		await backup('pre_verification');
 		await Permissions.RoleAccount.all({
 			type: 'stream',
 		}).pipe(a => a.delete());

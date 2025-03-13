@@ -18,7 +18,7 @@
 </script>
 
 <div class="container-fluid">
-	{#each $groups.filter(g => g.data.sectionId === section.data.id) as group}
+	{#each $groups.filter((g) => g.data.sectionId === section.data.id) as group}
 		<div class="row">
 			<Group {group} {section} {team} {event} {questions} {answers} />
 		</div>

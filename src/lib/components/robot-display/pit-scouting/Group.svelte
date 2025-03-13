@@ -18,7 +18,7 @@
 </script>
 
 <ul class="list-group border-0">
-	{#each $questions.filter(q => q.data.groupId === group.data.id) as question}
+	{#each $questions.filter((q) => q.data.groupId === group.data.id) as question}
 		<li class="list-group-item border-0">
 			<Question {question} answer={$answers.find((a) => a.data.questionId === question.data.id)} />
 		</li>

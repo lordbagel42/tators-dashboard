@@ -36,15 +36,15 @@ export namespace FIRST {
 			})
 			.parse(data);
 
-			setTimeout(async () => {
-				const res = (await getTeamPictures(team, eventKey)).unwrap();
+		setTimeout(async () => {
+			const res = (await getTeamPictures(team, eventKey)).unwrap();
 
-				for (let i = 0; i < res.length; i++) {
-					stream.add(res[i]);
-				}
+			for (let i = 0; i < res.length; i++) {
+				stream.add(res[i]);
+			}
 
-				stream.end();
-			}, event.locals.session.data.latency);
+			stream.end();
+		}, event.locals.session.data.latency);
 
 		return stream;
 	});
@@ -55,7 +55,7 @@ export namespace FIRST {
 				.from(TeamPictures.table)
 				.where(and(eq(TeamPictures.table.team, team), eq(TeamPictures.table.eventKey, eventKey)));
 
-			return res.map(r => TeamPictures.Generator(r));
+			return res.map((r) => TeamPictures.Generator(r));
 		});
 	};
 

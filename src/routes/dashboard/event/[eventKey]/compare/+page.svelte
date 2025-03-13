@@ -12,6 +12,7 @@
 	const event = $derived(data.event);
 	const selectedTeams = $derived(data.selectedTeams);
 	const teams = $derived(data.teams);
+	const teamScouting = $derived(data.teamScouting);
 
 	$effect(() => nav(event.tba));
 
@@ -128,23 +129,19 @@
 							<label class="btn btn-outline-primary h-min" for="stats-view">Event Stats</label>
 						</div>
 					</div>
-					<small class="text-muted">
-						This tool is still in beta-testing. You may need to reload the page if you encounter any
-						issues.
-					</small>
 				</div>
 				<div class="row mb-3">
 					{#key selectedTeams}
-						{#each selectedTeams as team}
+						{#each selectedTeams as team, i}
 							<div class="col-md-4 mb-3">
 								<div class="card">
 									<div class="card-body">
 										<h5 class="card-title">{team.tba.team_number} | {team.tba.nickname}</h5>
 										<div style="height: 300px;">
 											{#if view === 'progress'}
-												<Progress {team} {event} bind:staticY />
+												<Progress {team} {event} bind:staticY scouting={teamScouting[i]} />
 											{:else}
-												<TeamEventStats {team} {event} bind:staticY />
+												<TeamEventStats {team} {event} bind:staticY  scouting={teamScouting[i]}/>
 											{/if}
 										</div>
 									</div>

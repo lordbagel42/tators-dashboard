@@ -35,56 +35,43 @@ export const load = async (event) => {
 		});
 	}
 
-	const [
-		scouting,
-		comments,
-		pitScouting,
-		pictures,
-	] = await Promise.all([
+	const [scouting, comments, pitScouting, pictures] = await Promise.all([
 		Scouting.getTeamScouting(team.tba.team_number, e.value.tba.key),
 		Scouting.getTeamComments(team.tba.team_number, e.value.tba.key),
 		Scouting.PIT.getScoutingInfo(team.tba.team_number, e.value.tba.key),
-		FIRST.getTeamPictures(team.tba.team_number, e.value.tba.key),
+		FIRST.getTeamPictures(team.tba.team_number, e.value.tba.key)
 	]);
 
 	if (scouting.isErr()) {
 		terminal.error(scouting.error);
-		throw fail(
-			ServerCode.internalServerError,
-		);
+		throw fail(ServerCode.internalServerError);
 	}
 
 	if (comments.isErr()) {
 		terminal.error(comments.error);
-		throw fail(
-			ServerCode.internalServerError,
-		);
+		throw fail(ServerCode.internalServerError);
 	}
 
 	if (pitScouting.isErr()) {
 		terminal.error(pitScouting.error);
-		throw fail(
-			ServerCode.internalServerError,
-		);
+		throw fail(ServerCode.internalServerError);
 	}
 
 	if (pictures.isErr()) {
 		terminal.error(pictures.error);
-		throw fail(
-			ServerCode.internalServerError,
-		);
+		throw fail(ServerCode.internalServerError);
 	}
 
 	return {
 		team: team.tba,
 		teams: teams.value.map((t) => t.tba),
 		event: e.value.tba,
-		scouting: scouting.value.map(s => s.safe()),
-		comments: comments.value.map(c => c.safe()),
-		answers: pitScouting.value.answers.map(a => a.safe()),
-		questions: pitScouting.value.questions.map(q => q.safe()),
-		groups: pitScouting.value.groups.map(g => g.safe()),
-		sections: pitScouting.value.sections.map(s => s.safe()),
-		pictures: pictures.value.map(p => p.safe()),
+		scouting: scouting.value.map((s) => s.safe()),
+		comments: comments.value.map((c) => c.safe()),
+		answers: pitScouting.value.answers.map((a) => a.safe()),
+		questions: pitScouting.value.questions.map((q) => q.safe()),
+		groups: pitScouting.value.groups.map((g) => g.safe()),
+		sections: pitScouting.value.sections.map((s) => s.safe()),
+		pictures: pictures.value.map((p) => p.safe())
 	};
 };

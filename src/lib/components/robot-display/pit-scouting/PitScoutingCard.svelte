@@ -14,7 +14,7 @@
 		answers: Scouting.PIT.AnswerArr;
 	}
 
-	const { team, event, sections, groups, questions, answers, }: Props = $props();
+	const { team, event, sections, groups, questions, answers }: Props = $props();
 </script>
 
 <div

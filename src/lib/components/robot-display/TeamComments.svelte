@@ -14,7 +14,6 @@
 
 	const { team, event, comments }: Props = $props();
 
-
 	const accountFilterParams: ITextFilterParams = {
 		filterOptions: ['contains', 'notContains'],
 		textFormatter: (r) => {

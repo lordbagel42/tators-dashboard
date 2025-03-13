@@ -8,7 +8,7 @@
 	interface Props {
 		team: TBATeam;
 		event: TBAEvent;
-		scouting: Scouting.MatchScoutingArr,
+		scouting: Scouting.MatchScoutingArr;
 	}
 
 	const { team, event, scouting }: Props = $props();
@@ -36,7 +36,6 @@
 			record = `${wins}-${losses}-${ties}`;
 			played = wins + losses + ties;
 		});
-
 
 		return scouting.subscribe((s) => {
 			const autoRes = Scouting.averageAutoScore(s, event.tba.year);

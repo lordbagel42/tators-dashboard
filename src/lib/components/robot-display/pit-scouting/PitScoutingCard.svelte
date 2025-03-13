@@ -8,15 +8,13 @@
 	interface Props {
 		team: TBATeam;
 		event: TBAEvent;
+		sections: Scouting.PIT.SectionArr;
+		groups: Scouting.PIT.GroupArr;
+		questions: Scouting.PIT.QuestionArr;
+		answers: Scouting.PIT.AnswerArr;
 	}
 
-	const { team, event }: Props = $props();
-
-	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
-
-	onMount(() => {
-		sections = Scouting.PIT.Sections.fromProperty('eventKey', event.tba.key, false);
-	});
+	const { team, event, sections, groups, questions, answers, }: Props = $props();
 </script>
 
 <div
@@ -43,7 +41,7 @@
 				</div>
 			</div>
 			<div class="row mb-3">
-				<Section {section} team={team.tba} event={event.tba} />
+				<Section {section} team={team.tba} event={event.tba} {groups} {questions} {answers} />
 			</div>
 		{/each}
 	{:else}

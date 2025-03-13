@@ -7,6 +7,7 @@ import { Permissions } from './permissions';
 import { z } from 'zod';
 import { DB } from '../db';
 import { and, eq } from 'drizzle-orm';
+import { attemptAsync } from 'ts-utils/check';
 
 export namespace FIRST {
 	export const TeamPictures = new Struct({
@@ -35,20 +36,28 @@ export namespace FIRST {
 			})
 			.parse(data);
 
-		(async () => {
+			setTimeout(async () => {
+				const res = (await getTeamPictures(team, eventKey)).unwrap();
+
+				for (let i = 0; i < res.length; i++) {
+					stream.add(res[i]);
+				}
+
+				stream.end();
+			}, event.locals.session.data.latency);
+
+		return stream;
+	});
+
+	export const getTeamPictures = (team: number, eventKey: string) => {
+		return attemptAsync(async () => {
 			const res = await DB.select()
 				.from(TeamPictures.table)
 				.where(and(eq(TeamPictures.table.team, team), eq(TeamPictures.table.eventKey, eventKey)));
 
-			for (let i = 0; i < res.length; i++) {
-				stream.add(TeamPictures.Generator(res[i]));
-			}
-
-			stream.end();
-		})();
-
-		return stream;
-	});
+			return res.map(r => TeamPictures.Generator(r));
+		});
+	};
 
 	// TeamPictures.on('delete', (pic) => {});
 

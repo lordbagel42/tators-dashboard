@@ -8,14 +8,14 @@
 	interface Props {
 		team: TBATeam;
 		event: TBAEvent;
+		scouting: Scouting.MatchScoutingArr,
 	}
 
-	const { team, event }: Props = $props();
+	const { team, event, scouting }: Props = $props();
 
 	let rank = $state(0);
 	let record = $state('');
 	let played = $state(0);
-	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
 	let auto = $state(0);
 	let teleop = $state(0);
 	let endgame = $state(0);
@@ -37,7 +37,6 @@
 			played = wins + losses + ties;
 		});
 
-		scouting = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 
 		return scouting.subscribe((s) => {
 			const autoRes = Scouting.averageAutoScore(s, event.tba.year);

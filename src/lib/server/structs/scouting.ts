@@ -165,10 +165,26 @@ export namespace Scouting {
 						eq(MatchScouting.table.team, team),
 						eq(MatchScouting.table.eventKey, event),
 						eq(MatchScouting.table.archived, false)
-					)
+					),
 				);
 
 			return res.map((r) => MatchScouting.Generator(r));
+		});
+	};
+
+	export const getTeamComments = (team: number, event: string) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(TeamComments.table)
+				.where(
+					and(
+						eq(TeamComments.table.team, team),
+						eq(TeamComments.table.eventKey, event),
+						eq(TeamComments.table.archived, false)
+					),
+				);
+			
+			return res.map(r => TeamComments.Generator(r));
 		});
 	};
 
@@ -369,6 +385,29 @@ export namespace Scouting {
 
 			return stream;
 		});
+
+		export const getScoutingInfo = (team: number, eventKey: string) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Questions.table)
+					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
+					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
+					.where(eq(Sections.table.eventKey, eventKey));
+
+				const questions = res.map(q => Questions.Generator(q.pit_questions)).filter((q, i, a) => a.findIndex(qq => q.id === qq.id) === i).filter(a => !a.archived);
+				const groups = res.map(q => Groups.Generator(q.pit_groups)).filter((q, i, a) => a.findIndex(qq => q.id === qq.id) === i).filter(a => !a.archived);
+				const sections = res.map(q => Sections.Generator(q.pit_sections)).filter((q, i, a) => a.findIndex(qq => q.id === qq.id) === i).filter(a => !a.archived);
+
+				const answers = (await Answers.fromProperty('team', team, { type: 'stream', }).await()).unwrap();
+
+				return {
+					questions,
+					groups,
+					sections,
+					answers,
+				}
+			});
+		};
 
 		export const getAnswersFromGroup = (group: GroupData) => {
 			return attemptAsync(async () => {

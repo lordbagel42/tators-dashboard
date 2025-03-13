@@ -9,21 +9,18 @@
 		section: Scouting.PIT.SectionData;
 		team: TBATeam;
 		event: TBAEvent;
+		groups: Scouting.PIT.GroupArr;
+		questions: Scouting.PIT.QuestionArr;
+		answers: Scouting.PIT.AnswerArr;
 	}
 
-	const { section, team, event }: Props = $props();
-
-	let groups = $state(new DataArr(Scouting.PIT.Groups, []));
-
-	onMount(() => {
-		groups = Scouting.PIT.Groups.fromProperty('sectionId', String(section.data.id), false);
-	});
+	const { section, team, event, groups, questions, answers }: Props = $props();
 </script>
 
 <div class="container-fluid">
-	{#each $groups as group}
+	{#each $groups.filter((g) => g.data.sectionId === section.data.id) as group}
 		<div class="row">
-			<Group {group} {section} {team} {event} />
+			<Group {group} {section} {team} {event} {questions} {answers} />
 		</div>
 	{/each}
 </div>

@@ -9,11 +9,10 @@
 	interface Props {
 		team: number;
 		event: string;
+		comments: Scouting.TeamCommentsArr;
 	}
 
-	const { team, event }: Props = $props();
-
-	let comments = $state(new DataArr(Scouting.TeamComments, []));
+	const { team, event, comments }: Props = $props();
 
 	const accountFilterParams: ITextFilterParams = {
 		filterOptions: ['contains', 'notContains'],
@@ -75,15 +74,6 @@
 	let render = $state(0);
 
 	onMount(() => {
-		comments = Scouting.TeamComments.query(
-			'from-event',
-			{ eventKey: event, team },
-			{
-				asStream: false,
-				satisfies: (c) => c.data.team === team && c.data.eventKey === event
-			}
-		);
-
 		render++;
 
 		return comments.subscribe(() => {

@@ -11,17 +11,15 @@
 		team: TBATeam;
 		event: TBAEvent;
 		staticY?: number;
+		scouting: Scouting.MatchScoutingArr;
 	}
 
-	let { team, event, staticY = $bindable() }: Props = $props();
-
-	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
+	let { team, event, staticY = $bindable(), scouting }: Props = $props();
 
 	let canvas: HTMLCanvasElement;
 	let chart: Chart;
 
 	onMount(() => {
-		scouting = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
 		scouting.sort((a, b) => {
 			if (a.data.compLevel === b.data.compLevel)
 				return Number(a.data.matchNumber) - Number(b.data.matchNumber);

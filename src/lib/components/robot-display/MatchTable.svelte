@@ -9,13 +9,12 @@
 	interface Props {
 		event: TBAEvent;
 		team: TBATeam;
+		scouting: Scouting.MatchScoutingArr;
 	}
 
-	const { team, event }: Props = $props();
+	const { team, event, scouting }: Props = $props();
 
 	let matches: TBAMatch[] = $state([]);
-
-	let matchScouting = $state(new DataArr(Scouting.MatchScouting, []));
 
 	const generateMatchStr = (match: TBAMatch) => {
 		return `${match.tba.comp_level} ${match.tba.match_number}`;
@@ -55,25 +54,6 @@
 				matches = m.value;
 			}
 		});
-
-		matchScouting = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
-
-		// import('bootstrap').then((bs) => {
-		// 	table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
-		// 		new bs.Tooltip(el);
-		// 	});
-		// });
-
-		matchScouting.subscribe(console.log);
-
-		return () => {
-			// import('bootstrap').then((bs) => {
-			// 	table?.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((el) => {
-			// 		const tooltip = bs.Tooltip.getInstance(el);
-			// 		if (tooltip) tooltip.dispose();
-			// 	});
-			// });
-		};
 	});
 
 	let table: HTMLTableElement;
@@ -112,9 +92,9 @@
 						<td>{generateTime(match)}</td>
 						<td>
 							<i
-								class="material-icons text-{generateFlagColor(findMatch($matchScouting, match))}"
+								class="material-icons text-{generateFlagColor(findMatch($scouting, match))}"
 								style="color: "
-								title={generateFlagTitle(findMatch($matchScouting, match))}
+								title={generateFlagTitle(findMatch($scouting, match))}
 							>
 								flag
 							</i>

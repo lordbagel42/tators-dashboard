@@ -22,8 +22,6 @@ import path from 'path';
 import '$lib/server/index';
 config();
 
-console.log('Fuck you');
-
 Struct.each((struct) => {
 	if (!struct.built) {
 		struct.build(DB);

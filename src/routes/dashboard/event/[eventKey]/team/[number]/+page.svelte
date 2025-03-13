@@ -364,17 +364,17 @@
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<MatchTable {team} {event} />
+					<MatchTable {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 			<Card card={progress}>
 				{#snippet body()}
-					<Progress {team} {event} />
+					<Progress {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 			<Card card={eventStats}>
 				{#snippet body()}
-					<TeamEventStats {team} {event} />
+					<TeamEventStats {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 		{/key}

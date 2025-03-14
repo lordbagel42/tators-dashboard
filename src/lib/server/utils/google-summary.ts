@@ -93,8 +93,8 @@ export const summarize = async (eventKey: string) => {
 						)
 					);
 
-				if (answer) return (JSON.parse(Scouting.PIT.Answers.Generator(answer).data.answer) as string[])[0];
-				return undefined;
+				if (answer) return Scouting.PIT.Answers.Generator(answer).data.answer;
+				return 'No response';
 			} catch (error) {
 				terminal.error(`Error pulling pitscouting for team: ${team}`, error);
 				throw error;

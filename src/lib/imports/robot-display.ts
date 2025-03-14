@@ -48,11 +48,17 @@ export default (event: TBAEvent) => {
 				type: 'material-icons'
 			},
 			{
+				name: 'Checlist',
+				href: `/dashboard/event/${event.key}/checklist`,
+				icon: 'list',
+				type: 'material-icons',
+			},
+			{
 				name: 'Archived Matches',
 				href: `/dashboard/event/${event.key}/archived-matches`,
 				icon: 'archive',
 				type: 'material-icons'
-			}
+			},
 		]
 	});
 };

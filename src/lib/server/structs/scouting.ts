@@ -849,6 +849,35 @@ export namespace Scouting {
 				});
 			});
 		};
+		export const getAnswersFromTeam = (team: number, eventKey: string) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Answers.table)
+					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
+					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
+					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
+					.where(
+						and(
+							eq(Answers.table.team, team),
+							eq(Sections.table.eventKey, eventKey),
+						)
+					);
+
+				return res.map(r => Answers.Generator(r.pit_answers));
+			});
+		};
+
+		export const getQuestionsFromEvent = (eventKey: string) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Questions.table)
+					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
+					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
+					.where(eq(Sections.table.eventKey, eventKey));
+
+				return res.map(r => Questions.Generator(r.pit_questions));
+			});
+		};
 
 		createEntitlement({
 			name: 'view-pit-scouting',

@@ -93,7 +93,7 @@ export const summarize = async (eventKey: string) => {
 						)
 					);
 
-				if (answer) return z.array(z.union([z.string(), z.number()])).parse(JSON.parse(Scouting.PIT.Answers.Generator(answer).data.answer))[0];
+				if (answer) return z.array(z.unknown()).parse(JSON.parse(Scouting.PIT.Answers.Generator(answer).data.answer))[0];
 				return undefined;
 			} catch (error) {
 				terminal.error(`Error pulling pitscouting for team: ${team}`, error);

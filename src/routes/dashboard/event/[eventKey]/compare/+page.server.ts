@@ -26,9 +26,13 @@ export const load = async (event) => {
 		.filter((t) => !isNaN(t))
 		.sort((a, b) => a - b);
 
-	const teamScouting = await Promise.all(searchTeams.map(async t => {
-		return (await Scouting.getTeamScouting(t, event.params.eventKey)).unwrap().map(s => s.safe());
-	}));
+	const teamScouting = await Promise.all(
+		searchTeams.map(async (t) => {
+			return (await Scouting.getTeamScouting(t, event.params.eventKey))
+				.unwrap()
+				.map((s) => s.safe());
+		})
+	);
 
 	return {
 		event: e.value.tba,
@@ -37,6 +41,6 @@ export const load = async (event) => {
 			.filter(Boolean)
 			.map((t) => t.tba),
 		teams: teams.value.map((t) => t.tba),
-		teamScouting,
+		teamScouting
 	};
 };

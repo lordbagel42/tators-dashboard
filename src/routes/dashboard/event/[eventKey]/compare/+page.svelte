@@ -141,7 +141,7 @@
 											{#if view === 'progress'}
 												<Progress {team} {event} bind:staticY scouting={teamScouting[i]} />
 											{:else}
-												<TeamEventStats {team} {event} bind:staticY  scouting={teamScouting[i]}/>
+												<TeamEventStats {team} {event} bind:staticY scouting={teamScouting[i]} />
 											{/if}
 										</div>
 									</div>

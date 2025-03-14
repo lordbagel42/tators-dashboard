@@ -33,26 +33,27 @@ export const selectAccount = async (filter?: (account: Account.AccountData) => b
 };
 
 export default new Folder('Accounts', 'Edit accounts', '👤', [
-	new Action('Reset Verification', 'Resets all account verification status',  '👤', async () => {
+	new Action('Reset Verification', 'Resets all account verification status', '👤', async () => {
 		await backup('pre_verification');
 		await Permissions.RoleAccount.all({
-			type: 'stream',
-		}).pipe(a => a.delete());
-	
+			type: 'stream'
+		}).pipe((a) => a.delete());
+
 		await Account.Admins.all({
-			type: 'stream',
-		}).pipe(a => a.delete());
+			type: 'stream'
+		}).pipe((a) => a.delete());
 
 		return await Account.Account.all({
-			type: 'stream',
-		}).pipe(async a => {
-			(await a.update({
-				verified: false,
-			})).unwrap();
+			type: 'stream'
+		}).pipe(async (a) => {
+			(
+				await a.update({
+					verified: false
+				})
+			).unwrap();
 			return Account.verify(a);
 		});
-	},
-	),
+	}),
 	new Action('List', 'List all accounts', '📋', async () => {
 		return (
 			await structActions.all(Account.Account as any, undefined, {

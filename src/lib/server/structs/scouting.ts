@@ -856,14 +856,9 @@ export namespace Scouting {
 					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
 					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
 					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
-					.where(
-						and(
-							eq(Answers.table.team, team),
-							eq(Sections.table.eventKey, eventKey),
-						)
-					);
+					.where(and(eq(Answers.table.team, team), eq(Sections.table.eventKey, eventKey)));
 
-				return res.map(r => Answers.Generator(r.pit_answers));
+				return res.map((r) => Answers.Generator(r.pit_answers));
 			});
 		};
 
@@ -875,7 +870,7 @@ export namespace Scouting {
 					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
 					.where(eq(Sections.table.eventKey, eventKey));
 
-				return res.map(r => Questions.Generator(r.pit_questions));
+				return res.map((r) => Questions.Generator(r.pit_questions));
 			});
 		};
 

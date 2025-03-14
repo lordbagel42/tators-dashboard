@@ -1,7 +1,7 @@
 import * as TBA from '$lib/server/utils/tba';
 import { fail, redirect } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
-import { Scouting } from "$lib/server/structs/scouting";
+import { Scouting } from '$lib/server/structs/scouting';
 import terminal from '$lib/server/utils/terminal';
 
 export const load = async (event) => {
@@ -35,7 +35,7 @@ export const load = async (event) => {
 	if (scouting.isErr()) {
 		terminal.error(scouting.error);
 		throw fail(ServerCode.internalServerError, {
-			message: 'Failed to get scouting data',
+			message: 'Failed to get scouting data'
 		});
 	}
 
@@ -43,6 +43,6 @@ export const load = async (event) => {
 		event: e.value.tba,
 		team: team.tba,
 		teams: teams.value.map((t) => t.tba),
-		scouting: scouting.value.map(s => s.safe()),
+		scouting: scouting.value.map((s) => s.safe())
 	};
 };

@@ -271,6 +271,5 @@ export namespace Scouting {
 				if (!res.success) throw new Error(res.message || 'Failed to answer question');
 			});
 		};
-
 	}
 }

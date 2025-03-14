@@ -60,30 +60,23 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const res = await DB.select()
 					.from(Scouting.PIT.Answers.table)
-					.innerJoin(Scouting.PIT.Questions.table, eq(
-						Scouting.PIT.Answers.table.questionId, Scouting.PIT.Questions.table.id
-					))
-					.innerJoin(Scouting.PIT.Groups.table, eq(
-						Scouting.PIT.Questions.table.groupId, Scouting.PIT.Groups.table.id
+					.innerJoin(
+						Scouting.PIT.Questions.table,
+						eq(Scouting.PIT.Answers.table.questionId, Scouting.PIT.Questions.table.id)
 					)
+					.innerJoin(
+						Scouting.PIT.Groups.table,
+						eq(Scouting.PIT.Questions.table.groupId, Scouting.PIT.Groups.table.id)
 					)
-					.innerJoin(Scouting.PIT.Sections.table, eq(
-						Scouting.PIT.Groups.table.sectionId, Scouting.PIT.Sections.table.id
-					))
+					.innerJoin(
+						Scouting.PIT.Sections.table,
+						eq(Scouting.PIT.Groups.table.sectionId, Scouting.PIT.Sections.table.id)
+					)
 					.where(
 						and(
-							eq(
-								Scouting.PIT.Answers.table.team,
-								team.tba.team_number,
-							),
-							eq(
-								Scouting.PIT.Questions.table.key,
-								requestedQuestion,
-							),
-							eq(
-								Scouting.PIT.Sections.table.eventKey,
-								event.tba.key
-							)
+							eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
+							eq(Scouting.PIT.Questions.table.key, requestedQuestion),
+							eq(Scouting.PIT.Sections.table.eventKey, event.tba.key)
 						)
 					);
 

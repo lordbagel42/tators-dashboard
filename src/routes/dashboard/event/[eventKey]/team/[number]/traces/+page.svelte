@@ -16,15 +16,9 @@
 	const teams = $derived(data.teams);
 	const event = $derived(data.event);
 	const team = $derived(data.team);
+	const scoutingArr = $derived(data.scouting);
 
 	$effect(() => nav(event.tba));
-
-	let scoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
-
-	$effect(() => {
-		if (!browser) return;
-		scoutingArr = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
-	});
 
 	let modal: Modal;
 	let selectedScouting: Scouting.MatchScoutingData | undefined = $state(undefined);

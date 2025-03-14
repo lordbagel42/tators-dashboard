@@ -59,42 +59,38 @@ export const summarize = async (eventKey: string) => {
 		const getPitScouting = async (requestedQuestion: string, team: Team) => {
 			try {
 				const res = await DB.select()
-					.from(Scouting.PIT.Questions.table)
-					.innerJoin(
-						Scouting.PIT.Groups.table,
-						eq(Scouting.PIT.Groups.table.id, Scouting.PIT.Questions.table.groupId)
-					)
-					.innerJoin(
-						Scouting.PIT.Sections.table,
-						eq(Scouting.PIT.Sections.table.id, Scouting.PIT.Groups.table.sectionId)
-					)
-					.innerJoin(
-						Scouting.PIT.Answers.table,
-						eq(Scouting.PIT.Answers.table.questionId, Scouting.PIT.Questions.table.id)
-					)
-					.where(
-						and(
-							eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
-							eq(Scouting.PIT.Sections.table.eventKey, event.tba.key)
-						)
-					);
-
-				const questions = res.map((r) => Scouting.PIT.Questions.Generator(r.pit_questions));
-
-				const question = questions.find((q) => q.data.key === requestedQuestion);
-				if (!question) return undefined;
-
-				const [answer] = await DB.select()
 					.from(Scouting.PIT.Answers.table)
+					.innerJoin(Scouting.PIT.Questions.table, eq(
+						Scouting.PIT.Answers.table.questionId, Scouting.PIT.Questions.table.id
+					))
+					.innerJoin(Scouting.PIT.Groups.table, eq(
+						Scouting.PIT.Questions.table.groupId, Scouting.PIT.Groups.table.id
+					)
+					)
+					.innerJoin(Scouting.PIT.Sections.table, eq(
+						Scouting.PIT.Groups.table.sectionId, Scouting.PIT.Sections.table.id
+					))
 					.where(
 						and(
-							eq(Scouting.PIT.Answers.table.team, team.tba.team_number),
-							eq(Scouting.PIT.Answers.table.questionId, question.id)
+							eq(
+								Scouting.PIT.Answers.table.team,
+								team.tba.team_number,
+							),
+							eq(
+								Scouting.PIT.Questions.table.key,
+								requestedQuestion,
+							),
+							eq(
+								Scouting.PIT.Sections.table.eventKey,
+								event.tba.key
+							)
 						)
 					);
 
-				if (answer) return Scouting.PIT.Answers.Generator(answer).data.answer;
-				return 'No response';
+				if (res.length === 0) {
+					return 'unknown';
+				}
+				return z.array(z.string()).parse(JSON.parse(res[0].pit_answers.answer))[0];
 			} catch (error) {
 				terminal.error(`Error pulling pitscouting for team: ${team}`, error);
 				throw error;

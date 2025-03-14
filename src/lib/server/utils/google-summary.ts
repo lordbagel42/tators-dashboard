@@ -93,7 +93,7 @@ export const summarize = async (eventKey: string) => {
 						)
 					);
 
-				if (answer) return Scouting.PIT.Answers.Generator(answer);
+				if (answer) return z.array(z.union([z.string(), z.number()])).parse(JSON.parse(Scouting.PIT.Answers.Generator(answer).data.answer))[0];
 				return undefined;
 			} catch (error) {
 				terminal.error(`Error pulling pitscouting for team: ${team}`, error);
@@ -123,28 +123,22 @@ export const summarize = async (eventKey: string) => {
 				.join('\n ');
 		});
 		t.column('Weight', async (t) => {
-			const pitScouting = await getPitScouting('robot_weight', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_weight', t);
 		});
 		t.column('Height', async (t) => {
-			const pitScouting = await getPitScouting('robot_height', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_height', t);
 		});
 		t.column('Width', async (t) => {
-			const pitScouting = await getPitScouting('robot_width', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_width', t);
 		});
 		t.column('Length', async (t) => {
-			const pitScouting = await getPitScouting('robot_length', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_length', t);
 		});
 		t.column('Drivetrain', async (t) => {
-			const pitScouting = await getPitScouting('robot_drivetrain', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_drivetrain', t);
 		});
 		t.column('Driver Practice', async (t) => {
-			const pitScouting = await getPitScouting('robot_drive_practice', t);
-			return pitScouting?.data.answer;
+			return getPitScouting('robot_drive_practice', t);
 		});
 		t.column('Average Score Contribution', async (t) => {
 			const scores = await getScores(t);
@@ -337,7 +331,9 @@ class Table {
 						return Promise.all(
 							this.columns.map(async (c) => {
 								try {
-									return await c.fn(t);
+									const res = await c.fn(t);
+									if (typeof res === 'number') return res.toFixed(2);
+									return res;
 								} catch (error) {
 									terminal.error(
 										'Error serializing column',

@@ -77,15 +77,15 @@
 		</tr>
 		<tr>
 			<td>Average Auto Score:</td>
-			<td>{auto}</td>
+			<td>{auto.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td>Average Teleop Score:</td>
-			<td>{teleop}</td>
+			<td>{teleop.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td>Average Endgame Score:</td>
-			<td>{endgame}</td>
+			<td>{endgame.toFixed(2)}</td>
 		</tr>
 		<tr>
 			<td>Average Seconds Not Moving:</td>

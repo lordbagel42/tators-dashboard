@@ -322,6 +322,7 @@ class Table {
 								try {
 									const res = await c.fn(t);
 									if (typeof res === 'number') return res.toFixed(2);
+									if (typeof res === 'string' && !isNaN(Number(res))) return Number(res).toFixed(2);
 									return res;
 								} catch (error) {
 									terminal.error(

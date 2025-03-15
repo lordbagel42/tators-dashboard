@@ -255,10 +255,6 @@ export const summarize = async (eventKey: string) => {
 			const scores = await getScores(t);
 			return Math.max(...scores.map((s) => s.auto.brg + s.teleop.brg));
 		});
-		t.column('Average Mobility Points Per Match', async (t) => {
-			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.mobility));
-		});
 		t.column('Average Overall Coral Points', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(

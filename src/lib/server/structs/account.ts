@@ -14,7 +14,6 @@ import { Universes } from './universe';
 import { Permissions } from './permissions';
 import { Email } from './email';
 import terminal from '../utils/terminal';
-import { a } from 'vitest/dist/chunks/suite.B2jumIFP.js';
 
 export namespace Account {
 	export const Account = new Struct({

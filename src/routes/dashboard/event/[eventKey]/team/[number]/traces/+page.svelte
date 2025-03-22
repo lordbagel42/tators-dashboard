@@ -142,6 +142,19 @@
 	</div>
 </div>
 
+<div class="container">
+	<div class="row">
+		<div class="col">
+				<a
+					href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+					class="btn"
+				>
+					Return to Robot Display
+				</a>
+		</div>
+	</div>
+</div>
+
 <Modal
 	bind:this={modal}
 	size="lg"

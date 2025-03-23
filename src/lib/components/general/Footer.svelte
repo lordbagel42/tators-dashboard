@@ -37,7 +37,7 @@
 		Team Tators | All Rights Reserved
 		<br />
 		If you see an issue, please report it
-		<a href="https://github.com/TeamTators/dashboard" target="_blank">here</a>.
+		<a href="https://github.com/TeamTators/dashboard/issues" target="_blank">here</a>.
 		<br />
 
 		<a

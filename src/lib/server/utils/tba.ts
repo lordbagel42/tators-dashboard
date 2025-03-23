@@ -8,9 +8,11 @@ import {
 	type TBATeamEventStatus,
 	TeamEventStatusSchema,
 	teamsFromMatch,
-	MediaSchema
+	MediaSchema,
+	Match2025Schema,
+	type TBAMatch2025
 } from 'tatorscout/tba';
-import { attemptAsync } from 'ts-utils/check';
+import { attempt, attemptAsync, type Result } from 'ts-utils/check';
 import { TBA } from '../structs/TBA';
 import { StructData } from 'drizzle-struct/back-end';
 import { z } from 'zod';
@@ -182,6 +184,22 @@ export class Match {
 		});
 	}
 
+	get teams(): [number, number, number, number, number, number] {
+		const { red, blue } = this.tba.alliances;
+		return [
+			red.team_keys[0],
+			red.team_keys[1],
+			red.team_keys[2],
+			blue.team_keys[0],
+			blue.team_keys[1],
+			blue.team_keys[2]
+		].map((key) => {
+			const match = key.match(/\d+/);
+			if (!match) throw new Error(`Invalid team key: ${key}`);
+			return parseInt(match[0]);
+		}) as [number, number, number, number, number, number];
+	}
+
 	// delete() {
 	//     return attemptAsync(async () => {
 	//         if (this.data) {
@@ -189,6 +207,15 @@ export class Match {
 	//         }
 	//     });
 	// }
+
+	asYear<Y extends 2025>(year: Y): Result<Y extends 2025 ? TBAMatch2025 : never> {
+		return attempt(() => {
+			if (year === 2025) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				return Match2025Schema.parse(this.tba) as any;
+			} else throw new Error('Invalid year');
+		});
+	}
 }
 
 export class Team {

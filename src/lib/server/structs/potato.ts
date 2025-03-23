@@ -13,7 +13,7 @@ export namespace Potato {
 		prescouting: 5,
 		remote: 5,
 		rescout: 10,
-		pit: 20,
+		pit: 1,
 		teamPicture: 5
 	};
 
@@ -36,7 +36,7 @@ export namespace Potato {
 		kid: 1000,
 		teen: 2_122,
 		adult: 5000,
-		elder: 10_000,
+		elder: 10_000
 	};
 
 	const getPhase = (level: number) => {
@@ -184,7 +184,7 @@ export namespace Potato {
 				.from(Friend.table)
 				.orderBy(Friend.table.level)
 				.innerJoin(Account.Account.table, eq(Friend.table.account, Account.Account.table.id))
-				.then(r => r.reverse());
+				.then((r) => r.reverse());
 		});
 	};
 
@@ -199,8 +199,8 @@ export namespace Potato {
 		name: 'edit-potato-level',
 		structs: [Friend],
 		group: 'Potatoes',
-		permissions: ['potato_friend:update:level'],
-	})
+		permissions: ['potato_friend:update:level']
+	});
 }
 
 export const _potato = Potato.Friend.table;

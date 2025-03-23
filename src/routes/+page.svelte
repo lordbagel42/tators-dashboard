@@ -37,10 +37,7 @@
 			</a>
 		</div>
 		<div class="col-md-6 p-3">
-			<a
-				href="/dashboard/potato"
-				class="text-reset text-decoration-none"
-			>
+			<a href="/dashboard/potato" class="text-reset text-decoration-none">
 				<div class="card bg-warning">
 					<div class="card-body">
 						<h5 class="card-title text-black">Potato Leaderboard</h5>

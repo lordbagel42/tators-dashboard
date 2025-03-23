@@ -77,7 +77,12 @@
 			<h1>Traces for team {team.tba.team_number} at event {event.tba.name}</h1>
 			<div class="d-flex">
 				<button onclick={() => history.back()} class="btn btn-primary me-3"> Back </button>
-				<a href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}" class="btn btn-secondary"> To Robot Display </a>
+				<a
+					href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+					class="btn btn-secondary"
+				>
+					To Robot Display
+				</a>
 			</div>
 		</div>
 	</div>

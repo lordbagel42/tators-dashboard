@@ -189,10 +189,7 @@ export const postBuild = async () => {
 		})
 	).unwrap();
 	if (!potatoAdminRole) {
-		const entitlements: Entitlement[] = [
-			'edit-potato-level',
-			'view-potatoes',
-		];
+		const entitlements: Entitlement[] = ['edit-potato-level', 'view-potatoes'];
 		const mentor = (
 			await Permissions.Role.new(
 				{

@@ -37,7 +37,7 @@ export namespace Potato {
 		kid: 1000,
 		teen: 2_122,
 		adult: 5000,
-		elder: 10_000,
+		elder: 10_000
 	};
 
 	export const getPhase = (level: number) => {

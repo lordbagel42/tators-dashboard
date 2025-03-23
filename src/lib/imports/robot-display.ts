@@ -70,7 +70,7 @@ export default (event: TBAEvent) => {
 				name: 'Potato Leaderboard',
 				href: '/dashboard/potato',
 				icon: 'leaderboard',
-				type: 'material-icons',
+				type: 'material-icons'
 			}
 		]
 	});

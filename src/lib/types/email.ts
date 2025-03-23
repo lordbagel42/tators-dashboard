@@ -7,4 +7,9 @@ export type Email = {
 		username: string;
 		verification: string;
 	};
+	test: {
+		service: string;
+		link: string;
+		linkText: string;
+	};
 };

@@ -3,6 +3,8 @@
 	import Section from '$lib/components/pit-scouting/Section.svelte';
 	import { afterNavigate, goto } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
+	import { onMount } from 'svelte';
+	import { listen } from '$lib/utils/struct-listener.js';
 
 	const { data = $bindable() } = $props();
 	// const { eventKey, section, sections, teams, team, sectionIndex } = data;
@@ -13,6 +15,9 @@
 	const team = $derived(data.team);
 	const sectionIndex = $derived(data.sectionIndex);
 	const event = $derived(data.event);
+	const groups = $derived(data.groups);
+	const answers = $derived(data.answers);
+	const questions = $derived(data.questions);
 
 	$effect(() => nav(event));
 
@@ -28,6 +33,20 @@
 					inline: 'center'
 				})
 			);
+		}
+	});
+
+	onMount(() => {
+		const offSections = listen(sections, s => s.data.eventKey === event.key);
+		const offGroups = listen(groups, g => section.data.id === g.data.sectionId);
+		const offQuestions = listen(questions, q => !!groups.data.find(g => g.data.id === q.data.groupId));
+		const offAnswers = listen(answers, a => !!questions.data.find(q => q.data.id === a.data.questionId));
+
+		return () => {
+			offSections();
+			offGroups();
+			offQuestions();
+			offAnswers();
 		}
 	});
 </script>
@@ -61,7 +80,7 @@
 	</div>
 	<div class="row mb-3">
 		<div class="no-scroll-y ws-nowrap" style="overflow-x: auto;">
-			{#each sections as section, i}
+			{#each $sections as section, i}
 				<button
 					onclick={() => {
 						goto(`/dashboard/event/${eventKey}/pit-scouting/${i}/team/${team.team_number}`);
@@ -75,6 +94,6 @@
 		</div>
 	</div>
 	{#key team}
-		<Section {section} team={team.team_number} />
+		<Section {section} team={team.team_number} groups={$groups.filter(g => g.data.sectionId === section.data.id)} {questions} {answers} />
 	{/key}
 </div>

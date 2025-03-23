@@ -420,6 +420,37 @@ export namespace Scouting {
 			});
 		};
 
+		export const getScoutingInfoFromSection = (team: number, section: SectionData) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Answers.table)
+					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
+					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
+					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
+					.where(and(eq(Sections.table.id, section.id), eq(Answers.table.team, team)));
+
+				const questions = res
+					.map((q) => Questions.Generator(q.pit_questions))
+					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
+					.filter((a) => !a.archived);
+
+				const groups = res
+					.map((q) => Groups.Generator(q.pit_groups))
+					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
+					.filter((a) => !a.archived);
+
+				const answers = res.map((r) => Answers.Generator(r.pit_answers))
+					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
+					.filter((a) => !a.archived);
+
+				return {
+					questions,
+					groups,
+					answers
+				}
+			});
+		};
+
 		export const getAnswersFromGroup = (group: GroupData) => {
 			return attemptAsync(async () => {
 				const res = await DB.select()

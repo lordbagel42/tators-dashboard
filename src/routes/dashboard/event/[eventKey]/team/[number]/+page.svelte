@@ -15,6 +15,7 @@
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
+	import { listen } from '$lib/utils/struct-listener';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -28,46 +29,6 @@
 	const sections = $derived(data.sections);
 	const pictures = $derived(data.pictures);
 	$effect(() => nav(event.tba));
-
-	const listen = <T extends Blank>(data: DataArr<T>, satisfies: (d: StructData<T>) => boolean) => {
-		const offNew = data.struct.on('new', (d) => {
-			if (satisfies(d)) {
-				data.add(d);
-			}
-		});
-
-		const offRestore = data.struct.on('restore', (d) => {
-			if (satisfies(d)) {
-				data.add(d);
-			}
-		});
-
-		const offUpdate = data.struct.on('update', (d) => {
-			if (satisfies(d)) {
-				data.inform();
-			}
-		});
-
-		const offDelete = data.struct.on('delete', (d) => {
-			if (satisfies(d)) {
-				data.inform();
-			}
-		});
-
-		const offArchive = data.struct.on('archive', (d) => {
-			if (satisfies(d)) {
-				data.remove(d);
-			}
-		});
-
-		return () => {
-			offNew();
-			offRestore();
-			offUpdate();
-			offDelete();
-			offArchive();
-		};
-	};
 
 	const summary = new Dashboard.Card({
 		name: 'Event Summary',

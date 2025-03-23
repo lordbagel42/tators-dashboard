@@ -6,6 +6,10 @@ import { Scouting } from './scouting';
 import { FIRST } from './FIRST';
 import { eq } from 'drizzle-orm';
 import { createEntitlement } from '../utils/entitlements';
+import { z } from 'zod';
+import terminal from '../utils/terminal';
+import { Permissions } from './permissions';
+import { Universes } from './universe';
 
 export namespace Potato {
 	export const LevelUpMap = {
@@ -93,9 +97,64 @@ export namespace Potato {
 		}
 	});
 
+	export const Log = new Struct({
+		name: 'potato_log',
+		structure: {
+			potato: text('potato').notNull(),
+			amount: integer('amount').notNull(),
+			reason: text('reason').notNull(),
+		},
+	});
+
+	Friend.callListen('give-levels', async (event, data) => {
+		if (!event.locals.account) {
+			return {
+				success: false,
+				reason: 'Unauthorized'
+			}
+		}
+
+		const universe = (await Universes.Universe.fromId('2122')).unwrap();
+		if (!universe) {
+			return {
+				success: false,
+				reason: 'Universe not found'
+			}
+		}
+
+		const roles = (await Permissions.getUniverseAccountRoles(event.locals.account, universe)).unwrap();
+		if (!Permissions.isEntitled(roles, 'edit-potato-level')) {
+			return {
+				success: false,
+				reason: 'Unauthorized'
+			}
+		}
+
+		const parsed = z.object({
+			accountId: z.string(),
+			levels: z.number().int(),
+		}).safeParse(data);
+
+		if (!parsed.success) {
+			terminal.error('Invalid data recieved', parsed.error);
+			return {
+				success: false,
+				reason: 'Invalid data recieved'
+			}
+		}
+
+		const potato = (await getPotato(parsed.data.accountId)).unwrap();
+		(await giveLevels(potato, parsed.data.levels, `Manually given levels by ${event.locals.account.data.username}`)).unwrap();
+
+		return {
+			success: true,
+		}
+	});
+
+
 	export type FriendData = typeof Friend.sample;
 
-	const giveLevels = (potato: FriendData, levels: number) => {
+	const giveLevels = (potato: FriendData, levels: number, reason: string) => {
 		return attemptAsync(async () => {
 			const currentPhase = getPhase(potato.data.level);
 			const newLevel = potato.data.level + levels;
@@ -110,10 +169,18 @@ export namespace Potato {
 				});
 			}
 
-			return (
+			(
 				await potato.update({
 					level: newLevel,
 					lastClicked: levels === 1 ? new Date().toISOString() : potato.data.lastClicked
+				})
+			).unwrap();
+
+			return (
+				await Log.new({
+					potato: potato.data.account,
+					amount: levels,
+					reason
 				})
 			).unwrap();
 		});
@@ -133,21 +200,21 @@ export namespace Potato {
 		if (vh.isErr()) return console.error(vh.error);
 		if (vh.value.length) levels += LevelUpMap.rescout;
 
-		giveLevels(p.value, levels);
+		giveLevels(p.value, levels, 'Scouted a match');
 	});
 
 	Scouting.PIT.Answers.on('create', async (a) => {
 		const p = await getPotato(a.data.accountId);
 		if (p.isErr()) return;
 
-		giveLevels(p.value, LevelUpMap.pit);
+		giveLevels(p.value, LevelUpMap.pit, 'Pit Scouting');
 	});
 
 	FIRST.TeamPictures.on('create', async (pic) => {
 		const p = await getPotato(pic.data.accountId);
 		if (p.isErr()) return;
 
-		giveLevels(p.value, LevelUpMap.teamPicture);
+		giveLevels(p.value, LevelUpMap.teamPicture, 'Uploaded a team picture');
 	});
 
 	export const getPotato = (accountId: string) => {
@@ -204,3 +271,4 @@ export namespace Potato {
 }
 
 export const _potato = Potato.Friend.table;
+export const _potatoLog = Potato.Log.table;

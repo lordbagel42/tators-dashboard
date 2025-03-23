@@ -80,4 +80,8 @@ export namespace Potato {
 				return 'elder';
 		}
 	};
+
+	export const giveLevels = (accountId: string, levels: number) => {
+		return Friend.call('give-levels', { accountId, levels });
+	};
 }

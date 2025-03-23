@@ -11,6 +11,9 @@
 	import { afterNavigate } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
 	import { returnType } from 'drizzle-struct/utils';
+	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
+	import Checks from '$lib/components/robot-display/Checks.svelte';
+	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -148,6 +151,15 @@
 		{#key selectedScouting}
 			{#if selectedScouting}
 				<Trace scouting={selectedScouting} {event} {focus} />
+				<MatchComments scouting={selectedScouting} />
+				<div class="row my-2">
+					<div class="col-md-6">
+						<Checks scouting={selectedScouting} />
+					</div>
+					<div class="col-md-6">
+						<MatchActions scouting={selectedScouting} />
+					</div>
+				</div>
 			{:else}
 				<p>No scouting data selected</p>
 			{/if}

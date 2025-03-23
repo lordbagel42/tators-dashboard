@@ -194,6 +194,13 @@ export namespace Potato {
 		group: 'Potatoes',
 		permissions: ['potato_friend:read:*']
 	});
+
+	createEntitlement({
+		name: 'edit-potato-level',
+		structs: [Friend],
+		group: 'Potatoes',
+		permissions: ['potato_friend:update:level'],
+	})
 }
 
 export const _potato = Potato.Friend.table;

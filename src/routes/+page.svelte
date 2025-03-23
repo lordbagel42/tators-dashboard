@@ -38,7 +38,7 @@
 		</div>
 		<div class="col-md-6 p-3">
 			<a
-				href="/potato"
+				href="/dashboard/potato"
 				class="text-reset text-decoration-none"
 			>
 				<div class="card bg-warning">

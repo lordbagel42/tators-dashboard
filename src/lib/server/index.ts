@@ -182,6 +182,33 @@ export const postBuild = async () => {
 		).unwrap();
 		(await mentor.setUniverse('2122')).unwrap();
 	}
+
+	const potatoAdminRole = (
+		await Permissions.Role.fromProperty('name', 'Potato Admin', {
+			type: 'single'
+		})
+	).unwrap();
+	if (!potatoAdminRole) {
+		const entitlements: Entitlement[] = [
+			'edit-potato-level',
+			'view-potatoes',
+		];
+		const mentor = (
+			await Permissions.Role.new(
+				{
+					universe: '2122',
+					name: 'Potato Admin',
+					description: 'Team Tators Potato Admin',
+					links: '[]',
+					entitlements: JSON.stringify(entitlements)
+				},
+				{
+					overwriteGenerators: true
+				}
+			)
+		).unwrap();
+		(await mentor.setUniverse('2122')).unwrap();
+	}
 };
 
 {

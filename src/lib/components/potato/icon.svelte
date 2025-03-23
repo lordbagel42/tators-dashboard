@@ -10,18 +10,22 @@
 
     let phase = $state('');
 
-    $effect(() => {
-        if (potato) {
-            phase = Potato.getPhase(potato.data.level || 0);
-        }
-    });
-
     onMount(() => {
         return self.subscribe(async () => {
-            console.log(self);
             const [p] = (await Potato.Friend.fromProperty('account', String(self.get().data.id), true).await()).unwrap();
             if (!p) return;
             potato = p;
+            phase = Potato.getPhase(p.data.level || 0);
+
+            let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+
+            link.href = `/potato/${phase}.png`;
         });
     });
 

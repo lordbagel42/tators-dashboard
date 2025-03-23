@@ -68,7 +68,7 @@ export default (event: TBAEvent) => {
 		links: [
 			{
 				name: 'Potato Leaderboard',
-				href: '/potato',
+				href: '/dashboard/potato',
 				icon: 'leaderboard',
 				type: 'material-icons',
 			}

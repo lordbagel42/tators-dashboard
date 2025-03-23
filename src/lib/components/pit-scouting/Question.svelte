@@ -16,7 +16,9 @@
 	const question = props.question;
 	const team = $derived(props.team);
 
-	let answer: Scouting.PIT.AnswerData | undefined = $state(props.answers.data.find(a => a.data.questionId === question.data.id && a.data.team === team));
+	let answer: Scouting.PIT.AnswerData | undefined = $state(
+		props.answers.data.find((a) => a.data.questionId === question.data.id && a.data.team === team)
+	);
 
 	const value = writable<string[]>([]);
 	let options: string[] = $state([]);
@@ -40,8 +42,7 @@
 		self = Account.getSelf();
 	});
 
-	const retrieveAnswer = () =>
-	{
+	const retrieveAnswer = () => {
 		if (answer) return;
 		Scouting.PIT.Answers.fromProperty('questionId', question.data.id || '', true)
 			.await()
@@ -53,7 +54,7 @@
 					answer = a;
 				}
 			});
-	}
+	};
 
 	$effect(() => {
 		if (!team) return; // trigger on team change

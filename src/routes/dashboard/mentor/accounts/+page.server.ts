@@ -14,9 +14,11 @@ export const load = async (event) => {
 		}).await()
 	).unwrap();
 
-	const roles = (await Permissions.Role.all({
-		type: 'stream',
-	}).await()).unwrap();
+	const roles = (
+		await Permissions.Role.all({
+			type: 'stream'
+		}).await()
+	).unwrap();
 
 	return {
 		accounts: await Promise.all(
@@ -25,10 +27,10 @@ export const load = async (event) => {
 					account: account.safe(),
 					roles: (await Permissions.allAccountRoles(account)).unwrap().map((r) => r.safe()),
 					developer: (await Account.isDeveloper(account)).unwrap(),
-					admin: (await Account.isAdmin(account)).unwrap(),
+					admin: (await Account.isAdmin(account)).unwrap()
 				};
 			})
 		),
-		roles: roles.map(r => r.safe()),
+		roles: roles.map((r) => r.safe())
 	};
 };

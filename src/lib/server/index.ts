@@ -135,7 +135,7 @@ export const postBuild = async () => {
 			'view-strategy',
 			'view-tba-info',
 			'view-universe',
-			'upload-pictures',
+			'upload-pictures'
 		];
 		const scout = (
 			await Permissions.Role.new(
@@ -164,7 +164,7 @@ export const postBuild = async () => {
 			'manage-pit-scouting',
 			'manage-roles',
 			'manage-tba',
-			'create-custom-tba-responses',
+			'create-custom-tba-responses'
 		];
 		const mentor = (
 			await Permissions.Role.new(

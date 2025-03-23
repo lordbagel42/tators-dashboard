@@ -4,17 +4,18 @@
 	import { Scouting } from '$lib/model/scouting';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
+	import { listen } from '$lib/utils/struct-listener.js';
 
 	const { data } = $props();
 	const event = $derived(data.event);
 	const eventKey = $derived(event.key);
+	const sections = $derived(data.sections);
 
 	$effect(() => nav(event));
-	let sections = $state(new DataArr(Scouting.PIT.Sections, []));
 
 	onMount(() => {
-		sections = Scouting.PIT.Sections.fromProperty('eventKey', page.params.eventKey, false);
 		sections.sort((a, b) => Number(a.data.order) - Number(b.data.order));
+		return listen(sections, (d) => d.data.eventKey === eventKey);
 	});
 </script>
 

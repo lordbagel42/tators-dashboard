@@ -4,9 +4,56 @@ import { Universes } from '$lib/server/structs/universe';
 import { Permissions } from '$lib/server/structs/permissions';
 import { getEntitlementNames } from './utils/entitlements';
 import type { Entitlement } from '$lib/types/entitlements';
-import { openStructs } from './cli/struct';
+import backup, { BACKUP_DIR } from '../../../scripts/backup';
+import { sleepUntil } from 'ts-utils/sleep';
+import { dateTime } from 'ts-utils/clock';
+import fs from 'fs';
+import path from 'path';
+
+const backupCycle = () => {
+	if (!process.env.BACKUP_INTERVAL) return;
+	const interval = parseInt(process.env.BACKUP_INTERVAL);
+	if (isNaN(interval)) return console.error('Invalid BACKUP_INTERVAL');
+
+	const max = parseInt(String(process.env.MAX_BACKUPS));
+	if (isNaN(max)) return console.error('Invalid MAX_BACKUPS');
+
+	const wait = (callback: () => void, ms: number) => {
+		if (ms > 1000 * 60 * 60 * 24) {
+			sleepUntil(callback, new Date(Date.now() + ms));
+		} else {
+			setTimeout(callback, ms);
+		}
+	};
+
+	const run = async () => {
+		terminal.log('Making backup');
+		await backup('automatic')
+			.then(() => console.log('Backup complete'))
+			.catch((e) => terminal.error('Error during backup', e));
+		console.log('Next backup at: ', dateTime(new Date(Date.now() + interval)));
+
+		// sort from oldest to newest
+		const backups = fs.readdirSync(BACKUP_DIR).sort((a, b) => {
+			const aTime = parseInt(a.split('-')[0]);
+			const bTime = parseInt(b.split('-')[0]);
+			return aTime - bTime;
+		});
+
+		// remove oldest backups
+		const toRemove = backups.slice(0, backups.length - max);
+		for (const file of toRemove) {
+			console.log('Removing backup:', file);
+			fs.unlinkSync(path.resolve(BACKUP_DIR, file));
+		}
+
+		wait(run, interval);
+	};
+	run();
+};
 
 export const postBuild = async () => {
+	backupCycle();
 	const exists = (await Universes.Universe.fromId('2122')).unwrap();
 	if (!exists) {
 		await Universes.Universe.new(
@@ -87,7 +134,8 @@ export const postBuild = async () => {
 			'view-scouting',
 			'view-strategy',
 			'view-tba-info',
-			'view-universe'
+			'view-universe',
+			'upload-pictures',
 		];
 		const scout = (
 			await Permissions.Role.new(
@@ -106,32 +154,24 @@ export const postBuild = async () => {
 		(await scout.setUniverse('2122')).unwrap();
 	}
 
-	const editorRole = await Permissions.Role.fromProperty('name', 'Editor', {
-		type: 'single'
-	});
-
-	if (!editorRole) {
+	const mentorRole = (
+		await Permissions.Role.fromProperty('name', 'Mentor', {
+			type: 'single'
+		})
+	).unwrap();
+	if (!mentorRole) {
 		const entitlements: Entitlement[] = [
-			'create-custom-tba-responses',
 			'manage-pit-scouting',
 			'manage-roles',
 			'manage-tba',
-			'manage-universe',
-			'view-checklist',
-			'view-pit-scouting',
-			'view-potatoes',
-			'view-scouting',
-			'view-strategy',
-			'view-tba-info',
-			'view-universe'
+			'create-custom-tba-responses',
 		];
-
-		const editor = (
+		const mentor = (
 			await Permissions.Role.new(
 				{
 					universe: '2122',
-					name: 'Editor',
-					description: 'Team Tators Editor',
+					name: 'Mentor',
+					description: 'Team Tators Mentor',
 					links: '[]',
 					entitlements: JSON.stringify(entitlements)
 				},
@@ -140,20 +180,18 @@ export const postBuild = async () => {
 				}
 			)
 		).unwrap();
-		(await editor.setUniverse('2122')).unwrap();
+		(await mentor.setUniverse('2122')).unwrap();
 	}
 };
 
 {
-	openStructs().then(() => {
-		const built = new Set<string>();
-		for (const struct of Struct.structs.values()) {
-			struct.once('build', () => {
-				built.add(struct.name);
-				if (built.size === Struct.structs.size) {
-					postBuild();
-				}
-			});
-		}
-	});
+	const built = new Set<string>();
+	for (const struct of Struct.structs.values()) {
+		struct.once('build', () => {
+			built.add(struct.name);
+			if (built.size === Struct.structs.size) {
+				postBuild();
+			}
+		});
+	}
 }

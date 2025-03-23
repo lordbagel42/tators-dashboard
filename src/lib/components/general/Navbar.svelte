@@ -41,7 +41,15 @@
 				>
 					<i class="material-icons">account_circle</i>
 				</button>
-				<ul class="dropdown-menu">
+				<ul
+					class="dropdown-menu"
+					style="
+					position: fixed;
+					top: 52px;
+					left: calc(100% - 160px);
+					width:	min-content;
+				"
+				>
 					{#if $self.data.username === 'guest'}
 						<li><a class="dropdown-item" href="/account/sign-in">Sign In</a></li>
 					{:else}
@@ -49,17 +57,39 @@
 						<li><a class="dropdown-item" href="/account/sign-out">Sign Out</a></li>
 					{/if}
 				</ul>
+			</div>
+			<div class="dropdown">
 				<button
-					class="btn px-2"
+					class="btn dropdown-toggle"
 					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarNav"
-					aria-controls="navbarNav"
+					data-bs-toggle="dropdown"
 					aria-expanded="false"
-					aria-label="Toggle navigation"
 				>
-					<i class="material-icons"> menu </i>
+					<i class="material-icons">menu</i>
 				</button>
+				<ul
+					class="dropdown-menu"
+					style="
+					position: fixed;
+					top: 52px;
+					left: calc(100% - 160px);
+					width:	min-content;
+				"
+				>
+					<li>
+						<a class="dropdown-item" aria-current="page" href="/">Home</a>
+					</li>
+					<li>
+						<a class="dropdown-item ws-nowrap" aria-current="page" href="/dashboard/mentor"
+							>Mentors</a
+						>
+					</li>
+					<li>
+						<a class="dropdown-item ws-nowrap" aria-current="page" href="https://app.tatorscout.org"
+							>Remote App</a
+						>
+					</li>
+				</ul>
 			</div>
 			<!-- <button
 				class="me-5 btn position-relative"
@@ -79,20 +109,6 @@
 		</div>
 	</div>
 </nav>
-
-<div
-	class="collapse navbar-collapse position-fixed bg-dark p-3 shadow border-secondary border-1"
-	id="navbarNav"
->
-	<ul class="navbar-nav">
-		<li class="nav-item">
-			<a class="nav-link active" aria-current="page" href="/">Home</a>
-		</li>
-		<li class="nav-item">
-			<a class="nav-link active ws-nowrap" aria-current="page" href="/dashboard/mentor">Mentors</a>
-		</li>
-	</ul>
-</div>
 <SideNav id="pages" />
 
 <!-- <Notifications bind:notifs /> -->

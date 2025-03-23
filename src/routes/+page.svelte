@@ -23,5 +23,24 @@
 				</div>
 			</a>
 		</div>
+		<div class="col-md-6 p-3">
+			<a
+				href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
+				class="text-reset text-decoration-none"
+			>
+				<div class="card picklist">
+					<div class="card-body">
+						<h5 class="card-title text-black">Picklist</h5>
+						<p class="card-text text-black">Team Tators Picklist Spreadsheet</p>
+					</div>
+				</div>
+			</a>
+		</div>
 	</div>
 </div>
+
+<style>
+	.picklist {
+		background-color: pink;
+	}
+</style>

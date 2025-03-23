@@ -33,6 +33,7 @@
 	"devDependencies": {
 		"@chromatic-com/storybook": "^3.2.4",
 		"@eslint/compat": "^1.2.6",
+		"@faker-js/faker": "^9.6.0",
 		"@playwright/test": "^1.50.1",
 		"@storybook/addon-essentials": "^8.5.3",
 		"@storybook/addon-interactions": "^8.5.3",
@@ -78,6 +79,7 @@
 	"dependencies": {
 		"@esbuild-kit/esm-loader": "^2.6.5",
 		"@eslint/js": "^9.19.0",
+		"@fortawesome/fontawesome-free": "^6.7.2",
 		"@inquirer/prompts": "^7.3.1",
 		"@neoxia-js/nodemailer-sendgrid-transport": "^0.1.1",
 		"@node-rs/argon2": "^1.8.3",

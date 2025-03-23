@@ -81,15 +81,15 @@ export namespace Potato {
 			const currentPhase = getPhase(potato.data.level);
 			const newLevel = potato.data.level + levels;
 			const nowPhase = getPhase(newLevel);
-			if (currentPhase !== nowPhase) {
-				Account.sendAccountNotif(potato.data.account, {
-					severity: 'success',
-					title: 'Your potato has reached a new phase',
-					message: `Your potato is now a ${nowPhase} (${Levels[nowPhase]})`,
-					icon: '',
-					link: ''
-				});
-			}
+			//if (currentPhase !== nowPhase) {
+			//	Account.sendAccountNotif(potato.data.account, {
+			//		severity: 'success',
+			//		title: 'Your potato has reached a new phase',
+			//		message: `Your potato is now a ${nowPhase} (${Levels[nowPhase]})`,
+			//		icon: '',
+			//		link: ''
+			//	});
+			//}
 
 			return (
 				await potato.update({

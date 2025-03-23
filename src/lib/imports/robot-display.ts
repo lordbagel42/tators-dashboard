@@ -28,6 +28,9 @@ export default (event: TBAEvent) => {
 		priority: 0
 	});
 
+	const section = Navbar.getSections().data.find((s) => s.priority === 1);
+	if (section) Navbar.removeSection(section);
+
 	Navbar.addSection({
 		name: `${event.name} Dashboard`,
 		priority: 1,
@@ -42,6 +45,18 @@ export default (event: TBAEvent) => {
 				name: 'Team Compare',
 				href: `/dashboard/event/${event.key}/compare`,
 				icon: 'compare',
+				type: 'material-icons'
+			},
+			{
+				name: 'Checlist',
+				href: `/dashboard/event/${event.key}/checklist`,
+				icon: 'list',
+				type: 'material-icons'
+			},
+			{
+				name: 'Archived Matches',
+				href: `/dashboard/event/${event.key}/archived-matches`,
+				icon: 'archive',
 				type: 'material-icons'
 			}
 		]

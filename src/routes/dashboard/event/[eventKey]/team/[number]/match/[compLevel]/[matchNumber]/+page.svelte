@@ -70,7 +70,7 @@
 	<div class="row mb-3">
 		{#if scouting}
 			{#key scouting}
-				<div class="col-md-4">
+				<div class="col-md-6">
 					<div class="card h-100">
 						<div class="card-body p-1">
 							<MatchContribution {match} {scouting} {team} {event} />
@@ -80,7 +80,7 @@
 			{/key}
 		{/if}
 		{#each match.tba.videos || [] as video}
-			<div class="col-md-4">
+			<div class="col-md-6">
 				<div class="card h-100">
 					<div class="card-body p-1">
 						{#if video.type === 'youtube'}
@@ -90,7 +90,10 @@
 								title="YouTube video player"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowfullscreen
-								class="w-100 mb-0 h-100"
+								class="w-100 mb-0"
+								style="
+									height: 200px;
+								"
 							></iframe>
 						{/if}
 					</div>

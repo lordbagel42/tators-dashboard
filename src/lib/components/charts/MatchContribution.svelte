@@ -83,7 +83,8 @@
 							stacked: true
 						}
 					},
-					responsive: true
+					responsive: true,
+					maintainAspectRatio: false
 				}
 			});
 

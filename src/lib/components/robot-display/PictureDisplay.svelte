@@ -13,13 +13,13 @@
 	interface Props {
 		team: TBATeam;
 		event: TBAEvent;
+		teamPictures: FIRST.TeamPicturesArr;
 	}
 
 	let pictures: string[] = $state([]);
-	let teamPictures = $state(new DataArr(FIRST.TeamPictures, []));
 	// $inspect(pictures);
 
-	const { team, event }: Props = $props();
+	const { team, event, teamPictures }: Props = $props();
 
 	onMount(() => {
 		team.getMedia().then((m) => {
@@ -28,19 +28,6 @@
 				...m.value.filter((media) => media.type === 'imgur').map((media) => media.direct_url)
 			);
 		});
-
-		teamPictures = FIRST.TeamPictures.query(
-			'from-event',
-			{
-				team: team.tba.team_number,
-				eventKey: event.tba.key
-			},
-			{
-				asStream: false,
-				satisfies: (tp) =>
-					tp.data.team === team.tba.team_number && tp.data.eventKey === event.tba.key
-			}
-		);
 
 		const unsub = teamPictures.subscribe((p) => {
 			pictures.push(

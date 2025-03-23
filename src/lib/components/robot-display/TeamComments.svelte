@@ -9,11 +9,20 @@
 	interface Props {
 		team: number;
 		event: string;
+		comments: Scouting.TeamCommentsArr;
+		scouting: Scouting.MatchScoutingArr;
 	}
 
-	const { team, event }: Props = $props();
+	const { team, event, comments, scouting }: Props = $props();
 
-	let comments = $state(new DataArr(Scouting.TeamComments, []));
+	console.log(scouting);
+
+	let commentProxy: {
+		comment: string;
+		scoutUsername: string;
+		type: string;
+		match: string;
+	}[] = $state([]);
 
 	const accountFilterParams: ITextFilterParams = {
 		filterOptions: ['contains', 'notContains'],
@@ -64,29 +73,29 @@
 			field: 'type',
 			filter: 'agTextColumnFilter',
 			filterParams: typeFilterparams
+		},
+		{
+			headerName: 'Match',
+			field: 'match',
+			filter: 'agNumberColumnFilter'
 		}
-		// {
-		// 	headerName: 'Match',
-		// 	field: 'matchNumber',
-		// 	filter: 'agNumberColumnFilter'
-		// }
 	];
 
 	let render = $state(0);
 
 	onMount(() => {
-		comments = Scouting.TeamComments.query(
-			'from-event',
-			{ eventKey: event, team },
-			{
-				asStream: false,
-				satisfies: (c) => c.data.team === team && c.data.eventKey === event
-			}
-		);
-
 		render++;
 
-		return comments.subscribe(() => {
+		return comments.subscribe((data) => {
+			commentProxy = data.map(c => {
+				const match = scouting.data.find(s => s.data.id === c.data.matchScoutingId);
+				return {
+					comment: String(c.data.comment),
+					scoutUsername: String(c.data.scoutUsername),
+					type: String(c.data.type),
+					match: match ? `${match.data.compLevel}${match.data.matchNumber}` : 'unknown',
+				}
+			});
 			// Yes, this is a hack. I don't want to do the right way when this works.
 			render++;
 		});
@@ -97,7 +106,7 @@
 	{#key render}
 		<Grid
 			columnDefs={columns}
-			rowData={$comments.map((c) => c.data)}
+			rowData={commentProxy}
 			gridClasses="table table-striped"
 			filterEnable={true}
 			filterClasses=""

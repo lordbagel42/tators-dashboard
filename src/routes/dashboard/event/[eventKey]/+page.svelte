@@ -37,44 +37,63 @@
 				{/each}
 			</div>
 			<div class="container-fluid">
-
 				{#each summaries as row, k}
-				<div class="row mb-5">
-					{#if k !== 0}
-						<hr />
-					{/if}
-					<h2 class="text-primary">{row.title}</h2>
-					{#each row.labels as label, i}
-						<h5>{label}</h5>
-						<div class="scroll-x mb-1">
-							<div class="chart-container">
-								<EventSummary 
-									labels={Object.entries(row.data)
-										.sort((a, b) => b[1][i] - a[1][i])
-										.map(v => v[0])}
-									datasets={[
-										{
-											label,
-											data: Object.entries(row.data)
-											.sort((a, b) => b[1][i] - a[1][i])
-											.map(v => v[1][i])
-										}
-									]}
-								/>
+					<div class="row mb-5">
+						{#if k !== 0}
+							<hr />
+						{/if}
+						<h2 class="text-primary">{row.title}</h2>
+						{#each row.labels as label, i}
+							<h5>{label}</h5>
+							<div class="scroll-x mb-1">
+								<div class="chart-container">
+									<EventSummary
+										labels={Object.entries(row.data)
+											.sort((a, b) => {
+												const A = a[1][i];
+												const B = b[1][i];
+												if (isNaN(A)) {
+													return 1;
+												}
+												if (isNaN(B)) {
+													return -1;
+												}
+												return B - A;
+											})
+											.map((v) => v[0])}
+										datasets={[
+											{
+												label,
+												data: Object.entries(row.data)
+													.sort((a, b) => {
+														const A = a[1][i];
+														const B = b[1][i];
+														if (isNaN(A)) {
+															return 1;
+														}
+														if (isNaN(B)) {
+															return -1;
+														}
+														return B - A;
+													})
+													.map((v) => v[1][i])
+											}
+										]}
+									/>
+								</div>
 							</div>
-						</div>
-					{/each}
-				</div>
-			{/each}
+						{/each}
+					</div>
+				{/each}
 			</div>
 		</div>
 	{/snippet}
 </DB>
 
 <style>
-    .chart-container {
-        min-width: 1500px !important;
-        width: 100vw;
-        height: 100%;
-    }
+	.chart-container {
+		min-width: 1500px !important;
+		width: 100vw;
+		height: 100%;
+	}
 </style>

@@ -13,11 +13,21 @@
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
+	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
+	import { onMount } from 'svelte';
+	import { listen } from '$lib/utils/struct-listener';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
 	const teams = $derived(data.teams.map((t) => new TBATeam(t, event)));
 	const team = $derived(new TBATeam(data.team, event));
+	const scouting = $derived(data.scouting);
+	const comments = $derived(data.comments);
+	const answers = $derived(data.answers);
+	const questions = $derived(data.questions);
+	const groups = $derived(data.groups);
+	const sections = $derived(data.sections);
+	const pictures = $derived(data.pictures);
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -39,7 +49,7 @@
 		}
 	});
 
-	const comments = new Dashboard.Card({
+	const commentsCard = new Dashboard.Card({
 		name: 'Comments',
 		iconType: 'material-icons',
 		icon: 'chat',
@@ -58,7 +68,7 @@
 		}
 	});
 
-	const pictures = new Dashboard.Card({
+	const picturesCard = new Dashboard.Card({
 		name: 'Pictures',
 		iconType: 'material-icons',
 		icon: 'image',
@@ -169,8 +179,8 @@
 			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
 			cards: [
 				summary,
-				pictures,
-				comments,
+				picturesCard,
+				commentsCard,
 				actionHeatmap,
 				pitScouting,
 				matchViewer,
@@ -186,8 +196,8 @@
 			name: `Robot Display: ${team.tba.team_number} - ${team.tba.nickname}`,
 			cards: [
 				summary,
-				pictures,
-				comments,
+				picturesCard,
+				commentsCard,
 				actionHeatmap,
 				pitScouting,
 				matchViewer,
@@ -211,6 +221,45 @@
 				})
 			);
 		}
+	});
+
+	onMount(() => {
+		const offScouting = listen(
+			scouting,
+			(d) => d.data.eventKey === event.tba.key && d.data.team === team.tba.team_number
+		);
+		const offComments = listen(
+			comments,
+			(d) => d.data.team === team.tba.team_number && d.data.eventKey === event.tba.key
+		);
+		const offAnswers = listen(
+			answers,
+			(d) =>
+				d.data.team === team.tba.team_number &&
+				!!questions.data.find((q) => q.data.id === d.data.questionId)
+		);
+		const offQuestions = listen(
+			questions,
+			(d) => !!groups.data.find((s) => s.data.id === d.data.groupId)
+		);
+		const offGroups = listen(
+			groups,
+			(d) => !!sections.data.find((s) => s.data.id === d.data.sectionId)
+		);
+		const offSections = listen(sections, (d) => d.data.eventKey === event.tba.key);
+		const offPictures = listen(
+			pictures,
+			(d) => d.data.eventKey === event.tba.key && d.data.team == team.tba.team_number
+		);
+		return () => {
+			offScouting();
+			offComments();
+			offAnswers();
+			offQuestions();
+			offGroups();
+			offSections();
+			offPictures();
+		};
 	});
 </script>
 
@@ -271,17 +320,17 @@
 		{#key team}
 			<Card card={summary}>
 				{#snippet body()}
-					<EventSummary {team} {event} />
+					<EventSummary {team} {event} {scouting} />
 				{/snippet}
 			</Card>
-			<Card card={pictures}>
+			<Card card={picturesCard}>
 				{#snippet body()}
-					<PictureDisplay {team} {event} />
+					<PictureDisplay {team} {event} teamPictures={pictures} />
 				{/snippet}
 			</Card>
-			<Card card={comments}>
+			<Card card={commentsCard}>
 				{#snippet body()}
-					<TeamComments team={team.tba.team_number} event={event.tba.key} />
+					<TeamComments team={team.tba.team_number} event={event.tba.key} {comments} {scouting} />
 				{/snippet}
 			</Card>
 			<!-- <Card card={actionHeatmap}>
@@ -291,22 +340,22 @@
 			</Card> -->
 			<Card card={pitScouting}>
 				{#snippet body()}
-					<PitScoutingCard {team} {event} />
+					<PitScoutingCard {team} {event} {sections} {groups} {questions} {answers} />
 				{/snippet}
 			</Card>
 			<Card card={matchViewer}>
 				{#snippet body()}
-					<MatchTable {team} {event} />
+					<MatchTable {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 			<Card card={progress}>
 				{#snippet body()}
-					<Progress {team} {event} />
+					<Progress {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 			<Card card={eventStats}>
 				{#snippet body()}
-					<TeamEventStats {team} {event} />
+					<TeamEventStats {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 		{/key}

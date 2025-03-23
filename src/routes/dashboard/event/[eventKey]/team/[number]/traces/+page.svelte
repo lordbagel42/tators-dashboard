@@ -11,20 +11,17 @@
 	import { afterNavigate } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
 	import { returnType } from 'drizzle-struct/utils';
+	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
+	import Checks from '$lib/components/robot-display/Checks.svelte';
+	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
 	const event = $derived(data.event);
 	const team = $derived(data.team);
+	const scoutingArr = $derived(data.scouting);
 
 	$effect(() => nav(event.tba));
-
-	let scoutingArr = $state(new DataArr(Scouting.MatchScouting, []));
-
-	$effect(() => {
-		if (!browser) return;
-		scoutingArr = Scouting.scoutingFromTeam(team.tba.team_number, event.tba.key);
-	});
 
 	let modal: Modal;
 	let selectedScouting: Scouting.MatchScoutingData | undefined = $state(undefined);
@@ -124,21 +121,23 @@
 		</div>
 	</div>
 	<div class="row">
-		{#if $scoutingArr.length}
-			{#each $scoutingArr as scouting}
-				<div class="col-3">
-					<h3>
-						{scouting.data.compLevel}{scouting.data.matchNumber} - {scouting.data.eventKey}
-						<button type="button" class="btn" onclick={() => open(scouting)}>
-							<i class="material-icons">visibility</i>
-						</button>
-					</h3>
-					<Trace {scouting} {event} {focus} />
-				</div>
-			{/each}
-		{:else}
-			<p>No scouting data found for team {team.tba.team_number} at event {event.tba.name}</p>
-		{/if}
+		{#key scoutingArr}
+			{#if scoutingArr.length}
+				{#each scoutingArr as scouting}
+					<div class="col-3">
+						<h3>
+							{scouting.data.compLevel}{scouting.data.matchNumber} - {scouting.data.eventKey}
+							<button type="button" class="btn" onclick={() => open(scouting)}>
+								<i class="material-icons">visibility</i>
+							</button>
+						</h3>
+						<Trace {scouting} {event} {focus} />
+					</div>
+				{/each}
+			{:else}
+				<p>No scouting data found for team {team.tba.team_number} at event {event.tba.name}</p>
+			{/if}
+		{/key}
 	</div>
 </div>
 
@@ -165,6 +164,15 @@
 		{#key selectedScouting}
 			{#if selectedScouting}
 				<Trace scouting={selectedScouting} {event} {focus} />
+				<MatchComments scouting={selectedScouting} />
+				<div class="row my-2">
+					<div class="col-md-6">
+						<Checks scouting={selectedScouting} />
+					</div>
+					<div class="col-md-6">
+						<MatchActions scouting={selectedScouting} />
+					</div>
+				</div>
 			{:else}
 				<p>No scouting data selected</p>
 			{/if}

@@ -144,7 +144,9 @@ export namespace Account {
 		Admins.fromProperty('accountId', a.id, {
 			type: 'stream'
 		}).pipe((a) => a.delete());
-		Permissions.RoleAccount.fromProperty('account', a.id,{type: 'stream'}).pipe((a) => a.delete());
+		Permissions.RoleAccount.fromProperty('account', a.id, { type: 'stream' }).pipe((a) =>
+			a.delete()
+		);
 	});
 
 	export const Admins = new Struct({

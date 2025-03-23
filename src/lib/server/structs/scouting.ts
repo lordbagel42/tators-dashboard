@@ -439,7 +439,8 @@ export namespace Scouting {
 					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
 					.filter((a) => !a.archived);
 
-				const answers = res.map((r) => Answers.Generator(r.pit_answers))
+				const answers = res
+					.map((r) => Answers.Generator(r.pit_answers))
 					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
 					.filter((a) => !a.archived);
 
@@ -447,7 +448,7 @@ export namespace Scouting {
 					questions,
 					groups,
 					answers
-				}
+				};
 			});
 		};
 

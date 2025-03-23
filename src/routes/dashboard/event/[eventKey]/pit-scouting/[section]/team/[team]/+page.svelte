@@ -37,17 +37,23 @@
 	});
 
 	onMount(() => {
-		const offSections = listen(sections, s => s.data.eventKey === event.key);
-		const offGroups = listen(groups, g => section.data.id === g.data.sectionId);
-		const offQuestions = listen(questions, q => !!groups.data.find(g => g.data.id === q.data.groupId));
-		const offAnswers = listen(answers, a => !!questions.data.find(q => q.data.id === a.data.questionId));
+		const offSections = listen(sections, (s) => s.data.eventKey === event.key);
+		const offGroups = listen(groups, (g) => section.data.id === g.data.sectionId);
+		const offQuestions = listen(
+			questions,
+			(q) => !!groups.data.find((g) => g.data.id === q.data.groupId)
+		);
+		const offAnswers = listen(
+			answers,
+			(a) => !!questions.data.find((q) => q.data.id === a.data.questionId)
+		);
 
 		return () => {
 			offSections();
 			offGroups();
 			offQuestions();
 			offAnswers();
-		}
+		};
 	});
 </script>
 
@@ -94,6 +100,12 @@
 		</div>
 	</div>
 	{#key team}
-		<Section {section} team={team.team_number} groups={$groups.filter(g => g.data.sectionId === section.data.id)} {questions} {answers} />
+		<Section
+			{section}
+			team={team.team_number}
+			groups={$groups.filter((g) => g.data.sectionId === section.data.id)}
+			{questions}
+			{answers}
+		/>
 	{/key}
 </div>

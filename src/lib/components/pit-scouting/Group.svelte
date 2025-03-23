@@ -13,7 +13,6 @@
 
 	const { group, team, questions, answers }: Props = $props();
 
-
 	let questionIds: string[] = $state([]);
 
 	$effect(() => {

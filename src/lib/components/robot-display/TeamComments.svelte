@@ -87,14 +87,14 @@
 		render++;
 
 		return comments.subscribe((data) => {
-			commentProxy = data.map(c => {
-				const match = scouting.data.find(s => s.data.id === c.data.matchScoutingId);
+			commentProxy = data.map((c) => {
+				const match = scouting.data.find((s) => s.data.id === c.data.matchScoutingId);
 				return {
 					comment: String(c.data.comment),
 					scoutUsername: String(c.data.scoutUsername),
 					type: String(c.data.type),
-					match: match ? `${match.data.compLevel}${match.data.matchNumber}` : 'unknown',
-				}
+					match: match ? `${match.data.compLevel}${match.data.matchNumber}` : 'unknown'
+				};
 			});
 			// Yes, this is a hack. I don't want to do the right way when this works.
 			render++;

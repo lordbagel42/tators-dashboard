@@ -18,46 +18,65 @@ export namespace Potato {
 	};
 
 	export const Levels = {
+		// seed: 0,
+		// sprout: 100,
+		// plant: 250,
+		// mature: 500,
+		// flower: 1_000,
+		// sentient: 1_500,
+		// intelligent: 2122,
+		// divine: 3_000,
+		// omnipotent: 4_000,
+		// omnipresent: 5_000,
+		// god: 7_500,
+		// tator: 10_000
 		seed: 0,
 		sprout: 100,
-		plant: 250,
-		mature: 500,
-		flower: 1_000,
-		sentient: 1_500,
-		intelligent: 2122,
-		divine: 3_000,
-		omnipotent: 4_000,
-		omnipresent: 5_000,
-		god: 7_500,
-		tator: 10_000
+		baby: 500,
+		kid: 1000,
+		teen: 2_122,
+		adult: 5000,
+		elder: 10_000,
 	};
 
 	const getPhase = (level: number) => {
 		switch (true) {
+			// case level < Levels.sprout:
+			// 	return 'seed';
+			// case level < Levels.plant:
+			// 	return 'sprout';
+			// case level < Levels.mature:
+			// 	return 'plant';
+			// case level < Levels.flower:
+			// 	return 'mature';
+			// case level < Levels.sentient:
+			// 	return 'flower';
+			// case level < Levels.intelligent:
+			// 	return 'sentient';
+			// case level < Levels.divine:
+			// 	return 'intelligent';
+			// case level < Levels.omnipotent:
+			// 	return 'divine';
+			// case level < Levels.omnipresent:
+			// 	return 'omnipotent';
+			// case level < Levels.god:
+			// 	return 'omnipresent';
+			// case level < Levels.tator:
+			// 	return 'god';
 			case level < Levels.sprout:
 				return 'seed';
-			case level < Levels.plant:
+			case level < Levels.baby:
 				return 'sprout';
-			case level < Levels.mature:
-				return 'plant';
-			case level < Levels.flower:
-				return 'mature';
-			case level < Levels.sentient:
-				return 'flower';
-			case level < Levels.intelligent:
-				return 'sentient';
-			case level < Levels.divine:
-				return 'intelligent';
-			case level < Levels.omnipotent:
-				return 'divine';
-			case level < Levels.omnipresent:
-				return 'omnipotent';
-			case level < Levels.god:
-				return 'omnipresent';
-			case level < Levels.tator:
-				return 'god';
+			case level < Levels.kid:
+				return 'baby';
+			case level < Levels.teen:
+				return 'kid';
+			case level < Levels.adult:
+				return 'teen';
+			case level < Levels.elder:
+				return 'adult';
 			default:
-				return 'tator';
+				return 'elder';
 		}
 	};
 
@@ -81,15 +100,15 @@ export namespace Potato {
 			const currentPhase = getPhase(potato.data.level);
 			const newLevel = potato.data.level + levels;
 			const nowPhase = getPhase(newLevel);
-			//if (currentPhase !== nowPhase) {
-			//	Account.sendAccountNotif(potato.data.account, {
-			//		severity: 'success',
-			//		title: 'Your potato has reached a new phase',
-			//		message: `Your potato is now a ${nowPhase} (${Levels[nowPhase]})`,
-			//		icon: '',
-			//		link: ''
-			//	});
-			//}
+			if (currentPhase !== nowPhase) {
+				Account.sendAccountNotif(potato.data.account, {
+					severity: 'success',
+					title: 'Your potato has reached a new phase',
+					message: `Your potato is now a ${nowPhase} (${Levels[nowPhase]})`,
+					icon: '',
+					link: ''
+				});
+			}
 
 			return (
 				await potato.update({
@@ -164,7 +183,8 @@ export namespace Potato {
 				})
 				.from(Friend.table)
 				.orderBy(Friend.table.level)
-				.innerJoin(Account.Account.table, eq(Friend.table.account, Account.Account.table.id));
+				.innerJoin(Account.Account.table, eq(Friend.table.account, Account.Account.table.id))
+				.then(r => r.reverse());
 		});
 	};
 
@@ -174,6 +194,13 @@ export namespace Potato {
 		group: 'Potatoes',
 		permissions: ['potato_friend:read:*']
 	});
+
+	createEntitlement({
+		name: 'edit-potato-level',
+		structs: [Friend],
+		group: 'Potatoes',
+		permissions: ['potato_friend:update:level'],
+	})
 }
 
 export const _potato = Potato.Friend.table;

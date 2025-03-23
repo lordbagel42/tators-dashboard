@@ -28,8 +28,8 @@ export default (event: TBAEvent) => {
 		priority: 0
 	});
 
-	const section = Navbar.getSections().data.find((s) => s.priority === 1);
-	if (section) Navbar.removeSection(section);
+	const s1 = Navbar.getSections().data.find((s) => s.priority === 1);
+	if (s1) Navbar.removeSection(s1);
 
 	Navbar.addSection({
 		name: `${event.name} Dashboard`,
@@ -58,6 +58,19 @@ export default (event: TBAEvent) => {
 				href: `/dashboard/event/${event.key}/archived-matches`,
 				icon: 'archive',
 				type: 'material-icons'
+			}
+		]
+	});
+
+	Navbar.addSection({
+		name: 'Other',
+		priority: 2,
+		links: [
+			{
+				name: 'Potato Leaderboard',
+				href: '/potato',
+				icon: 'leaderboard',
+				type: 'material-icons',
 			}
 		]
 	});

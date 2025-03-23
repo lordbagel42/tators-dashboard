@@ -36,6 +36,19 @@
 				</div>
 			</a>
 		</div>
+		<div class="col-md-6 p-3">
+			<a
+				href="/potato"
+				class="text-reset text-decoration-none"
+			>
+				<div class="card bg-warning">
+					<div class="card-body">
+						<h5 class="card-title text-black">Potato Leaderboard</h5>
+						<p class="card-text text-black">View the potato leaderboard</p>
+					</div>
+				</div>
+			</a>
+		</div>
 	</div>
 </div>
 

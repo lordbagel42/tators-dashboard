@@ -5,3 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/bs-overwrite.css';
 import './styles/global.css';
 import './styles/style.css';
+import 'range-slider-input/dist/style.css';
+import { browser } from '$app/environment';
+import '@fortawesome/fontawesome-free/css/all.min.css';

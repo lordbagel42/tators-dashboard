@@ -6,6 +6,12 @@ import { z } from 'zod';
 import { Requests } from './requests';
 import { Random } from 'ts-utils/math';
 
+const latency = {
+	average: 0,
+	history: [] as number[],
+	latest: 0
+};
+
 class SSE {
 	public uuid = Random.uuid();
 	public readonly emitter = new EventEmitter();
@@ -55,9 +61,10 @@ class SSE {
 			Requests.setMeta('sse', this.uuid);
 			const source = new EventSource(`/sse/init/${this.uuid}`);
 
-			source.addEventListener('error', (e) => console.error('Error:', e));
+			source.addEventListener('error', (e) => console.error('SSE Error:', e));
 
 			const onConnect = () => {
+				console.log('SSE Connected');
 				this.emit('connect', undefined);
 			};
 
@@ -142,7 +149,13 @@ class SSE {
 				toReturn.disconnect();
 				toReturn.disconnect = connect();
 			}
-		}, 10000);
+		}, 10 * 1000); // 10 seconds
+		this.ping().then((res) => {
+			if (!res) {
+				toReturn.disconnect();
+				toReturn.disconnect = connect();
+			}
+		});
 		// connect();
 		return toReturn;
 	}
@@ -152,7 +165,28 @@ class SSE {
 	}
 
 	private ping() {
-		return fetch('/sse/ping').then((res) => res.ok);
+		const now = Date.now();
+		return fetch('/sse/ping', {
+			body: JSON.stringify({
+				latency: latency.latest ?? 0
+			}),
+			method: 'POST'
+		}).then((res) => {
+			const ping = Math.abs(Date.now() - now);
+			if (!latency.history.length) {
+				this.ping(); // ping again to get a more accurate latency
+			}
+			if (latency.history.length > 100) {
+				latency.history.shift();
+			}
+			latency.history.push(ping);
+			latency.latest = ping;
+			latency.average = latency.history.reduce((a, b) => a + b, 0) / latency.history.length;
+			Object.assign(window, {
+				latency
+			});
+			return res.ok;
+		});
 	}
 
 	private stop = false;

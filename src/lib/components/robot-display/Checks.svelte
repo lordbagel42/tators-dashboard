@@ -41,16 +41,20 @@
 	});
 </script>
 
-<div>
-	<h5 class="text-center">Checks</h5>
-	<ul class="list-group">
-		{#each checks as check (check)}
-			<li class="list-group-item text-{checkColors[check] ?? checkColors.default}">
-				{capitalize(fromCamelCase(check))}
-			</li>
-		{/each}
-	</ul>
-	{#if !checks.length}
-		<p class="text-muted text-center">No checks available.</p>
-	{/if}
+<div class="card text-center h-100">
+	<div class="card-header">
+		<h5 class="mb-0">Checks</h5>
+	</div>
+	<div class="card-body">
+		<ul class="list-group">
+			{#each checks as check (check)}
+				<li class="list-group-item text-{checkColors[check] ?? checkColors.default}">
+					{capitalize(fromCamelCase(check))}
+				</li>
+			{/each}
+		</ul>
+		{#if !checks.length}
+			<p class="text-muted text-center">No checks available.</p>
+		{/if}
+	</div>
 </div>

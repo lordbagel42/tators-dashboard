@@ -32,19 +32,23 @@
 	});
 </script>
 
-<div>
-	<h5 class="text-center">Actions</h5>
-	<ul class="list-group">
-		{#each Object.entries(actionObj).sort(([a], [b]) => {
-			const arr = Object.keys(actions);
-			return arr.indexOf(a) - arr.indexOf(b);
-		}) as [action, count] (action)}
-			<li class="list-group-item">
-				{actions[action as keyof typeof actions]} - {count}
-			</li>
-		{/each}
-	</ul>
-	{#if !Object.keys(actions).length}
-		<p class="text-muted text-center">No actions available.</p>
-	{/if}
+<div class="card text-center h-100">
+	<div class="card-header">
+		<h5 class="mb-0">Actions</h5>
+	</div>
+	<div class="card-body">
+		<ul class="list-group">
+			{#each Object.entries(actionObj).sort(([a], [b]) => {
+				const arr = Object.keys(actions);
+				return arr.indexOf(a) - arr.indexOf(b);
+			}) as [action, count] (action)}
+				<li class="list-group-item">
+					{actions[action as keyof typeof actions]} - {count}
+				</li>
+			{/each}
+		</ul>
+		{#if !Object.keys(actions).length}
+			<p class="text-muted text-center">No actions available.</p>
+		{/if}
+	</div>
 </div>

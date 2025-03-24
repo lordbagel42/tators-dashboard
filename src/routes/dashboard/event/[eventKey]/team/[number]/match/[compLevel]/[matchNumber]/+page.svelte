@@ -32,7 +32,10 @@
 <div class="container">
 	<div class="row mb-3">
 		<div class="col-12">
-			<h1>{team.tba.nickname} - {event.tba.name} {match.tba.comp_level}{match.tba.match_number}</h1>
+			<h1>
+				{team.tba.key.slice(3)}: {team.tba.nickname} - {event.tba.name}
+				{match.tba.comp_level}{match.tba.match_number}
+			</h1>
 			<div class="btn-group" role="group">
 				{#if prev}
 					<a

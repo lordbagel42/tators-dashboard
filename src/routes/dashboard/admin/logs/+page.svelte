@@ -99,6 +99,42 @@
 		</div>
 	</div>
 	<div class="row mb-3">
+		<h5>Instructions</h5>
+		<p class="text-muted">
+			Search Functionality:
+			<br>
+			Each column can be filtered by typing in their respective search boxes.
+			<br>
+			Example: CLI in Account ID will show logs with "CLI" in the Account ID.
+			<br>
+			<br>
+			🚫 Exclude a Value:
+			<br>
+
+			Use ! before a word to exclude results containing that word until the next filter.
+			<br>
+			Example: !debug → Hides logs with "debug".
+			<br>
+			<br>
+			🔍 Combine Multiple Filters:
+			<br>
+
+			Use & to mix inclusion and exclusion.
+			<br>
+			Example: !debug&error → Shows logs with "error" but without "debug".
+			<br>
+			<br>
+			📝 More Examples:
+			<br>
+
+			warning → Finds logs with "warning".
+			<br>
+			!info&critical → Finds logs with "critical" but not "info".
+			<br>
+			user123 → Finds logs related to "user123".
+		</p>
+	</div>
+	<div class="row mb-3">
 		<div class="col">
 			<h3>Search:</h3>
 			<div class="input-group">

@@ -71,13 +71,12 @@ export namespace Logs {
 	
 				for (const part of parts) {
 					if (part.startsWith("!")) {
-						excludes.push(not(like(column, part.slice(1))));
+						excludes.push(not(sql`${column} ILIKE ${"%" + part.slice(1) + "%"}`));
 					} else {
-						includes.push(like(column, part));
+						includes.push(sql`${column} ILIKE ${"%" + part + "%"}`);
 					}
 				}
 	
-				// Combine NOT and AND conditions
 				if (includes.length > 0 && excludes.length > 0) {
 					return and(...includes, ...excludes);
 				} else if (includes.length > 0) {

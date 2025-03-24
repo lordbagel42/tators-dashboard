@@ -18,6 +18,23 @@
 	// i have no idea if this is correct, but it works and feels pretty good to me.
 	// type assertions feel gross to me, but i don't really know how to do this better.
 	const tba = match.tba as MatchSchema;
+
+	const getCellClass = (
+		teamKey: string,
+		allianceTeamKey: string,
+		endGameStatus: string
+	): string => {
+		const highlightClass = allianceTeamKey === teamKey ? 'table-highlight' : '';
+		const statusClass =
+			endGameStatus === 'DeepCage'
+				? 'table-green'
+				: endGameStatus === 'ShallowCage'
+					? 'table-blue'
+					: endGameStatus === 'Parked'
+						? 'table-purple'
+						: '';
+		return `${highlightClass} ${statusClass}`;
+	};
 </script>
 
 <div class="card text-center h-100">
@@ -35,13 +52,21 @@
 			<tbody>
 				<tr>
 					<td
-						class={`${tba.alliances.blue.team_keys[0] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.blue.endGameRobot1 === 'DeepCage' ? 'table-green' : tba.score_breakdown.blue.endGameRobot1 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.blue.endGameRobot1 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.blue.team_keys[0],
+							tba.score_breakdown.blue.endGameRobot1
+						)}
 					>
 						{tba.alliances.blue.team_keys[0].slice(3)}: {tba.score_breakdown.blue.endGameRobot1 ||
 							'None'}
 					</td>
 					<td
-						class={`${tba.alliances.red.team_keys[0] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.red.endGameRobot1 === 'DeepCage' ? 'table-green' : tba.score_breakdown.red.endGameRobot1 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.red.endGameRobot1 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.red.team_keys[0],
+							tba.score_breakdown.red.endGameRobot1
+						)}
 					>
 						{tba.alliances.red.team_keys[0].slice(3)}: {tba.score_breakdown.red.endGameRobot1 ||
 							'None'}
@@ -49,13 +74,21 @@
 				</tr>
 				<tr>
 					<td
-						class={`${tba.alliances.blue.team_keys[1] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.blue.endGameRobot2 === 'DeepCage' ? 'table-green' : tba.score_breakdown.blue.endGameRobot2 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.blue.endGameRobot2 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.blue.team_keys[1],
+							tba.score_breakdown.blue.endGameRobot2
+						)}
 					>
 						{tba.alliances.blue.team_keys[1].slice(3)}: {tba.score_breakdown.blue.endGameRobot2 ||
 							'None'}
 					</td>
 					<td
-						class={`${tba.alliances.red.team_keys[1] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.red.endGameRobot2 === 'DeepCage' ? 'table-green' : tba.score_breakdown.red.endGameRobot2 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.red.endGameRobot2 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.red.team_keys[1],
+							tba.score_breakdown.red.endGameRobot2
+						)}
 					>
 						{tba.alliances.red.team_keys[1].slice(3)}: {tba.score_breakdown.red.endGameRobot2 ||
 							'None'}
@@ -63,13 +96,21 @@
 				</tr>
 				<tr>
 					<td
-						class={`${tba.alliances.blue.team_keys[2] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.blue.endGameRobot3 === 'DeepCage' ? 'table-green' : tba.score_breakdown.blue.endGameRobot3 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.blue.endGameRobot3 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.blue.team_keys[2],
+							tba.score_breakdown.blue.endGameRobot3
+						)}
 					>
 						{tba.alliances.blue.team_keys[2].slice(3)}: {tba.score_breakdown.blue.endGameRobot3 ||
 							'None'}
 					</td>
 					<td
-						class={`${tba.alliances.red.team_keys[2] === team.tba.key ? 'table-highlight' : ''} ${tba.score_breakdown.red.endGameRobot3 === 'DeepCage' ? 'table-green' : tba.score_breakdown.red.endGameRobot3 === 'ShallowCage' ? 'table-blue' : tba.score_breakdown.red.endGameRobot3 === 'Parked' ? 'table-purple' : ''}`}
+						class={getCellClass(
+							team.tba.key,
+							tba.alliances.red.team_keys[2],
+							tba.score_breakdown.red.endGameRobot3
+						)}
 					>
 						{tba.alliances.red.team_keys[2].slice(3)}: {tba.score_breakdown.red.endGameRobot3 ||
 							'None'}

@@ -51,12 +51,12 @@
 
 			const selected = await select(
 				'Choose an event to copy from',
-				withSections.map((e) => e.event.tba.name)
+				withSections.map((e) => e.event.tba.name),
 			);
 
 			if (!selected) return;
 			Scouting.PIT.Sections.call('copy-from-event', {
-				from: selected,
+				from: withSections.find((e) => e.event.tba.name === selected)?.event.tba.key || '',
 				to: eventKey
 			});
 		} catch (err) {

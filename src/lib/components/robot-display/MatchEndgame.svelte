@@ -14,10 +14,9 @@
 
 	type MatchSchema = z.infer<typeof Match2025Schema>;
 
-	// this provides intellisense and makes typescript happy.
-	// i have no idea if this is correct, but it works and feels pretty good to me.
-	// type assertions feel gross to me, but i don't really know how to do this better.
 	const tba = match.tba as MatchSchema;
+
+	type EndGameRobotKey = `endGameRobot${1 | 2 | 3}`;
 
 	const getCellClass = (
 		teamKey: string,
@@ -33,7 +32,7 @@
 					: endGameStatus === 'Parked'
 						? 'table-purple'
 						: '';
-		return `${highlightClass} ${statusClass}`;
+		return `${highlightClass} ${statusClass}`.trim();
 	};
 </script>
 
@@ -50,72 +49,30 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.blue.team_keys[0],
-							tba.score_breakdown.blue.endGameRobot1
-						)}
-					>
-						{tba.alliances.blue.team_keys[0].slice(3)}: {tba.score_breakdown.blue.endGameRobot1 ||
-							'None'}
-					</td>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.red.team_keys[0],
-							tba.score_breakdown.red.endGameRobot1
-						)}
-					>
-						{tba.alliances.red.team_keys[0].slice(3)}: {tba.score_breakdown.red.endGameRobot1 ||
-							'None'}
-					</td>
-				</tr>
-				<tr>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.blue.team_keys[1],
-							tba.score_breakdown.blue.endGameRobot2
-						)}
-					>
-						{tba.alliances.blue.team_keys[1].slice(3)}: {tba.score_breakdown.blue.endGameRobot2 ||
-							'None'}
-					</td>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.red.team_keys[1],
-							tba.score_breakdown.red.endGameRobot2
-						)}
-					>
-						{tba.alliances.red.team_keys[1].slice(3)}: {tba.score_breakdown.red.endGameRobot2 ||
-							'None'}
-					</td>
-				</tr>
-				<tr>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.blue.team_keys[2],
-							tba.score_breakdown.blue.endGameRobot3
-						)}
-					>
-						{tba.alliances.blue.team_keys[2].slice(3)}: {tba.score_breakdown.blue.endGameRobot3 ||
-							'None'}
-					</td>
-					<td
-						class={getCellClass(
-							team.tba.key,
-							tba.alliances.red.team_keys[2],
-							tba.score_breakdown.red.endGameRobot3
-						)}
-					>
-						{tba.alliances.red.team_keys[2].slice(3)}: {tba.score_breakdown.red.endGameRobot3 ||
-							'None'}
-					</td>
-				</tr>
+				{#each [0, 1, 2] as i}
+					<tr>
+						<td
+							class={getCellClass(
+								team.tba.key,
+								tba.alliances.blue.team_keys[i],
+								tba.score_breakdown.blue[`endGameRobot${i + 1}` as EndGameRobotKey]
+							)}
+						>
+							{tba.alliances.blue.team_keys[i].slice(3)}:
+							{tba.score_breakdown.blue[`endGameRobot${i + 1}` as EndGameRobotKey] || 'None'}
+						</td>
+						<td
+							class={getCellClass(
+								team.tba.key,
+								tba.alliances.red.team_keys[i],
+								tba.score_breakdown.red[`endGameRobot${i + 1}` as EndGameRobotKey]
+							)}
+						>
+							{tba.alliances.red.team_keys[i].slice(3)}:
+							{tba.score_breakdown.red[`endGameRobot${i + 1}` as EndGameRobotKey] || 'None'}
+						</td>
+					</tr>
+				{/each}
 			</tbody>
 		</table>
 	</div>

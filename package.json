@@ -117,6 +117,7 @@
 		"googleapis": "^144.0.0",
 		"html-constructor": "github:tsaxking/html-constructor",
 		"http-status-codes": "^2.3.0",
+		"interactjs": "^1.10.27",
 		"math": "github:tsaxking/calculations",
 		"mjml": "^4.15.3",
 		"multiparty": "^4.2.3",

@@ -1,3 +1,4 @@
+import { FIRST } from '$lib/model/FIRST.js';
 import { Scouting } from '$lib/model/scouting';
 import { DataArr } from 'drizzle-struct/front-end';
 
@@ -24,6 +25,10 @@ export const load = (event) => {
 		groups: new DataArr(
 			Scouting.PIT.Groups,
 			event.data.groups.map((g) => Scouting.PIT.Groups.Generator(g))
-		)
+		),
+		pictures: new DataArr(
+			FIRST.TeamPictures,
+			event.data.pictures.map((p) => FIRST.TeamPictures.Generator(p)),
+		),
 	};
 };

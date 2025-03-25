@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_DO_POTATO } from '$env/static/public';
 </script>
 
 <div class="container mt-5">
@@ -23,16 +24,18 @@
 				</div>
 			</a>
 		</div>
-		<div class="col-md-6 p-3">
-			<a href="/dashboard/potato" class="text-reset text-decoration-none">
-				<div class="card bg-warning">
-					<div class="card-body">
-						<h5 class="card-title text-black">Potato Leaderboard</h5>
-						<p class="card-text text-black">View the potato leaderboard</p>
+		{#if PUBLIC_DO_POTATO === 'true'}
+			<div class="col-md-6 p-3">
+				<a href="/dashboard/potato" class="text-reset text-decoration-none">
+					<div class="card bg-warning">
+						<div class="card-body">
+							<h5 class="card-title text-black">Potato Leaderboard</h5>
+							<p class="card-text text-black">View the potato leaderboard</p>
+						</div>
 					</div>
-				</div>
-			</a>
-		</div>
+				</a>
+			</div>
+		{/if}
 		<div class="col-md-6 p-3">
 			<a href="/dashboard/admin" class="text-reset text-decoration-none">
 				<div class="card bg-danger">

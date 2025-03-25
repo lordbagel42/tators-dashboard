@@ -47,7 +47,7 @@
 	let modal: Modal;
 </script>
 
-{#if potato}
+{#if potato && potato.data.level}
 	<div class="d-flex align-items-center">
 		<p class="mb-0">
 			{level.toLocaleString()}

@@ -391,7 +391,15 @@ export namespace Potato {
 				.select({
 					username: Account.Account.table.username,
 					level: Friend.table.level,
-					name: Friend.table.name
+					name: Friend.table.name,
+					icon: Friend.table.icon,
+					color: Friend.table.color,
+					background: Friend.table.background,
+					attack: Friend.table.attack,
+					defense: Friend.table.defense,
+					speed: Friend.table.speed,
+					health: Friend.table.health,
+					mana: Friend.table.mana
 				})
 				.from(Friend.table)
 				.orderBy(Friend.table.level)

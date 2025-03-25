@@ -30,6 +30,14 @@
 		username: string;
 		level: number;
 		name: string;
+		icon: string;
+		color: string;
+		background: string;
+		attack: number;
+		defense: number;
+		speed: number;
+		health: number;
+		mana: number;
 	},
 	color: string
 )}

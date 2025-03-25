@@ -19,7 +19,7 @@ export namespace Potato {
 			defense: 'number',
 			speed: 'number',
 			health: 'number',
-			mana: 'number',
+			mana: 'number'
 		},
 		socket: sse,
 		browser
@@ -74,8 +74,8 @@ export namespace Potato {
 		wizard: 8_500,
 		ascending: 9_000,
 		god: 9_500,
-		timeTraveler: 10_000,
-	}
+		timeTraveler: 10_000
+	};
 
 	export const getPhase = (level: number) => {
 		switch (true) {
@@ -124,9 +124,9 @@ export namespace Potato {
 
 	export const renameYourPotato = (name: string) => {
 		return Friend.call('rename', { name });
-	}
+	};
 
 	export const chooseYourIcon = (icon: string) => {
 		return Friend.call('change-icon', { icon });
-	}
+	};
 }

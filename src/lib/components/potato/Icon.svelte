@@ -8,8 +8,7 @@
 
 	const self = Account.getSelf();
 
-	let potato: Potato.FriendData | undefined = $state(Potato.Friend.Generator({
-	}));
+	let potato: Potato.FriendData | undefined = $state(Potato.Friend.Generator({}));
 	let name = $state('');
 	let level = $state(0);
 	let phase = $state('');
@@ -35,18 +34,17 @@
 					document.head.appendChild(link);
 				}
 
-			link.href = `/potato/${phase}.png`;
+				link.href = `/potato/${phase}.png`;
 			});
 		});
 
 		return () => {
 			unsub();
 			u();
-		}
+		};
 	});
 
 	let modal: Modal;
-
 </script>
 
 {#if potato}
@@ -63,111 +61,127 @@
 <Modal title={name} size="md" bind:this={modal}>
 	{#snippet body()}
 		{#if potato}
-		<div class="container-fluid">
-			<div class="mb-3">
-				<div class="col">
-					<p>
-						Your potato's level is <span class="text-primary">{$potato.level || NaN}</span> and phase is <span class="text-primary">{phase}</span>
-					</p>
+			<div class="container-fluid">
+				<div class="mb-3">
+					<div class="col">
+						<p>
+							Your potato's level is <span class="text-primary">{$potato.level || NaN}</span> and
+							phase is <span class="text-primary">{phase}</span>
+						</p>
+					</div>
 				</div>
-			</div>
-			<hr>
-			<div class="mb-3">
-				<div class="col">
-					<p class="text-muted">If your potato is over level 2122, you are able to rename it!</p>
-					<button 
-					type="button" 
-					class="btn btn-primary"
-					onclick={async (event) => {
-						if (Number($potato.level) < 2122) {
-							const target = event.currentTarget as HTMLElement;
-							target.classList.add('animate__animated', 'animate__shakeX');
-							const onend = () => {
-								target.classList.remove('animate__animated', 'animate__shakeX');
-								target.removeEventListener('animationend', onend);
-							};
-							target.addEventListener('animationend', onend);
-							return;
-						}
-						modal.hide();
-						const name = await prompt('Enter a new name for your potato');
-						if (!name) return;
-						const res = await Potato.renameYourPotato(name);
-						if (res.isOk()) {
-							if (!res.value.success) {
-								alert(`Your potato could not be renamed: ${res.value.message}`);
-							}
-						} else {
-							console.error(res.error);
-						}
-					}}
-				>
-					Name your potato
-					{#if Number($potato.level) < 2122}
-						<strong class="text-secondary">Requires level 2122</strong>
-					{/if}
-				</button>
-				</div>
-			</div>
-			<hr>
-			<div class="mb-3">
-				<div class="col">
-					<p>
-						Unlock special icons for your potato by ascending!
-						<br>
-						<small>
-							After level 8,000, you can change your potato's icon at any time.
-						</small>
-					</p>
-					<div class="grid">
-						{#each Object.entries(Potato.Icons) as [icon, level]}
-						{#if Number($potato.level) >= level}
-							<button 
-								type="button" 
-								class="btn choose-potato-icon"
-								onclick={async () => {
-									const res = await Potato.chooseYourIcon(icon);
-									if (res.isOk()) {
-										if (!res.value.success) {
-											console.log(res.value);
-											alert(`Your potato's icon could not be changed: ${res.value.message}`);
-										}
-									} else {
-										console.error(res.error);
+				<hr />
+				<div class="mb-3">
+					<div class="col">
+						<p class="text-muted">If your potato is over level 2122, you are able to rename it!</p>
+						<button
+							type="button"
+							class="btn btn-primary"
+							onclick={async (event) => {
+								if (Number($potato.level) < 2122) {
+									const target = event.currentTarget as HTMLElement;
+									target.classList.add('animate__animated', 'animate__shakeX');
+									const onend = () => {
+										target.classList.remove('animate__animated', 'animate__shakeX');
+										target.removeEventListener('animationend', onend);
+									};
+									target.addEventListener('animationend', onend);
+									return;
+								}
+								modal.hide();
+								const name = await prompt('Enter a new name for your potato');
+								if (!name) return;
+								const res = await Potato.renameYourPotato(name);
+								if (res.isOk()) {
+									if (!res.value.success) {
+										alert(`Your potato could not be renamed: ${res.value.message}`);
 									}
-								}}
-							>
-								<img src="/potato/{icon}.png" alt="" srcset="" style="width: 24px; height: 24px;" />
-							</button>
-						{:else}
-							<button 
-								type="button" 
-								class="btn choose-potato-icon"
-								disabled
-							>
-								<i class="material-icons">
-									lock
-								</i>
-								<small class="text-secondary">{level.toLocaleString()}</small>
-							</button>
-						{/if}
-					{/each}
+								} else {
+									console.error(res.error);
+								}
+							}}
+						>
+							Name your potato
+							{#if Number($potato.level) < 2122}
+								<strong class="text-secondary">Requires level 2122</strong>
+							{/if}
+						</button>
+					</div>
+				</div>
+				<hr />
+				<div class="mb-3">
+					<div class="col">
+						<p>
+							Unlock special icons for your potato by ascending!
+							<br />
+							<small> After level 8,000, you can change your potato's icon at any time. </small>
+						</p>
+						<div class="grid">
+							{#each Object.entries(Potato.Icons) as [icon, level]}
+								{#if Number($potato.level) >= level}
+									<button
+										type="button"
+										class="btn choose-potato-icon"
+										onclick={async () => {
+											const res = await Potato.chooseYourIcon(icon);
+											if (res.isOk()) {
+												if (!res.value.success) {
+													console.log(res.value);
+													alert(`Your potato's icon could not be changed: ${res.value.message}`);
+												}
+											} else {
+												console.error(res.error);
+											}
+										}}
+									>
+										<img
+											src="/potato/{icon}.png"
+											alt=""
+											srcset=""
+											style="width: 24px; height: 24px;"
+										/>
+									</button>
+								{:else}
+									<button type="button" class="btn choose-potato-icon" disabled>
+										<i class="material-icons"> lock </i>
+										<small class="text-secondary">{level.toLocaleString()}</small>
+									</button>
+								{/if}
+							{/each}
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div class="mb-3">
+					<div class="col">
+						<Stats
+							level={$potato.level || 0}
+							name="Health"
+							stat={$potato.health || 0}
+							color="red"
+						/>
+						<Stats
+							level={$potato.level || 0}
+							name="Attack"
+							stat={$potato.attack || 0}
+							color="gold"
+						/>
+						<Stats
+							level={$potato.level || 0}
+							name="Defense"
+							stat={$potato.defense || 0}
+							color="gray"
+						/>
+						<Stats
+							level={$potato.level || 0}
+							name="Speed"
+							stat={$potato.speed || 0}
+							color="silver"
+						/>
+						<Stats level={$potato.level || 0} name="Mana" stat={$potato.mana || 0} color="blue" />
 					</div>
 				</div>
 			</div>
-			<hr>
-			<div class="mb-3">
-				<div class="col">
-					<Stats level={$potato.level || 0} name="Health" stat={$potato.health || 0} color="red" />
-					<Stats level={$potato.level || 0} name="Attack" stat={$potato.attack || 0} color="gold" />
-					<Stats level={$potato.level || 0} name="Defense" stat={$potato.defense || 0} color="gray" />
-					<Stats level={$potato.level || 0} name="Speed" stat={$potato.speed || 0} color="silver" />
-					<Stats level={$potato.level || 0} name="Mana" stat={$potato.mana || 0} color="blue" />
-				</div>
-			</div>
-		</div>
-
-
 		{:else}
 			You don't have a potato yet.
 		{/if}

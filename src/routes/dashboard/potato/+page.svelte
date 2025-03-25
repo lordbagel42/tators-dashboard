@@ -121,7 +121,9 @@
 
 <Modal bind:this={modal} title={$selectedPotato.name || 'Potato'} size="md">
 	{#snippet body()}
-		<Stats potato={selectedPotato} />
+		{#key selectedPotato}
+			<Stats potato={selectedPotato} />
+		{/key}
 	{/snippet}
 
 	{#snippet buttons()}{/snippet}

@@ -24,14 +24,14 @@
 
 <DB {dashboard}>
 	{#snippet body()}
-	<a
-	href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
-	type="button"
-	target="_blank"
-	class="btn btn-primary"
->
+		<a
+			href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
+			type="button"
+			target="_blank"
+			class="btn btn-primary"
+		>
 			Picklist Spreadsheet
-</a>
+		</a>
 		<div style="grid-column: span var(--grid-size);">
 			<div class="ws-nowrap p-3 scroll-x" style="width: 100% !important;">
 				{#each teams as team}

@@ -12,6 +12,7 @@ import { Permissions } from './permissions';
 import terminal from '../utils/terminal';
 import { TraceSchema } from 'tatorscout/trace';
 import { Logs } from './log';
+import { Account } from './account';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -416,7 +417,17 @@ export namespace Scouting {
 					questions,
 					groups,
 					sections,
-					answers
+					answers: await Promise.all(
+						answers
+							.filter((a) => a.data.team === team)
+							.map(async (a) => {
+								const account = (await Account.Account.fromId(a.data.accountId)).unwrap();
+								return {
+									answer: a,
+									account
+								};
+							})
+					)
 				};
 			});
 		};
@@ -429,15 +440,38 @@ export namespace Scouting {
 					}).await()
 				).unwrap();
 
-				const questions = resolveAll(await Promise.all(groups.map(g => Questions.fromProperty('groupId', g.id, { type: 'stream', }).await()))).unwrap().flat();
-				const answers = resolveAll(await Promise.all(questions.map(q => Answers.fromProperty('questionId', q.id, { type: 'stream', }).await()))).unwrap().flat();
-				
+				const questions = resolveAll(
+					await Promise.all(
+						groups.map((g) => Questions.fromProperty('groupId', g.id, { type: 'stream' }).await())
+					)
+				)
+					.unwrap()
+					.flat();
+				const answers = resolveAll(
+					await Promise.all(
+						questions.map((q) =>
+							Answers.fromProperty('questionId', q.id, { type: 'stream' }).await()
+						)
+					)
+				)
+					.unwrap()
+					.flat();
 
 				return {
 					questions,
 					groups,
-					answers: answers.filter(a => a.data.team === team)
-				}
+					answers: await Promise.all(
+						answers
+							.filter((a) => a.data.team === team)
+							.map(async (a) => {
+								const account = (await Account.Account.fromId(a.data.accountId)).unwrap();
+								return {
+									answer: a,
+									account
+								};
+							})
+					)
+				};
 			});
 		};
 
@@ -507,10 +541,10 @@ export namespace Scouting {
 			if (!account) {
 				terminal.error('Not logged in');
 				return {
-				success: false,
-				message: 'Not logged in'
+					success: false,
+					message: 'Not logged in'
+				};
 			}
-}
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
 			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) {
 				terminal.error('Not entitled');
@@ -558,13 +592,14 @@ export namespace Scouting {
 				).unwrap();
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
-				const log = (struct: string, message: string, id: string) => Logs.log({
-					struct,
-					message,
-					accountId,
-					type: 'create',
-					dataId: id
-				});
+				const log = (struct: string, message: string, id: string) =>
+					Logs.log({
+						struct,
+						message,
+						accountId,
+						type: 'create',
+						dataId: id
+					});
 				const [
 					general,
 					// mech,
@@ -881,20 +916,23 @@ export namespace Scouting {
 			});
 		};
 
-		export const copyFromEvent = async (fromEventKey: string, toEventKey: string, accountId: string) => {
+		export const copyFromEvent = async (
+			fromEventKey: string,
+			toEventKey: string,
+			accountId: string
+		) => {
 			return attemptAsync(async () => {
-				const log = (struct: string, message: string, id: string) => Logs.log({
-					struct,
-					message,
-					accountId,
-					type: 'create',
-					dataId: id
-				});
-
-				console.log('Copying from', fromEventKey, 'to', toEventKey);
+				const log = (struct: string, message: string, id: string) =>
+					Logs.log({
+						struct,
+						message,
+						accountId,
+						type: 'create',
+						dataId: id
+					});
 
 				await Sections.fromProperty('eventKey', fromEventKey, {
-					type: 'stream',
+					type: 'stream'
 				}).pipe(async (s) => {
 					const section = (
 						await Sections.new({
@@ -903,7 +941,11 @@ export namespace Scouting {
 						})
 					).unwrap();
 
-					log(Sections.name, `Copied section ${s.data.name} from ${fromEventKey} to ${toEventKey}`, section.id);
+					log(
+						Sections.name,
+						`Copied section ${s.data.name} from ${fromEventKey} to ${toEventKey}`,
+						section.id
+					);
 
 					return Groups.fromProperty('sectionId', s.id, {
 						type: 'stream'
@@ -915,7 +957,11 @@ export namespace Scouting {
 							})
 						).unwrap();
 
-						log(Groups.name, `Copied group ${g.data.name} from ${fromEventKey} to ${toEventKey}`, group.id);
+						log(
+							Groups.name,
+							`Copied group ${g.data.name} from ${fromEventKey} to ${toEventKey}`,
+							group.id
+						);
 
 						return Questions.fromProperty('groupId', g.id, {
 							type: 'stream'
@@ -927,7 +973,11 @@ export namespace Scouting {
 								})
 							).unwrap();
 
-							log(Questions.name, `Copied question ${q.data.key} from ${fromEventKey} to ${toEventKey}`, q.id);
+							log(
+								Questions.name,
+								`Copied question ${q.data.key} from ${fromEventKey} to ${toEventKey}`,
+								q.id
+							);
 						});
 					});
 				});
@@ -942,7 +992,14 @@ export namespace Scouting {
 					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
 					.where(and(eq(Answers.table.team, team), eq(Sections.table.eventKey, eventKey)));
 
-				return res.map((r) => Answers.Generator(r.pit_answers));
+				// return res.map((r) => Answers.Generator(r.pit_answers));
+
+				return Promise.all(
+					res.map(async (r) => ({
+						answer: Answers.Generator(r.pit_answers),
+						account: (await Account.Account.fromId(r.pit_answers.accountId)).unwrap()
+					}))
+				);
 			});
 		};
 

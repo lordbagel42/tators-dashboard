@@ -51,7 +51,7 @@
 
 			const selected = await select(
 				'Choose an event to copy from',
-				withSections.map((e) => e.event.tba.name),
+				withSections.map((e) => e.event.tba.name)
 			);
 
 			if (!selected) return;

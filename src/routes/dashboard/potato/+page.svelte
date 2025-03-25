@@ -2,6 +2,8 @@
 	import { Navbar } from '$lib/model/navbar';
 	import { Potato } from '$lib/model/potato';
 	import { capitalize } from 'ts-utils/text';
+	import Modal from '$lib/components/bootstrap/Modal.svelte';
+	import Stats from '$lib/components/potato/Stats.svelte';
 	const { data } = $props();
 	const [first, second, third, ...rest] = $derived(data.rankings);
 	const you = $derived(data.you);
@@ -18,6 +20,9 @@
 		],
 		priority: 0
 	});
+
+	let selectedPotato = $state(Potato.Friend.Generator({}));
+	let modal: Modal;
 </script>
 
 {#snippet row(
@@ -30,13 +35,20 @@
 )}
 	<tr class:you={data.username === you?.username}>
 		<td>
-			<img
+			<button type="button" class="btn" onclick={
+				() => {
+					selectedPotato = Potato.Friend.Generator(data);
+					modal.show();
+				}
+			}>
+				<img
 				src="/potato/{Potato.getPhase(data.level)}.png"
 				alt={Potato.getPhase(data.level)}
 				srcset=""
 				style="width: 56px; height: 56px;"
 				title={capitalize(Potato.getPhase(data.level))}
 			/>
+			</button>
 		</td>
 		<td class="text-{color}"
 			>{data.username}
@@ -111,3 +123,18 @@
 		color: black !important;
 	}
 </style>
+
+
+<Modal
+	bind:this={modal}
+	title={$selectedPotato.name || 'Potato'}
+	size="md"
+>
+	{#snippet body()}
+		<Stats potato={selectedPotato} />
+	{/snippet}
+
+	{#snippet buttons()}
+		
+	{/snippet}
+</Modal>

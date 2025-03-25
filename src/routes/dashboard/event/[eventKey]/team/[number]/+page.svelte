@@ -13,6 +13,7 @@
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
+	import RobotEndgame from '$lib/components/robot-display/RobotEndgame.svelte'
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { listen } from '$lib/utils/struct-listener';
@@ -38,6 +39,25 @@
 		id: 'event_summary',
 		size: {
 			width: 1,
+			height: 1,
+			sm: {
+				width: 2,
+				height: 1
+			},
+			xs: {
+				width: 2,
+				height: 1
+			}
+		}
+	});
+
+	const robotEndgame = new Dashboard.Card({
+		name: 'Endgame',
+		iconType: 'material-icons',
+		icon: 'sports_esports',
+		id: 'endgame',
+		size: {
+			width: 2,
 			height: 1,
 			sm: {
 				width: 2,
@@ -186,7 +206,8 @@
 				pitScouting,
 				matchViewer,
 				progress,
-				eventStats
+				eventStats,
+				robotEndgame
 			],
 			id: 'robot-display'
 		})
@@ -203,7 +224,8 @@
 				pitScouting,
 				matchViewer,
 				progress,
-				eventStats
+				eventStats,
+				robotEndgame
 			],
 			id: 'robot-display'
 		});
@@ -373,6 +395,11 @@
 			<Card card={eventStats}>
 				{#snippet body()}
 					<TeamEventStats {team} {event} {scouting} />
+				{/snippet}
+			</Card>
+			<Card card={robotEndgame}>
+				{#snippet body()}
+					<RobotEndgame {team} {event} />
 				{/snippet}
 			</Card>
 		{/key}

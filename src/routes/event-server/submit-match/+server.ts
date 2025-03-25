@@ -105,7 +105,7 @@ export const POST = async (event) => {
 				dataId: matchScoutingId,
 				accountId,
 				type: 'update',
-				message: 'Updated match scouting',
+				message: 'Updated match scouting'
 			});
 		}
 	} else {
@@ -132,7 +132,7 @@ export const POST = async (event) => {
 				dataId: create.value.id,
 				accountId,
 				type: 'create',
-				message: 'Created match scouting',
+				message: 'Created match scouting'
 			});
 		}
 		matchScoutingId = create.value.id;
@@ -149,7 +149,7 @@ export const POST = async (event) => {
 					eventKey,
 					matchScoutingId,
 					scoutUsername: scout
-				}).then(async res => {
+				}).then(async (res) => {
 					if (res.isOk()) {
 						return Logs.log({
 							struct: Scouting.TeamComments.name,

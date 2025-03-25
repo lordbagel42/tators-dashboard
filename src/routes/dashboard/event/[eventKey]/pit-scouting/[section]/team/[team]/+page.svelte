@@ -110,10 +110,7 @@
 			{questions}
 			{answers}
 		/>
-		<div 
-			style="height: 300px"
-		>
-			
+		<div style="height: 300px">
 			<PictureDisplay {team} {event} teamPictures={pictures} />
 		</div>
 	{/key}

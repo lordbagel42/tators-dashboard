@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import Section from './Section.svelte';
 	import type { TBATeam, TBAEvent } from '$lib/utils/tba';
+	import { Account } from '$lib/model/account';
 
 	interface Props {
 		team: TBATeam;
@@ -12,9 +13,10 @@
 		groups: Scouting.PIT.GroupArr;
 		questions: Scouting.PIT.QuestionArr;
 		answers: Scouting.PIT.AnswerArr;
+		answerAccounts: Account.AccountData[];
 	}
 
-	const { team, event, sections, groups, questions, answers }: Props = $props();
+	const { team, event, sections, groups, questions, answers, answerAccounts }: Props = $props();
 </script>
 
 <div
@@ -41,7 +43,7 @@
 				</div>
 			</div>
 			<div class="row mb-3">
-				<Section {section} team={team.tba} event={event.tba} {groups} {questions} {answers} />
+				<Section {section} team={team.tba} event={event.tba} {groups} {questions} {answers} {answerAccounts} />
 			</div>
 		{/each}
 	{:else}

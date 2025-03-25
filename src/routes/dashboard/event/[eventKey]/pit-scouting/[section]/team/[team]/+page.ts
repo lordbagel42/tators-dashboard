@@ -1,6 +1,7 @@
 import { FIRST } from '$lib/model/FIRST.js';
 import { Scouting } from '$lib/model/scouting';
 import { DataArr } from 'drizzle-struct/front-end';
+import { Account } from '$lib/model/account';
 
 export const load = (event) => {
 	return {
@@ -20,7 +21,7 @@ export const load = (event) => {
 		),
 		answers: new DataArr(
 			Scouting.PIT.Answers,
-			event.data.answers.map((a) => Scouting.PIT.Answers.Generator(a))
+			event.data.answers.map((a) => Scouting.PIT.Answers.Generator(a.answer))
 		),
 		groups: new DataArr(
 			Scouting.PIT.Groups,
@@ -28,7 +29,11 @@ export const load = (event) => {
 		),
 		pictures: new DataArr(
 			FIRST.TeamPictures,
-			event.data.pictures.map((p) => FIRST.TeamPictures.Generator(p)),
+			event.data.pictures.map((p) => FIRST.TeamPictures.Generator(p))
 		),
+		answeredAccounts: event.data.answers
+			.map((a) => a.account)
+			.filter(Boolean)
+			.map((a) => Account.Account.Generator(a))
 	};
 };

@@ -29,7 +29,9 @@ export const load = async (event) => {
 		await Scouting.PIT.getScoutingInfoFromSection(parseInt(event.params.team), s)
 	).unwrap();
 
-	const pictures = (await FIRST.getTeamPictures(parseInt(event.params.team), event.params.eventKey)).unwrap();
+	const pictures = (
+		await FIRST.getTeamPictures(parseInt(event.params.team), event.params.eventKey)
+	).unwrap();
 	return {
 		section: s.safe(),
 		eventKey,
@@ -41,7 +43,7 @@ export const load = async (event) => {
 		questions: info.questions.map((q) => q.safe()),
 		answers: info.answers.map((a) => ({
 			answer: a.answer.safe(),
-			account: a.account?.safe(),
+			account: a.account?.safe()
 		})),
 		groups: info.groups.map((g) => g.safe()),
 		pictures: pictures.map((p) => p.safe())

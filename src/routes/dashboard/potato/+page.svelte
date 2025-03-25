@@ -35,19 +35,21 @@
 )}
 	<tr class:you={data.username === you?.username}>
 		<td>
-			<button type="button" class="btn" onclick={
-				() => {
+			<button
+				type="button"
+				class="btn"
+				onclick={() => {
 					selectedPotato = Potato.Friend.Generator(data);
 					modal.show();
-				}
-			}>
+				}}
+			>
 				<img
-				src="/potato/{Potato.getPhase(data.level)}.png"
-				alt={Potato.getPhase(data.level)}
-				srcset=""
-				style="width: 56px; height: 56px;"
-				title={capitalize(Potato.getPhase(data.level))}
-			/>
+					src="/potato/{Potato.getPhase(data.level)}.png"
+					alt={Potato.getPhase(data.level)}
+					srcset=""
+					style="width: 56px; height: 56px;"
+					title={capitalize(Potato.getPhase(data.level))}
+				/>
 			</button>
 		</td>
 		<td class="text-{color}"
@@ -117,24 +119,17 @@
 	</div>
 </div>
 
+<Modal bind:this={modal} title={$selectedPotato.name || 'Potato'} size="md">
+	{#snippet body()}
+		<Stats potato={selectedPotato} />
+	{/snippet}
+
+	{#snippet buttons()}{/snippet}
+</Modal>
+
 <style>
 	.you * {
 		background-color: #f0f0f0 !important;
 		color: black !important;
 	}
 </style>
-
-
-<Modal
-	bind:this={modal}
-	title={$selectedPotato.name || 'Potato'}
-	size="md"
->
-	{#snippet body()}
-		<Stats potato={selectedPotato} />
-	{/snippet}
-
-	{#snippet buttons()}
-		
-	{/snippet}
-</Modal>

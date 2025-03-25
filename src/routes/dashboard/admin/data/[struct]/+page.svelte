@@ -13,13 +13,17 @@
 		NumberEditorModule,
 		CheckboxEditorModule,
 		type ICellEditorComp,
+		type ICellEditorParams,
     } from 'ag-grid-community';
     import { capitalize, fromSnakeCase } from 'ts-utils/text';
+	import * as monaco from 'monaco-editor';
 
     const { data } = $props();
     const structs = $derived(data.structs);
     const d = $derived(data.data);
     const struct = $derived(data.struct);
+
+	const proxy = $derived(data.data.map(d => ({ ...d, })));
 
     // Register AG Grid Modules
     ModuleRegistry.registerModules([
@@ -46,59 +50,103 @@
     let gridDiv: HTMLDivElement;
     let grid: GridApi;
 
-    // Create custom JSON editor
-    class JSONEditor implements ICellEditorComp {
-        eInput: HTMLTextAreaElement;
-        gridOptions: GridOptions<any> = {};
-        constructor() {
-            this.eInput = document.createElement('textarea');
-        }
 
-        init(params: any) {
-            this.eInput.value = JSON.stringify(params.value, null, 2);
-            this.eInput.style.width = '100%';
-            this.eInput.style.height = '100%';
-            this.eInput.onblur = () => {
-                try {
-                    params.setValue(JSON.parse(this.eInput.value)); // Save the JSON data
-                } catch (e) {
-                    alert('Invalid JSON format');
-                }
-            };
-        }
+	class StringCellEditor implements ICellEditorComp {
+    private eGui?: HTMLDivElement;
+    private editor?: monaco.editor.IStandaloneCodeEditor;
+    private value: any;
+    private ispopup = false;
 
-        getGui() {
-            return this.eInput;
-        }
-
-        destroy() {
-            // Cleanup when the editor is destroyed
-        }
-
-		getValue() {
-			return this.eInput.value;
-		}
-    }
-
-    // Function to check if a value is valid JSON
-    function isValidJSON(value: string): boolean {
-        try {
-            JSON.parse(value);
-            return true;
-        } catch {
-            return false;
+    init(params: ICellEditorParams) {
+        this.value = params.value;
+        
+        // If value is a JSON object, use Monaco Editor
+        if (typeof params.value === 'object' || params.value?.startsWith?.('{') || params.value?.startsWith?.('[')) {
+            this.jsonEditor(params);
+        } else if (params.value.constructor.name === 'Date') {
+            this.dateEditor(params);
+        } else if (!isNaN(params.value) && new Date(params.value).toString() === 'Invalid Date') {
+            this.numberEditor(params);
+        } else {
+            this.stringEditor(params);
         }
     }
+
+    jsonEditor(params: ICellEditorParams) {
+        this.ispopup = true;
+        this.eGui = document.createElement('div');
+        this.eGui.style.width = '400px';
+        this.eGui.style.height = '300px';
+        this.eGui.style.border = '1px solid #ccc';
+        this.eGui.style.overflow = 'hidden';
+
+        this.editor = monaco.editor.create(this.eGui, {
+            value: JSON.stringify(params.value, null, 2),
+            language: 'json',
+            theme: 'vs-dark',
+            automaticLayout: true,
+        });
+    }
+
+    dateEditor(params: ICellEditorParams) {
+        this.eGui = document.createElement('div');
+        this.eGui.innerHTML = `<input type="date" class="form-control" style="width: 100%;" value="${new Date(params.value).toISOString().split('T')[0]}">`;
+    }
+
+    numberEditor(params: ICellEditorParams) {
+        this.eGui = document.createElement('div');
+        this.eGui.innerHTML = `<input type="number" class="form-control" style="width: 100%;" value="${params.value}">`;
+    }
+
+    stringEditor(params: ICellEditorParams) {
+        this.eGui = document.createElement('div');
+        this.eGui.innerHTML = `<input type="text" class="form-control" style="width: 100%;" value="${params.value}">`;
+    }
+
+    getGui() {
+        return this.eGui as HTMLElement;
+    }
+
+    afterGuiAttached() {
+        if (this.editor) {
+            this.editor.focus();
+        } else {
+            this.eGui?.querySelector('input')?.focus();
+        }
+    }
+
+    getValue() {
+        if (this.editor) {
+            return JSON.parse(this.editor.getValue());
+        }
+        return this.eGui?.querySelector('input')?.value;
+    }
+
+    isPopup() {
+        return this.ispopup;
+    }
+}
+
+
 
     onMount(() => {
         const gridOptions: GridOptions<any> = {
             theme: darkTheme,
-            columnDefs: Object.entries(struct).map(([k, type]) => ({
-                field: k,
-                editable: (params) => !!params.data.canUpdate,
-                cellEditor: (params: any) => console.log(params),
-            })),
-            rowData: d.map((d) =>
+            columnDefs: Object.entries(struct)
+				.filter(([k, type]) => k !== 'id')
+				.filter(([k, type]) => k !== 'canUpdate')
+				.filter(([k, type]) => k !== 'enableRLS')
+				.map(([k, type]) => ({
+					field: k,
+					editable: (params) => !!params.data.canUpdate 
+					// && ![
+					// 'created',
+					// 'updated',
+					// ].includes(k)
+					,
+					cellEditor: type === 'string' ? StringCellEditor : undefined,
+				})),
+            rowData: proxy.map((d) =>
                 Object.fromEntries(
                     Object.entries(d).map(([k, v]) => {
                         if (typeof v === 'string') {

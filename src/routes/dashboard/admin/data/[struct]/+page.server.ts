@@ -2,7 +2,7 @@ import { fail } from "@sveltejs/kit";
 import { Struct } from "drizzle-struct/back-end";
 import { ServerCode } from "ts-utils/status";
 
-export const load = async(event) => {
+export const load = async (event) => {
     const limit = Math.abs(parseInt(event.url.searchParams.get('limit') || '100'));
     let page = Math.abs(parseInt(event.url.searchParams.get('page') || '1'));
     if (page === 0) page = 1;

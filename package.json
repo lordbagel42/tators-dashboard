@@ -121,6 +121,7 @@
 		"jsoneditor": "^10.1.3",
 		"math": "github:tsaxking/calculations",
 		"mjml": "^4.15.3",
+		"monaco-editor": "^0.52.2",
 		"multiparty": "^4.2.3",
 		"nodemailer": "^6.10.0",
 		"pg": "^8.13.1",

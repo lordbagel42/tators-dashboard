@@ -423,33 +423,21 @@ export namespace Scouting {
 
 		export const getScoutingInfoFromSection = (team: number, section: SectionData) => {
 			return attemptAsync(async () => {
-				const res = await DB.select()
-					.from(Answers.table)
-					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
-					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
-					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
-					.where(and(eq(Sections.table.id, section.id), eq(Answers.table.team, team)));
+				const groups = (
+					await Groups.fromProperty('sectionId', section.id, {
+						type: 'stream'
+					}).await()
+				).unwrap();
 
-				const questions = res
-					.map((q) => Questions.Generator(q.pit_questions))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
-
-				const groups = res
-					.map((q) => Groups.Generator(q.pit_groups))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
-
-				const answers = res
-					.map((r) => Answers.Generator(r.pit_answers))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
+				const questions = resolveAll(await Promise.all(groups.map(g => Questions.fromProperty('groupId', g.id, { type: 'stream', }).await()))).unwrap().flat();
+				const answers = resolveAll(await Promise.all(questions.map(q => Answers.fromProperty('questionId', q.id, { type: 'stream', }).await()))).unwrap().flat();
+				
 
 				return {
 					questions,
 					groups,
-					answers
-				};
+					answers: answers.filter(a => a.data.team === team)
+				}
 			});
 		};
 

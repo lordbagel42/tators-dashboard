@@ -71,6 +71,12 @@ export default (event: TBAEvent) => {
 				href: '/dashboard/potato',
 				icon: 'leaderboard',
 				type: 'material-icons'
+			},
+			{
+				name: 'Potato Logs',
+				href: '/dashboard/potato/logs',
+				icon: 'history',
+				type: 'material-icons'
 			}
 		]
 	});

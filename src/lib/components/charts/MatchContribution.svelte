@@ -4,6 +4,7 @@
 	import { Chart } from 'chart.js';
 	import { onMount } from 'svelte';
 	import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
+	import { match as matchCase } from 'ts-utils/match';
 
 	interface Props {
 		match: TBAMatch;
@@ -21,6 +22,35 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return console.error('Could not get canvas context');
 		try {
+			const match2025 = match.asYear(2025).unwrap();
+			const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
+			const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
+			const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
+			const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+			let endgamePoints = 0;
+			let autoPoints = 0;
+			if (alliance) {
+				const mobilityRobots = [
+					match2025.score_breakdown[alliance].autoLineRobot1,
+					match2025.score_breakdown[alliance].autoLineRobot2,
+					match2025.score_breakdown[alliance].autoLineRobot3,
+				];
+
+				autoPoints = 5 * Number(mobilityRobots[position] === 'Yes');
+
+				const endgameRobots = [
+					match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
+					match2025.score_breakdown[alliance].endGameRobot2,
+					match2025.score_breakdown[alliance].endGameRobot3,
+				];
+
+				// make this work 
+				endgamePoints = matchCase<string, number>(endgameRobots[position]);
+			}
+			
+			match2025.alliances.red.team_keys[0]
+
+
 			const trace = TraceSchema.safeParse(JSON.parse(scouting.data.trace || '[]'));
 
 			if (!trace.success) {

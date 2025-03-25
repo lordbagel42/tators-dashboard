@@ -56,7 +56,7 @@
 
 			if (!selected) return;
 			Scouting.PIT.Sections.call('copy-from-event', {
-				from: selected,
+				from: withSections.find((e) => e.event.tba.name === selected)?.event.tba.key || '',
 				to: eventKey
 			});
 		} catch (err) {
@@ -102,19 +102,19 @@
 							{section.data.name}
 						</h5>
 						<div class="btn-group" role="group">
-							<a href="/dashboard/event/{eventKey}/create-pit-scouting/{i}" class="btn btn-primary">
+							<a href="/dashboard/event/{eventKey}/edit-pit-scouting/{i}" class="btn btn-primary">
 								<i class="material-icons">edit</i>
 							</a>
 							<button
 								type="button"
 								class="btn btn-danger"
 								onclick={() => {
-									confirm('Are you sure you want to delete this section?').then((res) => {
-										if (res) section.delete();
+									confirm('Are you sure you want to archive this section?').then((res) => {
+										if (res) section.setArchive(true);
 									});
 								}}
 							>
-								<i class="material-icons"> delete </i>
+								<i class="material-icons"> archive </i>
 							</button>
 						</div>
 					</div>

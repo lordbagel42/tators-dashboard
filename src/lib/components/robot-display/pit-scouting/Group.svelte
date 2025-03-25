@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import type { TBAEvent, TBATeam } from 'tatorscout/tba';
 	import Question from './Question.svelte';
+	import { Account } from '$lib/model/account';
 
 	interface Props {
 		group: Scouting.PIT.GroupData;
@@ -12,15 +13,20 @@
 		event: TBAEvent;
 		questions: Scouting.PIT.QuestionArr;
 		answers: Scouting.PIT.AnswerArr;
+		answerAccounts: Account.AccountData[];
 	}
 
-	const { group, section, team, event, questions, answers }: Props = $props();
+	const { group, section, team, event, questions, answers, answerAccounts }: Props = $props();
 </script>
 
 <ul class="list-group border-0">
 	{#each $questions.filter((q) => q.data.groupId === group.data.id) as question}
 		<li class="list-group-item border-0">
-			<Question {question} answer={$answers.find((a) => a.data.questionId === question.data.id)} />
+			<Question
+				{question}
+				answer={$answers.find((a) => a.data.questionId === question.data.id)}
+				{answerAccounts}
+			/>
 		</li>
 	{/each}
 </ul>

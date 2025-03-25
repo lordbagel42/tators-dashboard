@@ -4,7 +4,8 @@ import terminal from '$lib/server/utils/terminal';
 import { TraceSchema } from 'tatorscout/trace';
 import { ServerCode } from 'ts-utils/status';
 import { Account } from '$lib/server/structs/account';
-import { resolveAll } from 'ts-utils/check';
+import { Err, resolveAll } from 'ts-utils/check';
+import { Logs } from '$lib/server/structs/log.js';
 
 export const POST = async (event) => {
 	terminal.log('Event server request', event.request.url);
@@ -98,6 +99,14 @@ export const POST = async (event) => {
 		if (update.isErr()) {
 			terminal.error('Error updating match scouting', update.error);
 			return res('Internal server error', 500);
+		} else {
+			Logs.log({
+				struct: Scouting.MatchScouting.name,
+				dataId: matchScoutingId,
+				accountId,
+				type: 'update',
+				message: 'Updated match scouting'
+			});
 		}
 	} else {
 		const create = await Scouting.MatchScouting.new({
@@ -117,6 +126,14 @@ export const POST = async (event) => {
 		if (create.isErr()) {
 			terminal.error('Error creating match scouting', create.error);
 			return res('Internal server error', 500);
+		} else {
+			Logs.log({
+				struct: Scouting.MatchScouting.name,
+				dataId: create.value.id,
+				accountId,
+				type: 'create',
+				message: 'Created match scouting'
+			});
 		}
 		matchScoutingId = create.value.id;
 	}
@@ -132,6 +149,19 @@ export const POST = async (event) => {
 					eventKey,
 					matchScoutingId,
 					scoutUsername: scout
+				}).then(async (res) => {
+					if (res.isOk()) {
+						return Logs.log({
+							struct: Scouting.TeamComments.name,
+							dataId: res.value.id,
+							accountId,
+							type: 'create',
+							message: 'Created team comment'
+						});
+					} else {
+						terminal.error('Error creating comments', res.error);
+						return new Err(res.error);
+					}
 				})
 			)
 		)

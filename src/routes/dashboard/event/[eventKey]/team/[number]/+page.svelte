@@ -28,6 +28,7 @@
 	const groups = $derived(data.groups);
 	const sections = $derived(data.sections);
 	const pictures = $derived(data.pictures);
+	const answerAccounts = $derived(data.answerAccounts);
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -287,6 +288,14 @@
 					</a>
 				{/each}
 			</div>
+			<a
+				href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
+				type="button"
+				target="_blank"
+				class="btn btn-primary"
+			>
+				Picklist Spreadsheet
+			</a>
 			<!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
 				<input
 					type="checkbox"
@@ -340,7 +349,15 @@
 			</Card> -->
 			<Card card={pitScouting}>
 				{#snippet body()}
-					<PitScoutingCard {team} {event} {sections} {groups} {questions} {answers} />
+					<PitScoutingCard
+						{team}
+						{event}
+						{sections}
+						{groups}
+						{questions}
+						{answers}
+						{answerAccounts}
+					/>
 				{/snippet}
 			</Card>
 			<Card card={matchViewer}>

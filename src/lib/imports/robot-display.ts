@@ -20,7 +20,7 @@ export default (event: TBAEvent) => {
 			},
 			{
 				name: 'Edit Pit Scouting',
-				href: '/dashboard/event/' + event.key + '/create-pit-scouting',
+				href: '/dashboard/event/' + event.key + '/edit-pit-scouting',
 				icon: 'edit',
 				type: 'material-icons'
 			}

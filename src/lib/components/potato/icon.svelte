@@ -35,7 +35,8 @@
 </script>
 
 {#if potato}
-	<button class="btn" onclick={() => modal.show()}>
+	<button class="btn ws-nowrap d-flex align-items-middle" onclick={() => modal.show()}>
+		<span class="me-2">{potato.data.level}</span>
 		<img src="/potato/{phase}.png" alt="" srcset="" style="width: 24px; height: 24px;" />
 	</button>
 {/if}

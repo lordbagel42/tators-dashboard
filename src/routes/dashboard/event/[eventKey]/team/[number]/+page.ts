@@ -1,6 +1,7 @@
 import { DataArr } from 'drizzle-struct/front-end';
 import { Scouting } from '$lib/model/scouting';
 import { FIRST } from '$lib/model/FIRST';
+import { Account } from '$lib/model/account';
 
 export const load = (event) => {
 	const scouting = new DataArr(
@@ -39,6 +40,7 @@ export const load = (event) => {
 		questions,
 		groups,
 		sections,
-		pictures
+		pictures,
+		answerAccounts: event.data.answerAccounts.map((a) => Account.Account.Generator(a))
 	};
 };

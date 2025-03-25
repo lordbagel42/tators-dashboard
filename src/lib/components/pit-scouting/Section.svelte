@@ -14,7 +14,6 @@
 
 	const { section, team, groups, questions, answers }: Props = $props();
 
-
 	$effect(() => {
 		if (!section || !team) return; // trigger on section or team change
 	});
@@ -27,7 +26,12 @@
 	</div>
 	{#each groups as group}
 		<div class="row mb-3">
-			<Group {group} {team} questions={$questions.filter(q => q.data.groupId === group.data.id)} {answers} />
+			<Group
+				{group}
+				{team}
+				questions={$questions.filter((q) => q.data.groupId === group.data.id)}
+				{answers}
+			/>
 		</div>
 	{/each}
 </div>

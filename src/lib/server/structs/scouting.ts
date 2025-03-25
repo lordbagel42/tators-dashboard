@@ -11,6 +11,8 @@ import { Session } from './session';
 import { Permissions } from './permissions';
 import terminal from '../utils/terminal';
 import { TraceSchema } from 'tatorscout/trace';
+import { Logs } from './log';
+import { Account } from './account';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -415,39 +417,61 @@ export namespace Scouting {
 					questions,
 					groups,
 					sections,
-					answers
+					answers: await Promise.all(
+						answers
+							.filter((a) => a.data.team === team)
+							.map(async (a) => {
+								const account = (await Account.Account.fromId(a.data.accountId)).unwrap();
+								return {
+									answer: a,
+									account
+								};
+							})
+					)
 				};
 			});
 		};
 
 		export const getScoutingInfoFromSection = (team: number, section: SectionData) => {
 			return attemptAsync(async () => {
-				const res = await DB.select()
-					.from(Answers.table)
-					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
-					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
-					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
-					.where(and(eq(Sections.table.id, section.id), eq(Answers.table.team, team)));
+				const groups = (
+					await Groups.fromProperty('sectionId', section.id, {
+						type: 'stream'
+					}).await()
+				).unwrap();
 
-				const questions = res
-					.map((q) => Questions.Generator(q.pit_questions))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
-
-				const groups = res
-					.map((q) => Groups.Generator(q.pit_groups))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
-
-				const answers = res.map((r) => Answers.Generator(r.pit_answers))
-					.filter((q, i, a) => a.findIndex((qq) => q.id === qq.id) === i)
-					.filter((a) => !a.archived);
+				const questions = resolveAll(
+					await Promise.all(
+						groups.map((g) => Questions.fromProperty('groupId', g.id, { type: 'stream' }).await())
+					)
+				)
+					.unwrap()
+					.flat();
+				const answers = resolveAll(
+					await Promise.all(
+						questions.map((q) =>
+							Answers.fromProperty('questionId', q.id, { type: 'stream' }).await()
+						)
+					)
+				)
+					.unwrap()
+					.flat();
 
 				return {
 					questions,
 					groups,
-					answers
-				}
+					answers: await Promise.all(
+						answers
+							.filter((a) => a.data.team === team)
+							.map(async (a) => {
+								const account = (await Account.Account.fromId(a.data.accountId)).unwrap();
+								return {
+									answer: a,
+									account
+								};
+							})
+					)
+				};
 			});
 		};
 
@@ -465,10 +489,22 @@ export namespace Scouting {
 		Sections.callListen('generate-event-template', async (event, data) => {
 			const session = (await Session.getSession(event)).unwrap();
 			const account = (await Session.getAccount(session)).unwrap();
-			if (!account) throw new Error('Not logged in');
+			if (!account) {
+				terminal.error('Not logged in');
+				return {
+					success: false,
+					message: 'Not logged in'
+				};
+			}
 
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
-			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) throw new Error('Not entitled');
+			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) {
+				terminal.error('Not entitled');
+				return {
+					success: false,
+					message: 'Not entitled'
+				};
+			}
 
 			const parsed = z
 				.object({
@@ -477,13 +513,14 @@ export namespace Scouting {
 				.safeParse(data);
 
 			if (!parsed.success) {
+				terminal.error('Invalid data', parsed.error);
 				return {
 					success: false,
 					message: 'Invalid data'
 				};
 			}
 
-			const res = await generateBoilerplate(parsed.data.eventKey);
+			const res = await generateBoilerplate(parsed.data.eventKey, account.id);
 
 			if (res.isOk()) {
 				return {
@@ -501,10 +538,21 @@ export namespace Scouting {
 		Sections.callListen('copy-from-event', async (event, data) => {
 			const session = (await Session.getSession(event)).unwrap();
 			const account = (await Session.getAccount(session)).unwrap();
-			if (!account) throw new Error('Not logged in');
-
+			if (!account) {
+				terminal.error('Not logged in');
+				return {
+					success: false,
+					message: 'Not logged in'
+				};
+			}
 			const roles = (await Permissions.allAccountRoles(account)).unwrap();
-			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) throw new Error('Not entitled');
+			if (!Permissions.isEntitled(roles, 'manage-pit-scouting')) {
+				terminal.error('Not entitled');
+				return {
+					success: false,
+					message: 'Not entitled'
+				};
+			}
 
 			const parsed = z
 				.object({
@@ -514,13 +562,14 @@ export namespace Scouting {
 				.safeParse(data);
 
 			if (!parsed.success) {
+				terminal.error('Invalid data', parsed.error);
 				return {
 					success: false,
 					message: 'Invalid data'
 				};
 			}
 
-			const res = await copyFromEvent(parsed.data.from, parsed.data.to);
+			const res = await copyFromEvent(parsed.data.from, parsed.data.to, account.id);
 			if (res.isOk()) {
 				return {
 					success: true
@@ -534,7 +583,7 @@ export namespace Scouting {
 			}
 		});
 
-		export const generateBoilerplate = async (eventKey: string) => {
+		export const generateBoilerplate = async (eventKey: string, accountId: string) => {
 			return attemptAsync(async () => {
 				const sections = (
 					await Sections.fromProperty('eventKey', eventKey, {
@@ -543,6 +592,14 @@ export namespace Scouting {
 				).unwrap();
 				if (sections.length) throw new Error('Cannot generate boilerplate for existing sections');
 
+				const log = (struct: string, message: string, id: string) =>
+					Logs.log({
+						struct,
+						message,
+						accountId,
+						type: 'create',
+						dataId: id
+					});
 				const [
 					general,
 					// mech,
@@ -568,6 +625,10 @@ export namespace Scouting {
 				const genSection = general.unwrap();
 				// const mechSection = mech.unwrap();
 				const electSection = electrical.unwrap();
+
+				log(Sections.name, `Created General section for ${eventKey}`, genSection.id);
+				// log(Sections.name, `Created Mechanical section for ${eventKey}`, mechSection.id);
+				log(Sections.name, `Created Electrical section for ${eventKey}`, electSection.id);
 
 				// TODO: Write boilerplate groups/questions
 				const [overviewRes, strategyRes, gameplayRes, summaryRes] = await Promise.all([
@@ -613,7 +674,14 @@ export namespace Scouting {
 				const eOverview = eOverviewRes.unwrap();
 				const eProtected = eProtectedRes.unwrap();
 
-				resolveAll(
+				log(Groups.name, `Created Overview group for ${eventKey}`, overview.id);
+				log(Groups.name, `Created Strategy group for ${eventKey}`, strategy.id);
+				log(Groups.name, `Created Gameplay group for ${eventKey}`, gameplay.id);
+				log(Groups.name, `Created Summary group for ${eventKey}`, summary.id);
+				log(Groups.name, `Created Electrical Overview group for ${eventKey}`, eOverview.id);
+				log(Groups.name, `Created Protected group for ${eventKey}`, eProtected.id);
+
+				const res = resolveAll(
 					await Promise.all([
 						Questions.new({
 							question: 'What is your favorite part of the robot, or what are you most proud of?',
@@ -840,12 +908,29 @@ export namespace Scouting {
 							order: 3
 						})
 					])
-				);
+				).unwrap();
+
+				for (const q of res) {
+					log(Questions.name, `Created question ${q.data.key} for ${eventKey}`, q.id);
+				}
 			});
 		};
 
-		export const copyFromEvent = async (fromEventKey: string, toEventKey: string) => {
+		export const copyFromEvent = async (
+			fromEventKey: string,
+			toEventKey: string,
+			accountId: string
+		) => {
 			return attemptAsync(async () => {
+				const log = (struct: string, message: string, id: string) =>
+					Logs.log({
+						struct,
+						message,
+						accountId,
+						type: 'create',
+						dataId: id
+					});
+
 				await Sections.fromProperty('eventKey', fromEventKey, {
 					type: 'stream'
 				}).pipe(async (s) => {
@@ -855,6 +940,12 @@ export namespace Scouting {
 							eventKey: toEventKey
 						})
 					).unwrap();
+
+					log(
+						Sections.name,
+						`Copied section ${s.data.name} from ${fromEventKey} to ${toEventKey}`,
+						section.id
+					);
 
 					return Groups.fromProperty('sectionId', s.id, {
 						type: 'stream'
@@ -866,6 +957,12 @@ export namespace Scouting {
 							})
 						).unwrap();
 
+						log(
+							Groups.name,
+							`Copied group ${g.data.name} from ${fromEventKey} to ${toEventKey}`,
+							group.id
+						);
+
 						return Questions.fromProperty('groupId', g.id, {
 							type: 'stream'
 						}).pipe(async (q) => {
@@ -875,6 +972,12 @@ export namespace Scouting {
 									groupId: group.id
 								})
 							).unwrap();
+
+							log(
+								Questions.name,
+								`Copied question ${q.data.key} from ${fromEventKey} to ${toEventKey}`,
+								q.id
+							);
 						});
 					});
 				});
@@ -889,7 +992,14 @@ export namespace Scouting {
 					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
 					.where(and(eq(Answers.table.team, team), eq(Sections.table.eventKey, eventKey)));
 
-				return res.map((r) => Answers.Generator(r.pit_answers));
+				// return res.map((r) => Answers.Generator(r.pit_answers));
+
+				return Promise.all(
+					res.map(async (r) => ({
+						answer: Answers.Generator(r.pit_answers),
+						account: (await Account.Account.fromId(r.pit_answers.accountId)).unwrap()
+					}))
+				);
 			});
 		};
 
@@ -912,7 +1022,7 @@ export namespace Scouting {
 				'pit_sections:read:*',
 				'pit_groups:read:*',
 				'pit_questions:read:*',
-				'pit_answers:read:*'
+				'pit_answers:*:*'
 			],
 			group: 'Scouting'
 		});

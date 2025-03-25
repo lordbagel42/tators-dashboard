@@ -75,6 +75,19 @@
 	<div class="row mb-3">
 		<div class="col">
 			<h1>Traces for team {team.tba.team_number} at event {event.tba.name}</h1>
+			<div class="d-flex">
+				<button onclick={() => history.back()} class="btn btn-primary me-3"> Back </button>
+				<a
+					href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+					class="btn btn-secondary"
+				>
+					To Robot Display
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col">
 			<div class="btn-group" role="group" aria-label="Trace Select">
 				<input
 					type="radio"
@@ -140,7 +153,6 @@
 		{/key}
 	</div>
 </div>
-
 <Modal
 	bind:this={modal}
 	size="lg"

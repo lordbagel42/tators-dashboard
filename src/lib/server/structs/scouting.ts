@@ -12,6 +12,7 @@ import { Permissions } from './permissions';
 import terminal from '../utils/terminal';
 import { TraceSchema } from 'tatorscout/trace';
 import { Logs } from './log';
+import { Account } from './account';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -436,7 +437,13 @@ export namespace Scouting {
 				return {
 					questions,
 					groups,
-					answers: answers.filter(a => a.data.team === team)
+					answers: await Promise.all(answers.filter(a => a.data.team === team).map(async a => {
+						const account = (await Account.fromId(a.data.accountId)).unwrap();
+						return {
+							answer: a,
+							account,
+						};
+					}))
 				}
 			});
 		};
@@ -891,8 +898,6 @@ export namespace Scouting {
 					dataId: id
 				});
 
-				console.log('Copying from', fromEventKey, 'to', toEventKey);
-
 				await Sections.fromProperty('eventKey', fromEventKey, {
 					type: 'stream',
 				}).pipe(async (s) => {
@@ -942,7 +947,12 @@ export namespace Scouting {
 					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
 					.where(and(eq(Answers.table.team, team), eq(Sections.table.eventKey, eventKey)));
 
-				return res.map((r) => Answers.Generator(r.pit_answers));
+				// return res.map((r) => Answers.Generator(r.pit_answers));
+
+				return Promise.all(res.map(async r => ({
+					answer: Answers.Generator(r.pit_answers),
+					account: (await Account.Account.fromId(r.pit_answers.accountId)).unwrap(),
+				})))
 			});
 		};
 

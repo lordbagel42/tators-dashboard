@@ -39,7 +39,10 @@ export const load = async (event) => {
 		sectionIndex: parseInt(section),
 		event: e.tba,
 		questions: info.questions.map((q) => q.safe()),
-		answers: info.answers.map((a) => a.safe()),
+		answers: info.answers.map((a) => ({
+			answer: a.answer.safe(),
+			account: a.account?.safe(),
+		})),
 		groups: info.groups.map((g) => g.safe()),
 		pictures: pictures.map((p) => p.safe())
 	};

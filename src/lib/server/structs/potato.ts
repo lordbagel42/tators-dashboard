@@ -36,12 +36,21 @@ export namespace Potato {
 		// tator: 10_000
 		seed: 0,
 		sprout: 100,
-		baby: 500,
-		kid: 1000,
+		baby: 250,
+		kid: 1_000,
 		teen: 2_122,
-		adult: 5000,
-		elder: 10_000
+		adult: 5_000,
+		elder: 8_000
 	};
+
+	export const Icons = {
+		...Levels,
+		wizard: 8_500,
+		ascending: 9_000,
+		god: 9_500,
+		timeTraveler: 10_000,
+	}
+
 
 	const getPhase = (level: number) => {
 		switch (true) {
@@ -90,12 +99,52 @@ export namespace Potato {
 			account: text('account').notNull().unique(),
 			level: integer('level').notNull(),
 			name: text('name').notNull(),
-			lastClicked: text('last_clicked').notNull()
+			lastClicked: text('last_clicked').notNull(),
+			icon: text('preffered_icon').notNull().default(''),
+			color: text('preffered_color').notNull().default(''),
+			background: text('preffered_background').notNull().default(''),
+
+			attack: integer('attack').notNull().default(0),
+			defense: integer('defense').notNull().default(0),
+			speed: integer('speed').notNull().default(0),
+			health: integer('health').notNull().default(0),
+			mana: integer('mana').notNull().default(0),
 		},
 		generators: {
 			universe: () => '2122'
 		}
 	});
+	const randomStats = (level: number) => {
+		const stats = ["attack", "defense", "speed", "health", "mana"];
+		let values = Array(stats.length).fill(0);
+	
+		// Generate random weights
+		const weights = stats.map(() => Math.random());
+		const weightSum = weights.reduce((sum, w) => sum + w, 0);
+	
+		// Distribute points based on weights
+		values = weights.map(w => Math.floor((w / weightSum) * level));
+	
+		// Adjust any rounding errors to ensure exact total
+		const finalSum = values.reduce((sum, v) => sum + v, 0);
+		let diff = level - finalSum;
+	
+		// Distribute the difference randomly
+		while (diff !== 0) {
+			const index = Math.floor(Math.random() * stats.length);
+			if (diff > 0) {
+				values[index]++;
+				diff--;
+			} else if (values[index] > 0) {
+				values[index]--;
+				diff++;
+			}
+		}
+	
+		return Object.fromEntries(stats.map((stat, i) => [stat, values[i]]));
+	};
+	
+	
 
 	export const Log = new Struct({
 		name: 'potato_log',
@@ -110,7 +159,7 @@ export namespace Potato {
 		if (!event.locals.account) {
 			return {
 				success: false,
-				reason: 'Unauthorized'
+				message: 'Unauthorized'
 			}
 		}
 
@@ -118,7 +167,7 @@ export namespace Potato {
 		if (!universe) {
 			return {
 				success: false,
-				reason: 'Universe not found'
+				message: 'Universe not found'
 			}
 		}
 
@@ -126,7 +175,7 @@ export namespace Potato {
 		if (!Permissions.isEntitled(roles, 'edit-potato-level')) {
 			return {
 				success: false,
-				reason: 'Unauthorized'
+				message: 'Unauthorized'
 			}
 		}
 
@@ -139,7 +188,7 @@ export namespace Potato {
 			terminal.error('Invalid data recieved', parsed.error);
 			return {
 				success: false,
-				reason: 'Invalid data recieved'
+				message: 'Invalid data recieved'
 			}
 		}
 
@@ -151,6 +200,82 @@ export namespace Potato {
 		}
 	});
 
+	Friend.callListen('rename', async (event, data) => {
+		if (!event.locals.account) {
+			return {
+				success: false,
+				message: 'Unauthorized'
+			}
+		}
+
+		const potato = (await getPotato(event.locals.account.id)).unwrap();
+		if (potato.data.level < 2122) {
+			return {
+				success: false,
+				message: `${potato.data.name} is not old enough to change their name`
+			}
+		}
+
+		const parsed = z.object({
+			name: z.string(),
+		}).safeParse(data);
+
+		if (!parsed.success) {
+			terminal.error('Invalid data recieved', parsed.error);
+			return {
+				success: false,
+				message: 'Invalid data recieved'
+			}
+		}
+
+		(await potato.update({ name: parsed.data.name })).unwrap();
+
+		return {
+			success: true,
+		}
+	});
+
+	Friend.callListen('change-icon', async (event, data) => {
+		if (!event.locals.account) {
+			return {
+				success: false,
+				message: 'Unauthorized'
+			}
+		}
+
+		const potato = (await getPotato(event.locals.account.id)).unwrap();
+		if (potato.data.level < Levels.elder) {
+			return {
+				success: false,
+				message: `${potato.data.name} is not old enough to choose their profession`
+			}
+		}
+
+		const parsed = z.object({
+			icon: z.string(),
+		}).safeParse(data);
+
+		if (!parsed.success) {
+			terminal.error('Invalid data recieved', parsed.error);
+			return {
+				success: false,
+				message: 'Invalid data recieved'
+			}
+		}
+
+		if (!Object.keys(Icons).includes(parsed.data.icon)) {
+			return {
+				success: false,
+				message: 'Invalid icon',
+			}
+		}
+
+		(await potato.update({ icon: parsed.data.icon })).unwrap();
+
+		return {
+			success: true,
+		}
+	});
 
 	export type FriendData = typeof Friend.sample;
 
@@ -172,7 +297,8 @@ export namespace Potato {
 			(
 				await potato.update({
 					level: newLevel,
-					lastClicked: levels === 1 ? new Date().toISOString() : potato.data.lastClicked
+					lastClicked: levels === 1 ? new Date().toISOString() : potato.data.lastClicked,
+					...randomStats(newLevel),
 				})
 			).unwrap();
 
@@ -234,7 +360,15 @@ export namespace Potato {
 					account: accountId,
 					level: 0,
 					name: a.data.username + "'s Potato",
-					lastClicked: new Date().toISOString()
+					lastClicked: new Date().toISOString(),
+					icon: '',
+					color: '',
+					background: '',
+					attack: 0,
+					defense: 0,
+					speed: 0,
+					health: 0,
+					mana: 0,
 				})
 			).unwrap();
 		});

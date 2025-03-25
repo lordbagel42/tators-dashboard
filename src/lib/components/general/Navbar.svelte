@@ -3,7 +3,7 @@
 	import Notifications from './Notifications.svelte';
 	import { Account } from '$lib/model/account';
 	import { onMount } from 'svelte';
-	import Icon from '../potato/icon.svelte';
+	import Icon from '../potato/Icon.svelte';
 	interface Props {
 		title: string;
 	}

@@ -9,7 +9,17 @@ export namespace Potato {
 			account: 'string',
 			level: 'number',
 			name: 'string',
-			lastClicked: 'string'
+			lastClicked: 'string',
+
+			icon: 'string',
+			color: 'string',
+			background: 'string',
+
+			attack: 'number',
+			defense: 'number',
+			speed: 'number',
+			health: 'number',
+			mana: 'number',
 		},
 		socket: sse,
 		browser
@@ -33,12 +43,39 @@ export namespace Potato {
 		// tator: 10_000
 		seed: 0,
 		sprout: 100,
-		baby: 500,
-		kid: 1000,
+		baby: 250,
+		kid: 1_000,
 		teen: 2_122,
-		adult: 5000,
-		elder: 10_000
+		adult: 5_000,
+		elder: 8_000
 	};
+
+	export const getNextPhase = (level: number): keyof typeof Levels => {
+		switch (true) {
+			case level < Levels.sprout:
+				return 'sprout';
+			case level < Levels.baby:
+				return 'baby';
+			case level < Levels.kid:
+				return 'kid';
+			case level < Levels.teen:
+				return 'teen';
+			case level < Levels.adult:
+				return 'adult';
+			case level < Levels.elder:
+				return 'elder';
+			default:
+				return 'elder';
+		}
+	};
+
+	export const Icons = {
+		...Levels,
+		wizard: 8_500,
+		ascending: 9_000,
+		god: 9_500,
+		timeTraveler: 10_000,
+	}
 
 	export const getPhase = (level: number) => {
 		switch (true) {
@@ -84,4 +121,12 @@ export namespace Potato {
 	export const giveLevels = (accountId: string, levels: number) => {
 		return Friend.call('give-levels', { accountId, levels });
 	};
+
+	export const renameYourPotato = (name: string) => {
+		return Friend.call('rename', { name });
+	}
+
+	export const chooseYourIcon = (icon: string) => {
+		return Friend.call('change-icon', { icon });
+	}
 }

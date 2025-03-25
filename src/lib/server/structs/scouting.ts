@@ -965,7 +965,9 @@ export namespace Scouting {
 				'pit_sections:read:*',
 				'pit_groups:read:*',
 				'pit_questions:read:*',
-				'pit_answers:read:*'
+				'pit_answers:read:*',
+				'pit_answers:create',
+				'pit_answers:update:answer',
 			],
 			group: 'Scouting'
 		});

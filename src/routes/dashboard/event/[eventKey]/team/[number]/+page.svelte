@@ -349,7 +349,15 @@
 			</Card> -->
 			<Card card={pitScouting}>
 				{#snippet body()}
-					<PitScoutingCard {team} {event} {sections} {groups} {questions} {answers} {answerAccounts} />
+					<PitScoutingCard
+						{team}
+						{event}
+						{sections}
+						{groups}
+						{questions}
+						{answers}
+						{answerAccounts}
+					/>
 				{/snippet}
 			</Card>
 			<Card card={matchViewer}>

@@ -43,7 +43,15 @@
 				</div>
 			</div>
 			<div class="row mb-3">
-				<Section {section} team={team.tba} event={event.tba} {groups} {questions} {answers} {answerAccounts} />
+				<Section
+					{section}
+					team={team.tba}
+					event={event.tba}
+					{groups}
+					{questions}
+					{answers}
+					{answerAccounts}
+				/>
 			</div>
 		{/each}
 	{:else}

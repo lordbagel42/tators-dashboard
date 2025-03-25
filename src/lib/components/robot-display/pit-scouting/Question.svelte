@@ -22,7 +22,7 @@
 		if (res.isOk()) {
 			value = res.value.join(', ');
 			console.log(answerAccounts);
-			const a = answerAccounts.find(a => a.data.id === answer.data.accountId);
+			const a = answerAccounts.find((a) => a.data.id === answer.data.accountId);
 			accountUsername = a?.data.username || 'unknown';
 		}
 
@@ -41,8 +41,8 @@
 	<div
 		bind:this={tooltip}
 		class="text-start"
-        data-bs-toggle="tooltip" 
-        data-bs-title="Answered by {accountUsername}"
+		data-bs-toggle="tooltip"
+		data-bs-title="Answered by {accountUsername}"
 	>
 		{value}
 	</div>

@@ -36,7 +36,7 @@
 					match2025.score_breakdown[alliance].autoLineRobot3,
 				];
 
-				autoPoints = 5 * Number(mobilityRobots[position] === 'Yes');
+				autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
 
 				const endgameRobots = [
 					match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
@@ -45,7 +45,13 @@
 				];
 
 				// make this work 
-				endgamePoints = matchCase<string, number>(endgameRobots[position]);
+				endgamePoints = matchCase<string, number>(endgameRobots[position])
+				.case('Parked', () => 2)
+				.case('ShallowClimb', () => 6)
+				.case('DeepClimb', () => 12)
+				.default(() => 0)
+				.exec()
+				.unwrap();
 			}
 			
 			match2025.alliances.red.team_keys[0]
@@ -99,6 +105,10 @@
 								0,
 								res.teleop.dpc + res.teleop.shc + res.teleop.park,
 								res.teleop.dpc + res.teleop.shc + res.teleop.park
+								
+								2 * Number(endgameRobots[position] === 'Parked') + 
+								6 * Number(endgameRobots[position] === 'ShallowClimb') + 
+								12 * Number(endgameRobots[position] === 'DeepClimb')
 							]
 						}
 					],

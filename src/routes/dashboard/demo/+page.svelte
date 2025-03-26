@@ -10,7 +10,7 @@
 		links: [
 			{
 				icon: 'home',
-				href: '/',
+				href: '/home',
 				name: 'Home',
 				type: 'material-icons'
 			}

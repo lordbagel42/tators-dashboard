@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { Permissions } from '$lib/server/structs/permissions';
 import { ServerCode } from 'ts-utils/status';
+import { Logs } from '$lib/server/structs/log.js';
 
 const UPLOAD_DIR = path.resolve(process.cwd(), './static/uploads');
 

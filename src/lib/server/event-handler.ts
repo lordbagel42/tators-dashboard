@@ -345,17 +345,16 @@ export const handleEvent =
 				const universe = event.request.request.headers.get('universe');
 				if (universe) {
 					(await created.setUniverse(universe)).unwrap();
-
-					(
-						await Logs.log({
-							dataId: String(created.data.id),
-							accountId: account?.id || 'unknown',
-							type: 'create',
-							message: 'Created data',
-							struct: struct.data.name
-						})
-					).unwrap();
 				}
+				(
+					await Logs.log({
+						dataId: String(created.data.id),
+						accountId: account?.id || 'unknown',
+						type: 'create',
+						message: 'Created data',
+						struct: struct.data.name
+					})
+				).unwrap();
 
 				notify({
 					title: 'Created',

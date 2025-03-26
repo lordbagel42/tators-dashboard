@@ -7,16 +7,15 @@
 	interface Props {
 		section: Scouting.PIT.SectionData;
 		team: number;
+		groups: Scouting.PIT.GroupData[];
+		questions: DataArr<typeof Scouting.PIT.Questions.data.structure>;
+		answers: DataArr<typeof Scouting.PIT.Answers.data.structure>;
 	}
 
-	const { section, team }: Props = $props();
-
-	let groups = $state(new DataArr(Scouting.PIT.Groups, []));
+	const { section, team, groups, questions, answers }: Props = $props();
 
 	$effect(() => {
 		if (!section || !team) return; // trigger on section or team change
-		groups = Scouting.PIT.Groups.fromProperty('sectionId', $section.id || '', false);
-		groups.sort((a, b) => Number(a.data.order) - Number(b.data.order));
 	});
 </script>
 
@@ -25,9 +24,14 @@
 		<h3>{$section.name}</h3>
 		<hr />
 	</div>
-	{#each $groups as group}
+	{#each groups as group}
 		<div class="row mb-3">
-			<Group {group} {team} />
+			<Group
+				{group}
+				{team}
+				questions={$questions.filter((q) => q.data.groupId === group.data.id)}
+				{answers}
+			/>
 		</div>
 	{/each}
 </div>

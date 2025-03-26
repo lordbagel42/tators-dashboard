@@ -4,17 +4,21 @@
 	import { Account } from '$lib/model/account';
 	import { capitalize } from 'ts-utils/text';
 	import { writable } from 'svelte/store';
+	import type { DataArr } from 'drizzle-struct/front-end';
 
 	interface Props {
 		question: Scouting.PIT.QuestionData;
 		team: number;
+		answers: DataArr<typeof Scouting.PIT.Answers.data.structure>;
 	}
 
 	const props: Props = $props();
 	const question = props.question;
 	const team = $derived(props.team);
 
-	let answer: Scouting.PIT.AnswerData | undefined = $state(undefined);
+	let answer: Scouting.PIT.AnswerData | undefined = $state(
+		props.answers.data.find((a) => a.data.questionId === question.data.id && a.data.team === team)
+	);
 
 	const value = writable<string[]>([]);
 	let options: string[] = $state([]);
@@ -38,14 +42,19 @@
 		self = Account.getSelf();
 	});
 
-	const retrieveAnswer = () =>
+	const retrieveAnswer = () => {
+		if (answer) return;
 		Scouting.PIT.Answers.fromProperty('questionId', question.data.id || '', true)
 			.await()
 			.then((res) => {
 				if (res.isErr()) return console.error(res.error);
-				value.set([]);
-				answer = res.value.find((a) => a.data.team === team);
+				const a = res.value.find((a) => a.data.team === team);
+				if (a) {
+					value.set([]);
+					answer = a;
+				}
 			});
+	};
 
 	$effect(() => {
 		if (!team) return; // trigger on team change
@@ -68,7 +77,7 @@
 				team,
 				accountId // Ideally, this would be done on the backend but it's okay to be a little insecure
 			});
-			retrieveAnswer();
+			// retrieveAnswer();
 		}
 		disabled = true;
 	};

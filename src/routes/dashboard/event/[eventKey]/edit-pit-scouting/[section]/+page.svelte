@@ -45,14 +45,14 @@
 		<div class="card">
 			<div class="card-body">
 				<div class="no-scroll-y scroll-x ws-nowrap">
-					<a href="/dashboard/event/{eventKey}/create-pit-scouting" class="btn btn-primary">
+					<a href="/dashboard/event/{eventKey}/edit-pit-scouting" class="btn btn-primary">
 						<i class="material-icons"> arrow_back </i>
 						Back
 					</a>
 					{#each $sections as section, i}
 						<button
 							onclick={() => {
-								goto(`/dashboard/event/${eventKey}/create-pit-scouting/${i}`);
+								goto(`/dashboard/event/${eventKey}/edit-pit-scouting/${i}`);
 							}}
 							class="btn btn-primary"
 							disabled={sectionIndex === i}

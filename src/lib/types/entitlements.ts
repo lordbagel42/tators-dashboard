@@ -1,5 +1,6 @@
 export type Entitlement = 
     'create-custom-tba-responses'
+  | 'edit-potato-level'
   | 'manage-pit-scouting'
   | 'manage-roles'
   | 'manage-tba'
@@ -15,10 +16,10 @@ export type Entitlement =
   | 'view-universe';
 export type Group = 
     'TBA'
+  | 'Potatoes'
   | 'Scouting'
   | 'Roles'
   | 'Universe'
   | 'FIRST'
   | 'Checklists'
-  | 'Potatoes'
   | 'Strategy';

@@ -11,6 +11,9 @@
 	import { afterNavigate } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
 	import { returnType } from 'drizzle-struct/utils';
+	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
+	import Checks from '$lib/components/robot-display/Checks.svelte';
+	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -72,6 +75,19 @@
 	<div class="row mb-3">
 		<div class="col">
 			<h1>Traces for team {team.tba.team_number} at event {event.tba.name}</h1>
+			<div class="d-flex">
+				<button onclick={() => history.back()} class="btn btn-primary me-3"> Back </button>
+				<a
+					href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+					class="btn btn-secondary"
+				>
+					To Robot Display
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col">
 			<div class="btn-group" role="group" aria-label="Trace Select">
 				<input
 					type="radio"
@@ -137,7 +153,6 @@
 		{/key}
 	</div>
 </div>
-
 <Modal
 	bind:this={modal}
 	size="lg"
@@ -148,6 +163,15 @@
 		{#key selectedScouting}
 			{#if selectedScouting}
 				<Trace scouting={selectedScouting} {event} {focus} />
+				<MatchComments scouting={selectedScouting} />
+				<div class="row my-2">
+					<div class="col-md-6">
+						<Checks scouting={selectedScouting} />
+					</div>
+					<div class="col-md-6">
+						<MatchActions scouting={selectedScouting} />
+					</div>
+				</div>
 			{:else}
 				<p>No scouting data selected</p>
 			{/if}

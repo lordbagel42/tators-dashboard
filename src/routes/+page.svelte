@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_DO_POTATO } from '$env/static/public';
 </script>
 
 <div class="container mt-5">
@@ -23,24 +24,27 @@
 				</div>
 			</a>
 		</div>
+		{#if PUBLIC_DO_POTATO === 'true'}
+			<div class="col-md-6 p-3">
+				<a href="/dashboard/potato" class="text-reset text-decoration-none">
+					<div class="card bg-warning">
+						<div class="card-body">
+							<h5 class="card-title text-black">Potato Leaderboard</h5>
+							<p class="card-text text-black">View the potato leaderboard</p>
+						</div>
+					</div>
+				</a>
+			</div>
+		{/if}
 		<div class="col-md-6 p-3">
-			<a
-				href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
-				class="text-reset text-decoration-none"
-			>
-				<div class="card picklist">
+			<a href="/dashboard/admin" class="text-reset text-decoration-none">
+				<div class="card bg-danger">
 					<div class="card-body">
-						<h5 class="card-title text-black">Picklist</h5>
-						<p class="card-text text-black">Team Tators Picklist Spreadsheet</p>
+						<h5 class="card-title text-black">Admin</h5>
+						<p class="card-text text-black">Admin Page</p>
 					</div>
 				</div>
 			</a>
 		</div>
 	</div>
 </div>
-
-<style>
-	.picklist {
-		background-color: pink;
-	}
-</style>

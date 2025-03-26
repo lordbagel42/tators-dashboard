@@ -7,23 +7,16 @@
 	interface Props {
 		group: Scouting.PIT.GroupData;
 		team: number;
+		questions: Scouting.PIT.QuestionData[];
+		answers: DataArr<typeof Scouting.PIT.Answers.data.structure>;
 	}
 
-	const { group, team }: Props = $props();
-
-	let questions = $state(new DataArr(Scouting.PIT.Questions, []));
-	// let answers = $state(new DataArr(Scouting.PIT.Answers, []));
+	const { group, team, questions, answers }: Props = $props();
 
 	let questionIds: string[] = $state([]);
 
 	$effect(() => {
-		questionIds = Array.from(new Set(questions.data.map((q) => String(q.data.id))));
-	});
-
-	onMount(() => {
-		questions = Scouting.PIT.Questions.fromProperty('groupId', $group.id || '', false);
-		questions.sort((a, b) => Number(a.data.order) - Number(b.data.order));
-		// answers = Scouting.PIT.getAnswersFromGroup(group, questionIds);
+		questionIds = Array.from(new Set(questions.map((q) => String(q.data.id))));
 	});
 </script>
 
@@ -34,11 +27,11 @@
 				<h3>{$group.name}</h3>
 			</div>
 		</div>
-		{#each $questions as question, i}
+		{#each questions as question, i}
 			{#if i > 0}
 				<hr />
 			{/if}
-			<Question {question} {team} />
+			<Question {question} {team} {answers} />
 		{/each}
 	</div>
 </div>

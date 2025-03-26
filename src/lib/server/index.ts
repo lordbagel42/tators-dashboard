@@ -134,7 +134,8 @@ export const postBuild = async () => {
 			'view-scouting',
 			'view-strategy',
 			'view-tba-info',
-			'view-universe'
+			'view-universe',
+			'upload-pictures'
 		];
 		const scout = (
 			await Permissions.Role.new(
@@ -153,32 +154,24 @@ export const postBuild = async () => {
 		(await scout.setUniverse('2122')).unwrap();
 	}
 
-	const editorRole = await Permissions.Role.fromProperty('name', 'Editor', {
-		type: 'single'
-	});
-
-	if (!editorRole) {
+	const mentorRole = (
+		await Permissions.Role.fromProperty('name', 'Mentor', {
+			type: 'single'
+		})
+	).unwrap();
+	if (!mentorRole) {
 		const entitlements: Entitlement[] = [
-			'create-custom-tba-responses',
 			'manage-pit-scouting',
 			'manage-roles',
 			'manage-tba',
-			'manage-universe',
-			'view-checklist',
-			'view-pit-scouting',
-			'view-potatoes',
-			'view-scouting',
-			'view-strategy',
-			'view-tba-info',
-			'view-universe'
+			'create-custom-tba-responses'
 		];
-
-		const editor = (
+		const mentor = (
 			await Permissions.Role.new(
 				{
 					universe: '2122',
-					name: 'Editor',
-					description: 'Team Tators Editor',
+					name: 'Mentor',
+					description: 'Team Tators Mentor',
 					links: '[]',
 					entitlements: JSON.stringify(entitlements)
 				},
@@ -187,7 +180,31 @@ export const postBuild = async () => {
 				}
 			)
 		).unwrap();
-		(await editor.setUniverse('2122')).unwrap();
+		(await mentor.setUniverse('2122')).unwrap();
+	}
+
+	const potatoAdminRole = (
+		await Permissions.Role.fromProperty('name', 'Potato Admin', {
+			type: 'single'
+		})
+	).unwrap();
+	if (!potatoAdminRole) {
+		const entitlements: Entitlement[] = ['edit-potato-level', 'view-potatoes'];
+		const mentor = (
+			await Permissions.Role.new(
+				{
+					universe: '2122',
+					name: 'Potato Admin',
+					description: 'Team Tators Potato Admin',
+					links: '[]',
+					entitlements: JSON.stringify(entitlements)
+				},
+				{
+					overwriteGenerators: true
+				}
+			)
+		).unwrap();
+		(await mentor.setUniverse('2122')).unwrap();
 	}
 };
 

@@ -144,6 +144,9 @@ export namespace Account {
 		Admins.fromProperty('accountId', a.id, {
 			type: 'stream'
 		}).pipe((a) => a.delete());
+		Permissions.RoleAccount.fromProperty('account', a.id, { type: 'stream' }).pipe((a) =>
+			a.delete()
+		);
 	});
 
 	export const Admins = new Struct({
@@ -467,10 +470,20 @@ export namespace Account {
 			).unwrap();
 			if (!scout) throw new Error('Role not found');
 			(await Permissions.giveRole(to, scout)).unwrap();
-			// TODO: remove this for idaho in favor of real permissions
-			Admins.new({
-				accountId: to.id
-			});
+
+			(await Admins.new({ accountId: to.id })).unwrap();
+		}
+
+		// account has been unverified
+		if (from.verified === true && to.data.verified === false) {
+			const universe = (await Universes.Universe.fromId('2122')).unwrap();
+			if (!universe) throw new Error('Universe not found');
+			(await Universes.removeFromUniverse(to, universe)).unwrap();
+			Permissions.RoleAccount.fromProperty('account', to.id, {
+				type: 'stream'
+			}).pipe((ra) => ra.delete());
+
+			(await Admins.fromProperty('accountId', to.id, { type: 'single' })).unwrap()?.delete();
 		}
 	});
 

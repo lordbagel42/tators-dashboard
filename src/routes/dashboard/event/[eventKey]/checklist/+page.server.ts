@@ -35,7 +35,7 @@ export const load = async (event) => {
 				return {
 					team: team.tba,
 					left: questions
-						.filter((q) => !answers.some((a) => a.data.questionId === q.id))
+						.filter((q) => !answers.some((a) => a.answer.data.questionId === q.id))
 						.map((a) => a.safe())
 				};
 			})

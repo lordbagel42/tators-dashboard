@@ -68,10 +68,14 @@ export const load = async (event) => {
 		event: e.value.tba,
 		scouting: scouting.value.map((s) => s.safe()),
 		comments: comments.value.map((c) => c.safe()),
-		answers: pitScouting.value.answers.map((a) => a.safe()),
+		answers: pitScouting.value.answers.map((a) => a.answer.safe()),
 		questions: pitScouting.value.questions.map((q) => q.safe()),
 		groups: pitScouting.value.groups.map((g) => g.safe()),
 		sections: pitScouting.value.sections.map((s) => s.safe()),
-		pictures: pictures.value.map((p) => p.safe())
+		pictures: pictures.value.map((p) => p.safe()),
+		answerAccounts: pitScouting.value.answers
+			.map((a) => a.account)
+			.filter(Boolean)
+			.map((a) => a.safe())
 	};
 };

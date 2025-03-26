@@ -1,3 +1,4 @@
+import { FIRST } from '$lib/server/structs/FIRST.js';
 import { Scouting } from '$lib/server/structs/scouting.js';
 import { Event } from '$lib/server/utils/tba.js';
 import { redirect } from '@sveltejs/kit';
@@ -24,6 +25,13 @@ export const load = async (event) => {
 	const team = teams.find((t) => t.tba.team_number === parseInt(event.params.team));
 	if (!team) throw redirect(ServerCode.permanentRedirect, `/status/404?url=${event.url.href}`);
 
+	const info = (
+		await Scouting.PIT.getScoutingInfoFromSection(parseInt(event.params.team), s)
+	).unwrap();
+
+	const pictures = (
+		await FIRST.getTeamPictures(parseInt(event.params.team), event.params.eventKey)
+	).unwrap();
 	return {
 		section: s.safe(),
 		eventKey,
@@ -31,6 +39,13 @@ export const load = async (event) => {
 		teams: teams.map((t) => t.tba),
 		team: team.tba,
 		sectionIndex: parseInt(section),
-		event: e.tba
+		event: e.tba,
+		questions: info.questions.map((q) => q.safe()),
+		answers: info.answers.map((a) => ({
+			answer: a.answer.safe(),
+			account: a.account?.safe()
+		})),
+		groups: info.groups.map((g) => g.safe()),
+		pictures: pictures.map((p) => p.safe())
 	};
 };

@@ -49,6 +49,8 @@ export const summarize = async (eventKey: string) => {
 				if (!traces) throw new Error('No traces found');
 				// TODO: include tba climb and mobility score here
 				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
+				// For each of the listeners below, you'll need to do `scores.map(s => s.traceScore.something)` instead of `scores.map(s => s.something)`
+				// Then, fill out the blank columns below with the appropriate values
 				return traces.map((t) =>
 					Trace.score.parse2025(t.trace, (t.match.data.alliance || 'red') as 'red' | 'blue')
 				);

@@ -20,6 +20,14 @@ export const load = async (event) => {
 		});
 	}
 
+	const matches = await e.value.getMatches();
+
+	if (matches.isErr()) {
+		throw fail(ServerCode.internalServerError, {
+			message: 'Failed to get matches',
+		});
+	}
+
 	const searchTeams = (event.url.searchParams.get('teams') || '')
 		.split(',')
 		.map((t) => parseInt(t))
@@ -41,6 +49,7 @@ export const load = async (event) => {
 			.filter(Boolean)
 			.map((t) => t.tba),
 		teams: teams.value.map((t) => t.tba),
-		teamScouting
+		teamScouting,
+		matches: matches.value.map((m) => m.tba)
 	};
 };

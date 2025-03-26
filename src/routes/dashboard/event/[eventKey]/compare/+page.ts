@@ -1,5 +1,5 @@
 import { Scouting } from '$lib/model/scouting.js';
-import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
+import { TBAEvent, TBAMatch, TBATeam } from '$lib/utils/tba.js';
 import { DataArr } from 'drizzle-struct/front-end';
 
 export const load = (event) => {
@@ -14,6 +14,7 @@ export const load = (event) => {
 					Scouting.MatchScouting,
 					ts.map((s) => Scouting.MatchScouting.Generator(s))
 				)
-		)
+		),
+		matches: event.data.matches.map((m) => new TBAMatch(m, e)),
 	};
 };

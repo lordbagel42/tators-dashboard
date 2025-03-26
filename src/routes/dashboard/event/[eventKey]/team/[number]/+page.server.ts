@@ -28,6 +28,14 @@ export const load = async (event) => {
 		});
 	}
 
+	const matches = await e.value.getMatches();
+	if (matches.isErr()) {
+		terminal.error(matches.error);
+		throw fail(ServerCode.internalServerError, {
+			message: 'Failed to get matches'
+		});
+	}
+
 	const team = teams.value.find((t) => t.tba.team_number === number);
 	if (!team) {
 		throw fail(ServerCode.notFound, {
@@ -76,6 +84,7 @@ export const load = async (event) => {
 		answerAccounts: pitScouting.value.answers
 			.map((a) => a.account)
 			.filter(Boolean)
-			.map((a) => a.safe())
+			.map((a) => a.safe()),
+			matches: matches.value.map((m) => m.tba)
 	};
 };

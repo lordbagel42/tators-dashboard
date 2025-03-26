@@ -1,8 +1,12 @@
 import { Scouting } from '$lib/server/structs/scouting';
 import * as TBA from '$lib/server/utils/tba';
+import terminal from '$lib/server/utils/terminal.js';
 import { redirect, fail } from '@sveltejs/kit';
+import { teamsFromMatch } from 'tatorscout/tba';
 import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
+import { $Math } from 'ts-utils/math';
 import { ServerCode } from 'ts-utils/status';
+import { match as matchCase } from 'ts-utils/match';
 
 export const load = async (event) => {
 	if (!event.locals.account) throw redirect(ServerCode.temporaryRedirect, '/account/sign-in');
@@ -60,13 +64,15 @@ export const load = async (event) => {
 			};
 		}
 	});
-	const summaries: {
+	type Summary = {
 		labels: string[];
 		title: string;
 		data: {
 			[key: number]: number[];
 		};
-	}[] = [];
+	};
+
+	const summaries: Summary[] = [];
 
 	const [team] = data;
 
@@ -86,6 +92,121 @@ export const load = async (event) => {
 			if (!found) continue;
 			found.data[team.number] = d.data;
 		}
+	}
+
+	const auto = summaries.find(r => r.title === 'Auto Points');
+	if (auto) {
+		auto.labels = ['Mobility', 'Coral', 'Algae', 'Total'];
+		auto.data = Object.fromEntries(Object.entries(auto.data).map(([k, v]) => {
+			let mobility = 0;
+			try {
+				mobility = $Math.average(matches.value.filter(m => teamsFromMatch(m.tba).includes(parseInt(k))).map(m => {
+					const match2025Res = m.asYear(2025);
+					if (match2025Res.isOk()) {
+						const match2025 = match2025Res.value;
+						const redPosition = match2025.alliances.red.team_keys.indexOf(`frc${k}`);
+						const bluePosition = match2025.alliances.blue.team_keys.indexOf(`frc${k}`);
+						const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
+						const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+						// let endgamePoints = 0;
+						let autoPoints = 0;
+						if (alliance) {
+							const mobilityRobots = [
+								match2025.score_breakdown[alliance].autoLineRobot1,
+								match2025.score_breakdown[alliance].autoLineRobot2,
+								match2025.score_breakdown[alliance].autoLineRobot3,
+							];
+	
+							autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
+	
+							// const endgameRobots = [
+							// 	match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
+							// 	match2025.score_breakdown[alliance].endGameRobot2,
+							// 	match2025.score_breakdown[alliance].endGameRobot3,
+							// ];
+	
+	
+							// endgamePoints = matchCase<string, number>(endgameRobots[position])
+							// 	.case('Parked', () => 2)
+							// 	.case('ShallowCage', () => 6)
+							// 	.case('DeepCage', () => 12)
+							// 	.default(() => 0)
+							// 	.exec()
+							// 	.unwrap();
+						}
+						return autoPoints;
+					}
+					return 0;
+				}))
+			} catch (error) {
+				terminal.error(error);
+			}
+			return [k, [mobility, v[0], v[1], v[2]]];
+		})) as { [key: number]: number[] };
+	}
+
+	const endgame: Summary = {
+		title: 'Endgame',
+		labels: ['Park', 'Shallow', 'Deep'],
+		data: {},
+	};
+
+	endgame.data = Object.fromEntries(Object.entries(auto?.data || {}).map(([k, v]) => {
+		let park = 0;
+		let shallow = 0;
+		let deep = 0;
+		let total = 0;
+		try {
+			const match2025Res = matches.value.filter(m => teamsFromMatch(m.tba).includes(parseInt(k))).map(m => {
+				const match2025Res = m.asYear(2025);
+				if (match2025Res.isOk()) {
+					const match2025 = match2025Res.value;		
+					const redPosition = match2025.alliances.red.team_keys.indexOf(`frc${k}`);
+					const bluePosition = match2025.alliances.blue.team_keys.indexOf(`frc${k}`);
+					const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
+					const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+					if (alliance) {
+						const endgameRobots = [
+							match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
+							match2025.score_breakdown[alliance].endGameRobot2,
+							match2025.score_breakdown[alliance].endGameRobot3,
+						];
+
+						return {
+							park: endgameRobots[position] === 'Parked',
+							shallow: endgameRobots[position] === 'ShallowCage',
+							deep: endgameRobots[position] === 'DeepCage',
+						}
+					}
+				}
+				return {
+					park: false,
+					shallow: false,
+					deep: false,
+				}
+			})
+
+			park = $Math.average(match2025Res.map(m => m.park ? 2 : 0));
+			shallow = $Math.average(match2025Res.map(m => m.shallow ? 6 : 0));
+			deep = $Math.average(match2025Res.map(m => m.deep ? 12 : 0));
+			total = park + shallow + deep;
+		} catch (error) {
+			terminal.error(error);
+		}
+		return [k, [park, shallow, deep, total]];
+	})) as { [key: number]: number[] };
+
+	summaries.push(endgame);
+
+	const total = summaries.find(r => r.title === 'Total Points');
+	if (total) {
+		// include auto and endgame
+		total.labels = ['Total'];
+		total.data = Object.fromEntries(Object.entries(total.data).map(([k, v]) => {
+			const autoPoints = auto?.data[parseInt(k)][3] || 0;
+			const endgamePoints = endgame.data[parseInt(k)][3] || 0;
+			return [k, [v[0] + autoPoints + endgamePoints]];
+		}));
 	}
 
 	return {

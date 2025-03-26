@@ -10,7 +10,6 @@
 		match: TBAMatch;
 		scouting: Scouting.MatchScoutingData;
 		team: TBATeam;
-		// focus: Focus;
 		event: TBAEvent;
 	}
 
@@ -22,40 +21,44 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return console.error('Could not get canvas context');
 		try {
-			const match2025 = match.asYear(2025).unwrap();
-			const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
-			const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
-			const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
-			const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+			
 			let endgamePoints = 0;
 			let autoPoints = 0;
-			if (alliance) {
-				const mobilityRobots = [
-					match2025.score_breakdown[alliance].autoLineRobot1,
-					match2025.score_breakdown[alliance].autoLineRobot2,
-					match2025.score_breakdown[alliance].autoLineRobot3,
-				];
+			MATCH2025: {
+				const match2025Res = match.asYear(2025);
+				console.log(match2025Res, match);
+				if (match2025Res.isErr()) break MATCH2025;
+				const match2025 = match2025Res.unwrap();
+				const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
+				const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
+				const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
+				const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+				if (alliance) {
+					const mobilityRobots = [
+						match2025.score_breakdown[alliance].autoLineRobot1,
+						match2025.score_breakdown[alliance].autoLineRobot2,
+						match2025.score_breakdown[alliance].autoLineRobot3,
+					];
 
-				autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
+					autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
 
-				const endgameRobots = [
-					match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
-					match2025.score_breakdown[alliance].endGameRobot2,
-					match2025.score_breakdown[alliance].endGameRobot3,
-				];
+					const endgameRobots = [
+						match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
+						match2025.score_breakdown[alliance].endGameRobot2,
+						match2025.score_breakdown[alliance].endGameRobot3,
+					];
 
-				// make this work 
-				endgamePoints = matchCase<string, number>(endgameRobots[position])
-				.case('Parked', () => 2)
-				.case('ShallowClimb', () => 6)
-				.case('DeepClimb', () => 12)
-				.default(() => 0)
-				.exec()
-				.unwrap();
+					console.log(endgameRobots, alliance, position);
+
+					endgamePoints = matchCase<string, number>(endgameRobots[position])
+						.case('Parked', () => 2)
+						.case('ShallowCage', () => 6)
+						.case('DeepCage', () => 12)
+						.default(() => 0)
+						.exec()
+						.unwrap();
+				}
 			}
-			
-			match2025.alliances.red.team_keys[0]
-
 
 			const trace = TraceSchema.safeParse(JSON.parse(scouting.data.trace || '[]'));
 
@@ -72,7 +75,15 @@
 			const chart = new Chart(canvas, {
 				type: 'bar',
 				data: {
-					datasets: [
+					datasets: [{
+						label: 'Mobility Points',
+						data: [
+							autoPoints, 
+							0, 
+							0, 
+							autoPoints
+						]
+					},
 						{
 							label: 'Coral Points',
 							data: [
@@ -103,12 +114,8 @@
 							data: [
 								0,
 								0,
-								res.teleop.dpc + res.teleop.shc + res.teleop.park,
-								res.teleop.dpc + res.teleop.shc + res.teleop.park
-								
-								2 * Number(endgameRobots[position] === 'Parked') + 
-								6 * Number(endgameRobots[position] === 'ShallowClimb') + 
-								12 * Number(endgameRobots[position] === 'DeepClimb')
+								endgamePoints,
+								endgamePoints
 							]
 						}
 					],

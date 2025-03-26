@@ -9,7 +9,7 @@
 	import PitScoutingCard from '$lib/components/robot-display/pit-scouting/PitScoutingCard.svelte';
 	import TeamComments from '$lib/components/robot-display/TeamComments.svelte';
 	import EventSummary from '$lib/components/robot-display/EventSummary.svelte';
-	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
+	import { TBAEvent, TBAMatch, TBATeam } from '$lib/utils/tba.js';
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
@@ -29,6 +29,7 @@
 	const sections = $derived(data.sections);
 	const pictures = $derived(data.pictures);
 	const answerAccounts = $derived(data.answerAccounts);
+	const matches = $derived(data.matches.map(m => new TBAMatch(m, event)));
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -367,12 +368,12 @@
 			</Card>
 			<Card card={progress}>
 				{#snippet body()}
-					<Progress {team} {event} {scouting} />
+					<Progress {team} {event} {scouting} {matches} />
 				{/snippet}
 			</Card>
 			<Card card={eventStats}>
 				{#snippet body()}
-					<TeamEventStats {team} {event} {scouting} />
+					<TeamEventStats {team} {event} {scouting} {matches} />
 				{/snippet}
 			</Card>
 		{/key}

@@ -31,6 +31,14 @@ export const load = async (event) => {
 		});
 	}
 
+	const matches = await e.value.getMatches();
+	if (matches.isErr()) {
+		terminal.error(matches.error);
+		throw fail(ServerCode.internalServerError, {
+			message: 'Failed to get matches'
+		});
+	}
+
 	const scouting = await Scouting.getTeamScouting(team.tba.team_number, e.value.tba.key);
 	if (scouting.isErr()) {
 		terminal.error(scouting.error);
@@ -43,6 +51,7 @@ export const load = async (event) => {
 		event: e.value.tba,
 		team: team.tba,
 		teams: teams.value.map((t) => t.tba),
-		scouting: scouting.value.map((s) => s.safe())
+		scouting: scouting.value.map((s) => s.safe()),
+		matches: matches.value.map((m) => m.tba)
 	};
 };

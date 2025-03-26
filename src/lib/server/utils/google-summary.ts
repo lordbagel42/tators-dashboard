@@ -47,6 +47,8 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
+				// TODO: include tba climb and mobility score here
+				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
 				return traces.map((t) =>
 					Trace.score.parse2025(t.trace, (t.match.data.alliance || 'red') as 'red' | 'blue')
 				);
@@ -156,8 +158,7 @@ export const summarize = async (eventKey: string) => {
 			return $Math.average(scores.map((s) => s.teleop.dpc + s.teleop.shc + s.teleop.park));
 		});
 		t.column('Max Endgame Score', async (t) => {
-			const scores = await getScores(t);
-			return Math.max(...scores.map((s) => s.teleop.dpc + s.teleop.shc + s.teleop.park));
+
 		});
 		t.column('Average Coral L1 Points Per Match', async (t) => {
 			const scores = await getScores(t);
@@ -280,12 +281,8 @@ export const summarize = async (eventKey: string) => {
 			return $Math.average(scores.map((s) => s.auto.brg + s.teleop.brg));
 		});
 		t.column('Average Shallow Climb Points', async (t) => {
-			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.teleop.shc));
 		});
 		t.column('Average Deep Climb Points', async (t) => {
-			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.teleop.dpc));
 		});
 		return t;
 	});

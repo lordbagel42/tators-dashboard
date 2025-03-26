@@ -23,7 +23,7 @@
 			if (!p) return;
 			potato = p;
 			unsub = p.subscribe((data) => {
-				phase = Potato.getPhase(data.level || 0);
+				phase = data.icon ? data.icon : Potato.getPhase(data.level || 0);
 				level = data.level || 0;
 				name = data.name || '';
 

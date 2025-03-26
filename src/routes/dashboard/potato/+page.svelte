@@ -52,7 +52,7 @@
 				}}
 			>
 				<img
-					src="/potato/{Potato.getPhase(data.level)}.png"
+					src="/potato/{data.icon ? data.icon : Potato.getPhase(data.level)}.png"
 					alt={Potato.getPhase(data.level)}
 					srcset=""
 					style="width: 56px; height: 56px;"

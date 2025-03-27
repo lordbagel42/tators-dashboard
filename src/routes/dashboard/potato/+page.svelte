@@ -4,8 +4,22 @@
 	import { capitalize } from 'ts-utils/text';
 	import Modal from '$lib/components/bootstrap/Modal.svelte';
 	import Stats from '$lib/components/potato/Stats.svelte';
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
+	import type { Account } from '$lib/model/account.js';
 	const { data } = $props();
-	const [first, second, third, ...rest] = $derived(data.rankings);
+	const rankings = writable(
+		data.rankings.sort((a, b) => Number(b.potato.data.level) - Number(a.potato.data.level))
+	);
+	type PotatoAccount = {
+		potato: Potato.FriendData;
+		account?: Account.AccountData;
+	};
+	let first: PotatoAccount | undefined = $state(undefined);
+	let second: PotatoAccount | undefined = $state(undefined);
+	let third: PotatoAccount | undefined = $state(undefined);
+	let rest: PotatoAccount[] = $state([]);
+
 	const you = $derived(data.you);
 
 	Navbar.addSection({
@@ -23,51 +37,58 @@
 
 	let selectedPotato = $state(Potato.Friend.Generator({}));
 	let modal: Modal;
+
+	onMount(() => {
+		const off = Potato.Friend.on('update', () => {
+			rankings.update((r) => {
+				r.sort((a, b) => Number(b.potato.data.level) - Number(a.potato.data.level));
+				return r;
+			});
+		});
+		const unsub = rankings.subscribe((data) => {
+			first = data[0];
+			second = data[1];
+			third = data[2];
+			rest = data.slice(3);
+		});
+
+		return () => {
+			off();
+			unsub();
+		};
+	});
 </script>
 
-{#snippet row(
-	data: {
-		username: string;
-		level: number;
-		name: string;
-		icon: string;
-		color: string;
-		background: string;
-		attack: number;
-		defense: number;
-		speed: number;
-		health: number;
-		mana: number;
-	},
-	color: string
-)}
-	<tr class:you={data.username === you?.username}>
+{#snippet row(data: PotatoAccount, color: string)}
+	<tr class:you={data.account?.data.id === you?.account?.data.id}>
 		<td>
 			<button
 				type="button"
 				class="btn"
 				onclick={() => {
-					selectedPotato = Potato.Friend.Generator(data);
+					selectedPotato = data.potato;
 					modal.show();
 				}}
 			>
 				<img
-					src="/potato/{data.icon ? data.icon : Potato.getPhase(data.level)}.png"
-					alt={Potato.getPhase(data.level)}
+					src="/potato/{data.potato.data.icon
+						? data.potato.data.icon
+						: Potato.getPhase(data.potato.data.level || 0)}.png"
+					alt={Potato.getPhase(data.potato.data.level || 0)}
 					srcset=""
 					style="width: 56px; height: 56px;"
-					title={capitalize(Potato.getPhase(data.level))}
+					title={capitalize(Potato.getPhase(data.potato.data.level || 0))}
 				/>
 			</button>
 		</td>
 		<td class="text-{color}"
-			>{data.username}
-			{#if data.username === you?.username}
+			>{data.account?.data.username}
+			{#if data.account?.data.username === you?.account?.data.username}
 				<span class="badge bg-primary">You</span>
 			{/if}
 		</td>
-		<td class="text-{color}">{data.name}</td>
-		<td class="text-{color}">{data.level}</td>
+		<td class="text-{color}">{data.potato.data.name}</td>
+		<td class="text-{color}">{data.potato.data.level}</td>
 	</tr>
 {/snippet}
 

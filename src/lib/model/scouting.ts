@@ -161,7 +161,11 @@ export namespace Scouting {
 			{ team, eventKey },
 			{
 				asStream: false,
-				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived && !!d.data.prescouting
+				satisfies: (d) =>
+					d.data.team === team &&
+					d.data.eventKey === eventKey &&
+					!!d.data.archived &&
+					!!d.data.prescouting
 			}
 		);
 	};

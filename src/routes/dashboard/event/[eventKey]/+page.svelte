@@ -51,27 +51,27 @@
 					<div class="col">
 						<div class="d-flex">
 							<button
-							type="button"
-							class="btn btn-warning me-2"
-							onclick={async () => {
-								if (await confirm('Are you sure you want to archive all practice matches?')) {
-									Scouting.setPracticeArchive(event.key, true);
-								}
-							}}
-						>
-							Archive All Practice Matches
-						</button>
-						<button
-							type="button"
-							class="btn btn-warning me-2"
-							onclick={async () => {
-								if (await confirm('Are you sure you want to unarchive all practice matches?')) {
-									Scouting.setPracticeArchive(event.key, false);
-								}
-							}}
-						>
-							Unarchive All Practice Matches
-						</button>
+								type="button"
+								class="btn btn-warning me-2"
+								onclick={async () => {
+									if (await confirm('Are you sure you want to archive all practice matches?')) {
+										Scouting.setPracticeArchive(event.key, true);
+									}
+								}}
+							>
+								Archive All Practice Matches
+							</button>
+							<button
+								type="button"
+								class="btn btn-warning me-2"
+								onclick={async () => {
+									if (await confirm('Are you sure you want to unarchive all practice matches?')) {
+										Scouting.setPracticeArchive(event.key, false);
+									}
+								}}
+							>
+								Unarchive All Practice Matches
+							</button>
 						</div>
 					</div>
 				</div>

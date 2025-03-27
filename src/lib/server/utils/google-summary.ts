@@ -51,8 +51,10 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
-				const teamMatches = matches.filter(m => teamsFromMatch(m.tba).includes(team.tba.team_number));
-				if (teamMatches.length === 0) throw new Error('No matches found'); 
+				const teamMatches = matches.filter((m) =>
+					teamsFromMatch(m.tba).includes(team.tba.team_number)
+				);
+				if (teamMatches.length === 0) throw new Error('No matches found');
 
 				// TODO: include tba climb and mobility score here
 				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }

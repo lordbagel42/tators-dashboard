@@ -10,6 +10,7 @@ import { z } from 'zod';
 import terminal from '../utils/terminal';
 import { Permissions } from './permissions';
 import { Universes } from './universe';
+import { DB } from '../db';
 
 export namespace Potato {
 	export const LevelUpMap = {
@@ -387,24 +388,18 @@ export namespace Potato {
 
 	export const getRankings = async () => {
 		return attemptAsync(async () => {
-			return Friend.database
-				.select({
-					username: Account.Account.table.username,
-					level: Friend.table.level,
-					name: Friend.table.name,
-					icon: Friend.table.icon,
-					color: Friend.table.color,
-					background: Friend.table.background,
-					attack: Friend.table.attack,
-					defense: Friend.table.defense,
-					speed: Friend.table.speed,
-					health: Friend.table.health,
-					mana: Friend.table.mana
-				})
+			const res = await DB.select()
 				.from(Friend.table)
 				.orderBy(Friend.table.level)
 				.innerJoin(Account.Account.table, eq(Friend.table.account, Account.Account.table.id))
-				.then((r) => r.reverse());
+				.where(eq(Friend.table.archived, false));
+
+			return Promise.all(
+				res.map(async (r) => ({
+					account: Account.Account.Generator(r.account),
+					potato: Potato.Friend.Generator(r.potato_friend)
+				}))
+			);
 		});
 	};
 

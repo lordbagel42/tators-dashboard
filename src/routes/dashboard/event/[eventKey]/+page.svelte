@@ -5,6 +5,8 @@
 	import DB from '$lib/components/dashboard/Dashboard.svelte';
 	import { Navbar } from '$lib/model/navbar.js';
 	import EventSummary from '$lib/components/charts/EventSummary.svelte';
+	import { Scouting } from '$lib/model/scouting.js';
+	import { confirm } from '$lib/utils/prompts.js';
 	const { data = $bindable() } = $props();
 	const event = $derived(data.event);
 	const teams = $derived(data.teams);
@@ -45,6 +47,34 @@
 				{/each}
 			</div>
 			<div class="container-fluid">
+				<div class="row mb-3">
+					<div class="col">
+						<div class="d-flex">
+							<button
+							type="button"
+							class="btn btn-warning me-2"
+							onclick={async () => {
+								if (await confirm('Are you sure you want to archive all practice matches?')) {
+									Scouting.setPracticeArchive(event.key, true);
+								}
+							}}
+						>
+							Archive All Practice Matches
+						</button>
+						<button
+							type="button"
+							class="btn btn-warning me-2"
+							onclick={async () => {
+								if (await confirm('Are you sure you want to unarchive all practice matches?')) {
+									Scouting.setPracticeArchive(event.key, false);
+								}
+							}}
+						>
+							Unarchive All Practice Matches
+						</button>
+						</div>
+					</div>
+				</div>
 				{#each summaries as row, k}
 					<div class="row mb-5">
 						{#if k !== 0}

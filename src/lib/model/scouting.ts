@@ -28,7 +28,8 @@ export namespace Scouting {
 			trace: 'string',
 			checks: 'string',
 			scoutUsername: 'string',
-			alliance: 'string'
+			alliance: 'string',
+			year: 'number'
 		},
 		socket: sse,
 		browser
@@ -128,6 +129,24 @@ export namespace Scouting {
 				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived
 			}
 		);
+	};
+
+	export const preScouting = (team: number, eventKey: string) => {
+		return MatchScouting.query(
+			'pre-scouting',
+			{ team, eventKey },
+			{
+				asStream: false,
+				satisfies: (d) => d.data.team === team && d.data.eventKey === eventKey && !!d.data.archived && !!d.data.prescouting
+			}
+		);
+	};
+
+	export const setPracticeArchive = (eventKey: string, archive: boolean) => {
+		return MatchScouting.call('set-practice-archive', {
+			eventKey,
+			archive
+		});
 	};
 
 	export const TeamComments = new Struct({

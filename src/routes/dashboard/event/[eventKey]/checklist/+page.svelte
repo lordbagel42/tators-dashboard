@@ -9,7 +9,7 @@
 
 <div class="container">
 	<div class="row mb-3">
-		<h1>Pit Scouting Checklilst for {event.tba.name}</h1>
+		<h1>Pit Scouting Checklist for {event.tba.name}</h1>
 	</div>
 	{#each checklist as item}
 		{#if item.left.data.length}

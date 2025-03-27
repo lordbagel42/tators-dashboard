@@ -48,7 +48,7 @@ export default (event: TBAEvent) => {
 				type: 'material-icons'
 			},
 			{
-				name: 'Checlist',
+				name: 'Checklist',
 				href: `/dashboard/event/${event.key}/checklist`,
 				icon: 'list',
 				type: 'material-icons'

@@ -211,7 +211,10 @@ export const summarize = async (eventKey: string) => {
 			const scores = await getScores(t);
 			return $Math.average(scores.endgame.map((s) => s.dpc + s.shc + s.park));
 		});
-		t.column('Max Endgame Score', async (t) => {});
+		t.column('Max Endgame Score', async (t) => {
+			const scores = await getScores(t);
+			return Math.max(...scores.endgame.map((s) => s.dpc + s.shc + s.park));
+		});
 		t.column('Average Coral L1 Points Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(scores.traceScore.map((s) => s.auto.cl1 + s.teleop.cl1));

@@ -63,6 +63,8 @@ export const POST = async (event) => {
 		remote
 	} = parsed.data;
 
+	const year = Number(/(\d+)/.exec(eventKey)?.[1]);
+
 	let accountId = '';
 
 	const account = await Account.Account.fromProperty('username', scout, {
@@ -94,7 +96,8 @@ export const POST = async (event) => {
 			remote,
 			trace: JSON.stringify(trace),
 			checks: JSON.stringify(checks),
-			alliance: alliance ? alliance : 'unknown'
+			alliance: alliance ? alliance : 'unknown',
+			year
 		});
 		if (update.isErr()) {
 			terminal.error('Error updating match scouting', update.error);
@@ -121,7 +124,8 @@ export const POST = async (event) => {
 			trace: JSON.stringify(trace),
 			checks: JSON.stringify(checks),
 			scoutUsername: scout,
-			alliance: alliance ? alliance : 'unknown'
+			alliance: alliance ? alliance : 'unknown',
+			year
 		});
 		if (create.isErr()) {
 			terminal.error('Error creating match scouting', create.error);

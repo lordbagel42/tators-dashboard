@@ -10,11 +10,5 @@ export default async (eventKey: string) => {
 		type: 'stream'
 	}).pipe(async (s) => {
 		if (s.data.compLevel === 'pr') s.setArchive(false);
-
-		await Scouting.TeamComments.fromProperty('matchScoutingId', s.id, {
-			type: 'stream'
-		}).pipe(async (c) => {
-			c.setArchive(false);
-		});
 	});
 };

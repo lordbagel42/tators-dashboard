@@ -30,7 +30,8 @@ export namespace Scouting {
 			trace: text('trace').notNull(),
 			checks: text('checks').notNull(),
 			scoutUsername: text('scout_username').notNull(),
-			alliance: text('alliance').notNull()
+			alliance: text('alliance').notNull(),
+			year: integer('year').notNull().default(0)
 		},
 		versionHistory: {
 			type: 'versions',
@@ -51,9 +52,11 @@ export namespace Scouting {
 
 	MatchScouting.queryListen('from-team', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
-		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
-		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
-			return new Error('Not entitled');
+		if (!(await Account.isAdmin(event.locals.account)).unwrap()) {
+			const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+			if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
+				return new Error('Not entitled');
+		}
 
 		const { team, eventKey } = z
 			.object({
@@ -87,9 +90,11 @@ export namespace Scouting {
 
 	MatchScouting.queryListen('archived-matches', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
-		const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
-		if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
-			return new Error('Not entitled');
+		if (!(await Account.isAdmin(event.locals.account)).unwrap()) {
+			const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+			if (!(await Permissions.isEntitled(roles, 'manage-scouting')).unwrap())
+				return new Error('Not entitled');
+		}
 
 		const { team, eventKey } = z
 			.object({
@@ -119,6 +124,85 @@ export namespace Scouting {
 		});
 
 		return stream;
+	});
+
+	MatchScouting.queryListen('pre-scouting', async (event, data) => {
+		if (!event.locals.account) return new Error('Not logged in');
+		if (!(await Account.isAdmin(event.locals.account)).unwrap()) {
+			const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+			if (!(await Permissions.isEntitled(roles, 'view-scouting')).unwrap())
+				return new Error('Not entitled');
+		}
+
+		const { team, year } = z
+			.object({
+				team: z.number(),
+				year: z.number()
+			})
+			.parse(data);
+
+		const stream = new StructStream(MatchScouting);
+
+		setTimeout(async () => {
+			const matchScouting = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.year, year),
+						eq(MatchScouting.table.prescouting, true)
+					)
+				);
+
+			for (let i = 0; i < matchScouting.length; i++) {
+				stream.add(MatchScouting.Generator(matchScouting[i]));
+			}
+
+			stream.end();
+		});
+
+		return stream;
+	});
+
+	MatchScouting.callListen('set-practice-archive', async (event, data) => {
+		if (!event.locals.account)
+			return {
+				success: false,
+				message: 'Not logged in'
+			};
+		if (!(await Account.isAdmin(event.locals.account)).unwrap()) {
+			const roles = (await Permissions.allAccountRoles(event.locals.account)).unwrap();
+			if (!(await Permissions.isEntitled(roles, 'manage-scouting')).unwrap())
+				return {
+					success: false,
+					message: 'Not entitled'
+				};
+		}
+
+		const parsed = z
+			.object({
+				eventKey: z.string(),
+				archive: z.boolean()
+			})
+			.safeParse(data);
+
+		if (!parsed.success)
+			return {
+				success: false,
+				message: 'Invalid data'
+			};
+
+		const { eventKey, archive } = parsed.data;
+
+		MatchScouting.fromProperty('eventKey', eventKey, {
+			type: 'stream'
+		}).pipe((d) => {
+			if (!['qm', 'qf', 'sf', 'f'].includes(d.data.compLevel)) d.setArchive(archive);
+		});
+
+		return {
+			success: true
+		};
 	});
 
 	MatchScouting.on('archive', (match) => {
@@ -171,6 +255,22 @@ export namespace Scouting {
 				);
 
 			return res.map((r) => MatchScouting.Generator(r));
+		});
+	};
+
+	export const getPreScouting = (team: number, year: number) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(
+					and(
+						eq(MatchScouting.table.team, team),
+						eq(MatchScouting.table.year, year),
+						eq(MatchScouting.table.prescouting, true)
+					)
+				);
+
+			return res;
 		});
 	};
 
@@ -244,6 +344,13 @@ export namespace Scouting {
 		name: 'view-scouting',
 		structs: [MatchScouting, TeamComments],
 		permissions: ['match_scouting:read:*', 'team_comments:read:*'],
+		group: 'Scouting'
+	});
+
+	createEntitlement({
+		name: 'manage-scouting',
+		structs: [MatchScouting, TeamComments],
+		permissions: ['match_scouting:*:*', 'team_comments:*:*'],
 		group: 'Scouting'
 	});
 

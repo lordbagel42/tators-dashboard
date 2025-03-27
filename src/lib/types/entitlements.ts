@@ -3,6 +3,7 @@ export type Entitlement =
   | 'edit-potato-level'
   | 'manage-pit-scouting'
   | 'manage-roles'
+  | 'manage-scouting'
   | 'manage-tba'
   | 'manage-universe'
   | 'upload-pictures'

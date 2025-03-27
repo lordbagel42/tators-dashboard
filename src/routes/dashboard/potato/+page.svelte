@@ -151,6 +151,9 @@
 <Modal bind:this={modal} title={$selectedPotato.name || 'Potato'} size="md">
 	{#snippet body()}
 		{#key selectedPotato}
+			<div class="d-flex justify-content-center">
+				<img src="/potato/{selectedPotato.data.icon ? selectedPotato.data.icon : Potato.getPhase(selectedPotato.data.level || 0)}.png" alt={Potato.getPhase(selectedPotato.data.level || 0)} srcset="" style="width: 128px; height: 128px;" title={capitalize(Potato.getPhase(selectedPotato.data.level || 0))} />
+			</div>
 			<Stats potato={selectedPotato} />
 		{/key}
 	{/snippet}

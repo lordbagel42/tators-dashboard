@@ -41,6 +41,6 @@ export const load = (event) => {
 		groups,
 		sections,
 		pictures,
-		answerAccounts: event.data.answerAccounts.map((a) => Account.Account.Generator(a)),
+		answerAccounts: event.data.answerAccounts.map((a) => Account.Account.Generator(a))
 	};
 };

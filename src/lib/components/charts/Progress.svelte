@@ -32,42 +32,50 @@
 			if (chart) chart.destroy();
 			try {
 				const score = data.map((s) => {
-					const match = matches.find(m => m.tba.match_number === s.data.matchNumber && m.tba.comp_level === s.data.compLevel);
+					const match = matches.find(
+						(m) =>
+							m.tba.match_number === s.data.matchNumber && m.tba.comp_level === s.data.compLevel
+					);
 					const trace = TraceSchema.parse(JSON.parse(s.data.trace || '[]')) as TraceArray;
-					const traceScore = Trace.score.parse2025(trace, (s.data.alliance || 'red') as 'red' | 'blue');
-					if (!match) return {
-						traceScore,
-						autoPoints: 0,
-						endgamePoints: 0,
-					}
+					const traceScore = Trace.score.parse2025(
+						trace,
+						(s.data.alliance || 'red') as 'red' | 'blue'
+					);
+					if (!match)
+						return {
+							traceScore,
+							autoPoints: 0,
+							endgamePoints: 0
+						};
 					const match2025Res = match.asYear(2025);
-					if (match2025Res.isErr()) return {
-						traceScore,
-						autoPoints: 0,
-						endgamePoints: 0,
-					}
+					if (match2025Res.isErr())
+						return {
+							traceScore,
+							autoPoints: 0,
+							endgamePoints: 0
+						};
 					const match2025 = match2025Res.unwrap();
 					const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
 					const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
 					const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
-					const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+					const position =
+						alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition : -1;
 					let endgamePoints = 0;
 					let autoPoints = 0;
 					if (alliance) {
 						const mobilityRobots = [
 							match2025.score_breakdown[alliance].autoLineRobot1,
 							match2025.score_breakdown[alliance].autoLineRobot2,
-							match2025.score_breakdown[alliance].autoLineRobot3,
+							match2025.score_breakdown[alliance].autoLineRobot3
 						];
 
-						autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
+						autoPoints = 3 * Number(mobilityRobots[position] === 'Yes');
 
 						const endgameRobots = [
 							match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
 							match2025.score_breakdown[alliance].endGameRobot2,
-							match2025.score_breakdown[alliance].endGameRobot3,
+							match2025.score_breakdown[alliance].endGameRobot3
 						];
-
 
 						endgamePoints = matchCase<string, number>(endgameRobots[position])
 							.case('Parked', () => 2)
@@ -77,12 +85,12 @@
 							.exec()
 							.unwrap();
 					}
-			
+
 					return {
 						traceScore,
 						autoPoints,
-						endgamePoints,
-					}
+						endgamePoints
+					};
 				});
 				const labels = data.map((s) => `${s.data.compLevel}${s.data.matchNumber}`);
 
@@ -103,7 +111,13 @@
 					},
 					{
 						label: 'Algae',
-						data: score.map((s) => s.traceScore.auto.brg + s.traceScore.auto.prc + s.traceScore.teleop.brg + s.traceScore.teleop.prc)
+						data: score.map(
+							(s) =>
+								s.traceScore.auto.brg +
+								s.traceScore.auto.prc +
+								s.traceScore.teleop.brg +
+								s.traceScore.teleop.prc
+						)
 					},
 					{
 						label: 'Endgame',

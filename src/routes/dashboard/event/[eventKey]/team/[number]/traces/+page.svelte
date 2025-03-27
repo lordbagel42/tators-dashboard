@@ -28,7 +28,11 @@
 
 	const open = async (scouting: Scouting.MatchScoutingData) => {
 		selectedScouting = scouting;
-		match = matches.find(m => m.tba.match_number === scouting.data.matchNumber && m.tba.comp_level === scouting.data.compLevel);
+		match = matches.find(
+			(m) =>
+				m.tba.match_number === scouting.data.matchNumber &&
+				m.tba.comp_level === scouting.data.compLevel
+		);
 		modal.show();
 	};
 
@@ -162,27 +166,27 @@
 	{#snippet body()}
 		{#key selectedScouting}
 			{#if selectedScouting}
-			<div class="container">
-				<div class="row mb-3">
-					<Trace scouting={selectedScouting} {event} {focus} />
-				</div>
-				<div class="row mb-3">
-					{#if match}
-						<MatchContribution {match} scouting={selectedScouting} {team} {event} />
-					{/if}
-				</div>
-				<div class="row mb-3">
-					<MatchComments scouting={selectedScouting} />
-				</div>
-				<div class="row mb-2">
-					<div class="col-md-6">
-						<Checks scouting={selectedScouting} />
+				<div class="container">
+					<div class="row mb-3">
+						<Trace scouting={selectedScouting} {event} {focus} />
 					</div>
-					<div class="col-md-6">
-						<MatchActions scouting={selectedScouting} />
+					<div class="row mb-3">
+						{#if match}
+							<MatchContribution {match} scouting={selectedScouting} {team} {event} />
+						{/if}
+					</div>
+					<div class="row mb-3">
+						<MatchComments scouting={selectedScouting} />
+					</div>
+					<div class="row mb-2">
+						<div class="col-md-6">
+							<Checks scouting={selectedScouting} />
+						</div>
+						<div class="col-md-6">
+							<MatchActions scouting={selectedScouting} />
+						</div>
 					</div>
 				</div>
-			</div>
 			{:else}
 				<p>No scouting data selected</p>
 			{/if}

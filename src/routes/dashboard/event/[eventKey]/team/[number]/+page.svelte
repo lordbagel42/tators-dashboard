@@ -29,7 +29,7 @@
 	const sections = $derived(data.sections);
 	const pictures = $derived(data.pictures);
 	const answerAccounts = $derived(data.answerAccounts);
-	const matches = $derived(data.matches.map(m => new TBAMatch(m, event)));
+	const matches = $derived(data.matches.map((m) => new TBAMatch(m, event)));
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -330,7 +330,7 @@
 		{#key team}
 			<Card card={summary}>
 				{#snippet body()}
-					<EventSummary {team} {event} {scouting} />
+					<EventSummary {matches} {team} {event} {scouting} />
 				{/snippet}
 			</Card>
 			<Card card={picturesCard}>

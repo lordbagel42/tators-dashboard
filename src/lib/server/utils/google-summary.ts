@@ -49,9 +49,9 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
-				const matches = await team.getMatches()
+				const matches = await team.getMatches();
 				if (matches.isErr()) throw fail(ServerCode.internalServerError);
-				
+
 				// TODO: include tba climb and mobility score here
 				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
 				// For each of the listeners below, you'll need to do `scores.map(s => s.traceScore.something)` instead of `scores.map(s => s.something)`
@@ -70,19 +70,29 @@ export const summarize = async (eventKey: string) => {
 					const scoreBreakdown = match.tba.score_breakdown;
 					if (!scoreBreakdown) continue;
 
-					const alliance = match.tba.alliances.red.team_keys.includes(team.tba.key) ? 'red' : 'blue';
+					const alliance = match.tba.alliances.red.team_keys.includes(team.tba.key)
+						? 'red'
+						: 'blue';
 
 					const teamIndex = match.tba.alliances[alliance].team_keys.indexOf(team.tba.key);
-					const status = (scoreBreakdown?.[alliance] as Record<EndGameRobotKey, string | undefined>)?.[`endGameRobot${teamIndex + 1}` as EndGameRobotKey];
+					const status = (
+						scoreBreakdown?.[alliance] as Record<EndGameRobotKey, string | undefined>
+					)?.[`endGameRobot${teamIndex + 1}` as EndGameRobotKey];
 
 					endgame.push({
 						dpc: status === 'DeepCage' ? 12 : 0,
 						shc: status === 'ShallowCage' ? 6 : 0,
 						park: status === 'Parked' ? 2 : 0
 					});
-					
+
 					mobility.push(
-						((scoreBreakdown?.[alliance] as Record<AutoLineKey, string | undefined>)?.[`autoLineRobot${teamIndex + 1}` as AutoLineKey] ?? '').length > 0 ? 2 : 0
+						(
+							(scoreBreakdown?.[alliance] as Record<AutoLineKey, string | undefined>)?.[
+								`autoLineRobot${teamIndex + 1}` as AutoLineKey
+							] ?? ''
+						).length > 0
+							? 2
+							: 0
 					);
 				}
 
@@ -193,17 +203,13 @@ export const summarize = async (eventKey: string) => {
 		});
 		t.column('Average Teleop Score', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(
-				scores.traceScore.map((s) => s.teleop.total)
-			);
+			return $Math.average(scores.traceScore.map((s) => s.teleop.total));
 		});
 		t.column('Average Endgame Score', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(scores.endgame.map((s) => s.dpc + s.shc + s.park));
 		});
-		t.column('Max Endgame Score', async (t) => {
-
-		});
+		t.column('Max Endgame Score', async (t) => {});
 		t.column('Average Coral L1 Points Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(scores.traceScore.map((s) => s.auto.cl1 + s.teleop.cl1));

@@ -24,7 +24,7 @@ export const load = async (event) => {
 
 	if (matches.isErr()) {
 		throw fail(ServerCode.internalServerError, {
-			message: 'Failed to get matches',
+			message: 'Failed to get matches'
 		});
 	}
 

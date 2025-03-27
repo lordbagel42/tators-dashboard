@@ -85,6 +85,6 @@ export const load = async (event) => {
 			.map((a) => a.account)
 			.filter(Boolean)
 			.map((a) => a.safe()),
-			matches: matches.value.map((m) => m.tba)
+		matches: matches.value.map((m) => m.tba)
 	};
 };

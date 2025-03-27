@@ -140,9 +140,21 @@
 										<h5 class="card-title">{team.tba.team_number} | {team.tba.nickname}</h5>
 										<div style="height: 300px;">
 											{#if view === 'progress'}
-												<Progress {team} {event} bind:staticY scouting={teamScouting[i]} {matches} />
+												<Progress
+													{team}
+													{event}
+													bind:staticY
+													scouting={teamScouting[i]}
+													{matches}
+												/>
 											{:else}
-												<TeamEventStats {team} {event} bind:staticY scouting={teamScouting[i]} {matches} />
+												<TeamEventStats
+													{team}
+													{event}
+													bind:staticY
+													scouting={teamScouting[i]}
+													{matches}
+												/>
 											{/if}
 										</div>
 									</div>

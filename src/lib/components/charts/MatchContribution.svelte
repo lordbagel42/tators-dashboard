@@ -21,34 +21,30 @@
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return console.error('Could not get canvas context');
 		try {
-			
 			let endgamePoints = 0;
 			let autoPoints = 0;
 			MATCH2025: {
 				const match2025Res = match.asYear(2025);
-				console.log(match2025Res, match);
 				if (match2025Res.isErr()) break MATCH2025;
 				const match2025 = match2025Res.unwrap();
 				const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
 				const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
 				const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
-				const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition: -1;
+				const position = alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition : -1;
 				if (alliance) {
 					const mobilityRobots = [
 						match2025.score_breakdown[alliance].autoLineRobot1,
 						match2025.score_breakdown[alliance].autoLineRobot2,
-						match2025.score_breakdown[alliance].autoLineRobot3,
+						match2025.score_breakdown[alliance].autoLineRobot3
 					];
 
-					autoPoints = 3 * Number(mobilityRobots[position] === 'Yes'); 
+					autoPoints = 3 * Number(mobilityRobots[position] === 'Yes');
 
 					const endgameRobots = [
 						match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
 						match2025.score_breakdown[alliance].endGameRobot2,
-						match2025.score_breakdown[alliance].endGameRobot3,
+						match2025.score_breakdown[alliance].endGameRobot3
 					];
-
-					console.log(endgameRobots, alliance, position);
 
 					endgamePoints = matchCase<string, number>(endgameRobots[position])
 						.case('Parked', () => 2)
@@ -75,15 +71,11 @@
 			const chart = new Chart(canvas, {
 				type: 'bar',
 				data: {
-					datasets: [{
-						label: 'Mobility Points',
-						data: [
-							autoPoints, 
-							0, 
-							0, 
-							autoPoints
-						]
-					},
+					datasets: [
+						{
+							label: 'Mobility Points',
+							data: [autoPoints, 0, 0, autoPoints]
+						},
 						{
 							label: 'Coral Points',
 							data: [
@@ -111,12 +103,7 @@
 						},
 						{
 							label: 'Endgame Points',
-							data: [
-								0,
-								0,
-								endgamePoints,
-								endgamePoints
-							]
+							data: [0, 0, endgamePoints, endgamePoints]
 						}
 					],
 					labels: ['Auto', 'Teleop', 'Endgame', 'Total']

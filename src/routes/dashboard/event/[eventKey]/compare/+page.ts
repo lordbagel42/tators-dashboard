@@ -15,6 +15,6 @@ export const load = (event) => {
 					ts.map((s) => Scouting.MatchScouting.Generator(s))
 				)
 		),
-		matches: event.data.matches.map((m) => new TBAMatch(m, e)),
+		matches: event.data.matches.map((m) => new TBAMatch(m, e))
 	};
 };

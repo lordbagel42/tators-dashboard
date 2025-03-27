@@ -48,7 +48,7 @@ export default async () => {
 		.exec()
 		.unwrap();
 
-		class MyThing {}
+	class MyThing {}
 
 	const nextValue = match(typeof someValue)
 		.case('string', (s) => 'hi')

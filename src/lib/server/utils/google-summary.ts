@@ -51,59 +51,52 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
-				const teamMatches = matches.filter(m => teamsFromMatch(m.tba).includes(team.tba.team_number));
-				if (teamMatches.length === 0) throw new Error('No matches found'); 
-
-				// TODO: include tba climb and mobility score here
-				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
-				// For each of the listeners below, you'll need to do `scores.map(s => s.traceScore.something)` instead of `scores.map(s => s.something)`
-				// Then, fill out the blank columns below with the appropriate values
-
-				const traceScore = traces.map((t) =>
+		
+				const teamMatches = matches.filter(m =>
+					teamsFromMatch(m.tba).includes(team.tba.team_number)
+				);
+				if (teamMatches.length === 0) throw new Error('No matches found');
+		
+				const traceScore = traces.map(t =>
 					Trace.score.parse2025(t.trace, (t.match.data.alliance || 'red') as 'red' | 'blue')
 				);
-
+		
 				const endgame: { dpc: number; shc: number; park: number }[] = [];
 				const mobility: number[] = [];
-				type EndGameRobotKey = `endGameRobot${1 | 2 | 3}`;
-				type AutoLineKey = `autoLineRobot${1 | 2 | 3}`;
-
+		
 				for (const match of teamMatches) {
-					const scoreBreakdown = match.tba.score_breakdown;
-					if (!scoreBreakdown) continue;
-
-					const alliance = match.tba.alliances.red.team_keys.includes(team.tba.key)
-						? 'red'
-						: 'blue';
-
-					const teamIndex = match.tba.alliances[alliance].team_keys.indexOf(team.tba.key);
-					const status = (
-						scoreBreakdown?.[alliance] as Record<EndGameRobotKey, string | undefined>
-					)?.[`endGameRobot${teamIndex + 1}` as EndGameRobotKey];
-
+					const breakdown = match.tba.score_breakdown;
+					if (!breakdown) {
+						endgame.push({ dpc: 0, shc: 0, park: 0 });
+						mobility.push(0);
+						continue;
+					}
+		
+					const alliances = match.tba.alliances;
+					const alliance = alliances.red.team_keys.includes(team.tba.key) ? 'red' : 'blue';
+					const teamKeys = alliances[alliance].team_keys;
+					const teamIndex = teamKeys.indexOf(team.tba.key) + 1; // 1-based index
+		
+					// Endgame
+					const endStatus = (breakdown[alliance] as Record<string, string | undefined>)?.[`endGameRobot${teamIndex}`];
 					endgame.push({
-						dpc: status === 'DeepCage' ? 12 : 0,
-						shc: status === 'ShallowCage' ? 6 : 0,
-						park: status === 'Parked' ? 2 : 0
+						dpc: endStatus === 'DeepCage' ? 12 : 0,
+						shc: endStatus === 'ShallowCage' ? 6 : 0,
+						park: endStatus === 'Parked' ? 2 : 0,
 					});
-
-					mobility.push(
-						(
-							(scoreBreakdown?.[alliance] as Record<AutoLineKey, string | undefined>)?.[
-								`autoLineRobot${teamIndex + 1}` as AutoLineKey
-							] ?? ''
-						).length > 0
-							? 2
-							: 0
-					);
+		
+					// Mobility
+					const autoStatus = (breakdown[alliance] as Record<string, string | undefined>)?.[`autoLineRobot${teamIndex}`] ?? '';
+					mobility.push(autoStatus.length > 0 ? 2 : 0);
 				}
-
+		
 				return { traceScore, endgame, mobility };
 			} catch (error) {
 				terminal.error(`Error pulling scores for team ${team.tba.team_number}`, error);
 				throw error;
 			}
 		};
+		
 
 		const getPitScouting = async (requestedQuestion: string, team: Team) => {
 			try {

@@ -14,8 +14,8 @@ export const actions = {
 
 		const username = z.string().min(3).max(20).safeParse(data.get('username'));
 		const email = z.string().email().safeParse(data.get('email'));
-		const firstName = z.string().min(3).max(20).safeParse(data.get('firstName'));
-		const lastName = z.string().min(3).max(20).safeParse(data.get('lastName'));
+		const firstName = z.string().min(1).max(20).safeParse(data.get('firstName'));
+		const lastName = z.string().min(1).max(20).safeParse(data.get('lastName'));
 		const password = z.string().min(8).max(20).safeParse(data.get('password'));
 		const confirmPassword = z.string().min(8).max(20).safeParse(data.get('confirmPassword'));
 

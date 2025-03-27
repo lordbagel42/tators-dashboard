@@ -1,7 +1,7 @@
 <script lang="ts">
 	import DateInput from '../forms/DateInput.svelte';
 	import { onMount } from 'svelte';
-	import { TBATeam, TBAEvent } from '$lib/utils/tba';
+	import { TBATeam, TBAEvent, TBAMatch } from '$lib/utils/tba';
 	import { DataArr } from 'drizzle-struct/front-end';
 	import { Scouting } from '$lib/model/scouting';
 
@@ -9,9 +9,10 @@
 		team: TBATeam;
 		event: TBAEvent;
 		scouting: Scouting.MatchScoutingArr;
+		matches: TBAMatch[];
 	}
 
-	const { team, event, scouting }: Props = $props();
+	const { team, event, scouting, matches }: Props = $props();
 
 	let rank = $state(0);
 	let record = $state('');
@@ -40,12 +41,12 @@
 		return scouting.subscribe((s) => {
 			const autoRes = Scouting.averageAutoScore(s, event.tba.year);
 			const teleRes = Scouting.averageTeleopScore(s, event.tba.year);
-			const endRes = Scouting.averageEndgameScore(s, event.tba.year);
+			const endRes = Scouting.averageEndgameScore(matches, team.tba.team_number, event.tba.year);
 			const secondsRes = Scouting.averageSecondsNotMoving(s);
 
 			auto = autoRes.isErr() ? 0 : autoRes.value;
 			teleop = teleRes.isErr() ? 0 : teleRes.value;
-			endgame = endRes.isErr() ? 0 : endRes.value;
+			// endgame = endRes.isErr() ? 0 : endRes.value;
 			averageSecondsNotMoving = secondsRes.isErr() ? 0 : secondsRes.value;
 		});
 	});

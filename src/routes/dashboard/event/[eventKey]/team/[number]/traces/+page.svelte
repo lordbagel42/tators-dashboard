@@ -2,33 +2,37 @@
 	import nav from '$lib/imports/robot-display.js';
 	import Trace from '$lib/components/robot-display/Trace.svelte';
 	import { Scouting } from '$lib/model/scouting.js';
-	import { TBAEvent, TBATeam } from '$lib/utils/tba.js';
-	import { DataArr } from 'drizzle-struct/front-end';
-	import { onMount } from 'svelte';
 	import Modal from '$lib/components/bootstrap/Modal.svelte';
 	import { writable } from 'svelte/store';
-	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
 	import { sleep } from 'ts-utils/sleep';
-	import { returnType } from 'drizzle-struct/utils';
 	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
 	import Checks from '$lib/components/robot-display/Checks.svelte';
 	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
+	import MatchContribution from '$lib/components/charts/MatchContribution.svelte';
+	import type { TBAMatch } from '$lib/utils/tba.js';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
 	const event = $derived(data.event);
 	const team = $derived(data.team);
 	const scoutingArr = $derived(data.scouting);
+	const matches = $derived(data.matches);
 
 	$effect(() => nav(event.tba));
 
 	let modal: Modal;
 	let selectedScouting: Scouting.MatchScoutingData | undefined = $state(undefined);
 	let scroller: HTMLDivElement;
+	let match: TBAMatch | undefined = $state(undefined);
 
-	const open = (scouting: Scouting.MatchScoutingData) => {
+	const open = async (scouting: Scouting.MatchScoutingData) => {
 		selectedScouting = scouting;
+		match = matches.find(
+			(m) =>
+				m.tba.match_number === scouting.data.matchNumber &&
+				m.tba.comp_level === scouting.data.compLevel
+		);
 		modal.show();
 	};
 
@@ -162,14 +166,25 @@
 	{#snippet body()}
 		{#key selectedScouting}
 			{#if selectedScouting}
-				<Trace scouting={selectedScouting} {event} {focus} />
-				<MatchComments scouting={selectedScouting} />
-				<div class="row my-2">
-					<div class="col-md-6">
-						<Checks scouting={selectedScouting} />
+				<div class="container">
+					<div class="row mb-3">
+						<Trace scouting={selectedScouting} {event} {focus} />
 					</div>
-					<div class="col-md-6">
-						<MatchActions scouting={selectedScouting} />
+					<div class="row mb-3">
+						{#if match}
+							<MatchContribution {match} scouting={selectedScouting} {team} {event} />
+						{/if}
+					</div>
+					<div class="row mb-3">
+						<MatchComments scouting={selectedScouting} />
+					</div>
+					<div class="row mb-2">
+						<div class="col-md-6">
+							<Checks scouting={selectedScouting} />
+						</div>
+						<div class="col-md-6">
+							<MatchActions scouting={selectedScouting} />
+						</div>
 					</div>
 				</div>
 			{:else}

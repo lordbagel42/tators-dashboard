@@ -1,4 +1,4 @@
-import { attemptAsync } from 'ts-utils/check';
+import { attempt, attemptAsync, type Result } from 'ts-utils/check';
 import { Requests } from './requests';
 import {
 	EventSchema,
@@ -11,7 +11,9 @@ import {
 	type TBAMedia,
 	MediaSchema,
 	type TBATeamEventStatus,
-	TeamEventStatusSchema
+	TeamEventStatusSchema,
+	Match2025Schema,
+	type TBAMatch2025
 } from 'tatorscout/tba';
 import { z } from 'zod';
 
@@ -98,6 +100,15 @@ export class TBAMatch {
 			];
 			this._teams = t;
 			return t;
+		});
+	}
+
+	asYear<Y extends 2025>(year: Y): Result<Y extends 2025 ? TBAMatch2025 : never> {
+		return attempt(() => {
+			if (year === 2025) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				return Match2025Schema.parse(this.tba) as any;
+			} else throw new Error('Invalid year');
 		});
 	}
 }

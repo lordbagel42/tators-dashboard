@@ -11,6 +11,9 @@ import { z } from 'zod';
 import { Account } from './account';
 import { Trace, TraceSchema, type TraceArray } from 'tatorscout/trace';
 import { $Math } from 'ts-utils/math';
+import type { TBAMatch } from '$lib/utils/tba';
+import { teamsFromMatch } from 'tatorscout/tba';
+import { match } from 'ts-utils/match';
 
 export namespace Scouting {
 	export const MatchScouting = new Struct({
@@ -84,25 +87,46 @@ export namespace Scouting {
 						).teleop
 				);
 
-				return $Math.average(teles.map((t) => t.total - (t.dpc + t.shc + t.park)));
+				return $Math.average(teles.map((t) => t.total));
 			}
 			return 0;
 		});
 	};
 
-	export const averageEndgameScore = (data: MatchScoutingData[], year: number) => {
+	export const averageEndgameScore = (matches: TBAMatch[], team: number, year: number) => {
 		return attempt(() => {
 			if (year === 2025) {
-				const teles = data.map(
-					(d) =>
-						Trace.score.parse2025(
-							TraceSchema.parse(JSON.parse(d.data.trace || '[]')) as TraceArray,
-							d.data.alliance as 'red' | 'blue'
-						).teleop
-				);
+				const endgames = matches
+					.filter((m) => teamsFromMatch(m.tba).includes(team))
+					.map((m) => {
+						const match2025 = m.asYear(2025).unwrap();
+						const redPosition = match2025.alliances.red.team_keys.indexOf(`frc${team}`);
+						const bluePosition = match2025.alliances.blue.team_keys.indexOf(`frc${team}`);
+						const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
+						const position =
+							alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition : -1;
+						if (alliance) {
+							const endgameRobots = [
+								match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
+								match2025.score_breakdown[alliance].endGameRobot2,
+								match2025.score_breakdown[alliance].endGameRobot3
+							];
 
-				return $Math.average(teles.map((t) => t.park + t.dpc + t.shc));
+							return match<string, number>(endgameRobots[position])
+								.case('Parked', () => 2)
+								.case('ShallowCage', () => 6)
+								.case('DeepCage', () => 12)
+								.default(() => 0)
+								.exec()
+								.unwrap();
+						}
+
+						return 0;
+					});
+
+				return $Math.average(endgames);
 			}
+
 			return 0;
 		});
 	};

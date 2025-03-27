@@ -11,6 +11,7 @@
 	import Checks from './Checks.svelte';
 	import { dateTime } from 'ts-utils/clock';
 	import MatchActions from './MatchActions.svelte';
+	import MatchEndgame from './MatchEndgame.svelte';
 
 	interface Props {
 		match: TBAMatch;
@@ -41,11 +42,14 @@
 			<MatchComments {scouting} />
 		</div>
 		<div class="row mb-3">
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<Checks {scouting} />
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<MatchActions {scouting} />
+			</div>
+			<div class="col-md-4">
+				<MatchEndgame {match} {team} {event} />
 			</div>
 		</div>
 		<div class="row mb-3">

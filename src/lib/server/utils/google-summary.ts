@@ -9,6 +9,8 @@ import { DB } from '../db';
 import { and, eq } from 'drizzle-orm';
 import { fail, type RequestEvent } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
+import { matchesGlob } from 'path';
+import e from 'express';
 
 export const auth = (event: RequestEvent) => {
 	const key = event.request.headers.get('X-Auth-Key');
@@ -47,13 +49,44 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
+				const matches = await team.getMatches()
+				if (matches.isErr()) throw fail(ServerCode.internalServerError);
+				
 				// TODO: include tba climb and mobility score here
 				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
 				// For each of the listeners below, you'll need to do `scores.map(s => s.traceScore.something)` instead of `scores.map(s => s.something)`
 				// Then, fill out the blank columns below with the appropriate values
-				return traces.map((t) =>
+
+				const traceScore = traces.map((t) =>
 					Trace.score.parse2025(t.trace, (t.match.data.alliance || 'red') as 'red' | 'blue')
 				);
+
+				const endgame: { dpc: number; shc: number; park: number }[] = [];
+				const mobility: number[] = [];
+				type EndGameRobotKey = `endGameRobot${1 | 2 | 3}`;
+				type AutoLineKey = `autoLineRobot${1 | 2 | 3}`;
+
+				for (const match of matches.value) {
+					const scoreBreakdown = match.tba.score_breakdown;
+					if (!scoreBreakdown) continue;
+
+					const alliance = match.tba.alliances.red.team_keys.includes(team.tba.key) ? 'red' : 'blue';
+
+					const teamIndex = match.tba.alliances[alliance].team_keys.indexOf(team.tba.key);
+					const status = (scoreBreakdown?.[alliance] as Record<EndGameRobotKey, string | undefined>)?.[`endGameRobot${teamIndex + 1}` as EndGameRobotKey];
+
+					endgame.push({
+						dpc: status === 'DeepCage' ? 12 : 0,
+						shc: status === 'ShallowCage' ? 6 : 0,
+						park: status === 'Parked' ? 2 : 0
+					});
+					
+					mobility.push(
+						((scoreBreakdown?.[alliance] as Record<AutoLineKey, string | undefined>)?.[`autoLineRobot${teamIndex + 1}` as AutoLineKey] ?? '').length > 0 ? 2 : 0
+					);
+				}
+
+				return { traceScore, endgame, mobility };
 			} catch (error) {
 				terminal.error(`Error pulling scores for team ${team.tba.team_number}`, error);
 				throw error;
@@ -98,7 +131,7 @@ export const summarize = async (eventKey: string) => {
 
 		const t = new Table(eventKey);
 		t.column('Team Number', (t) => t.tba.team_number);
-		t.column('Team Name', (t) => t.tba.nickname || 'unkown');
+		t.column('Team Name', (t) => t.tba.nickname || 'unknown');
 		t.column('Rank', (t) => t.getStatus().then((s) => s.unwrap()?.qual?.ranking.rank));
 		t.column('Average velocity', async (t) => {
 			const matchScouting = (await Scouting.getTeamScouting(t.tba.team_number, eventKey)).unwrap();
@@ -133,63 +166,72 @@ export const summarize = async (eventKey: string) => {
 		t.column('Driver Practice', async (t) => {
 			return getPitScouting('robot_drive_practice', t);
 		});
+		t.column('Programming Language', async (t) => {
+			return getPitScouting('programmingLanguage', t);
+		});
+		t.column('Electrical Rating', async (t) => {
+			return getPitScouting('robot_electrical_rating', t);
+		});
+		t.column('Pit Scouting Observations', async (t) => {
+			return getPitScouting('observations', t);
+		});
 		t.column('Average Score Contribution', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.total));
+			return $Math.average(scores.traceScore.map((s) => s.total));
 		});
 		t.column('Max Score Contribution', async (t) => {
 			const scores = await getScores(t);
-			return Math.max(...scores.map((s) => s.total));
+			return Math.max(...scores.traceScore.map((s) => s.total));
 		});
 		t.column('Average Auto Score', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.total));
+			return $Math.average(scores.traceScore.map((s) => s.auto.total));
 		});
 		t.column('Max Auto Score', async (t) => {
 			const scores = await getScores(t);
-			return Math.max(...scores.map((s) => s.auto.total));
+			return Math.max(...scores.traceScore.map((s) => s.auto.total));
 		});
 		t.column('Average Teleop Score', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map((s) => s.teleop.total - (s.teleop.dpc + s.teleop.shc + s.teleop.park))
+				scores.traceScore.map((s) => s.teleop.total)
 			);
 		});
 		t.column('Average Endgame Score', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.teleop.dpc + s.teleop.shc + s.teleop.park));
+			return $Math.average(scores.endgame.map((s) => s.dpc + s.shc + s.park));
 		});
 		t.column('Max Endgame Score', async (t) => {
 
 		});
 		t.column('Average Coral L1 Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.cl1 + s.teleop.cl1));
+			return $Math.average(scores.traceScore.map((s) => s.auto.cl1 + s.teleop.cl1));
 		});
 		t.column('Average Coral L2 Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.cl2 + s.teleop.cl2));
+			return $Math.average(scores.traceScore.map((s) => s.auto.cl2 + s.teleop.cl2));
 		});
 		t.column('Average Coral L3 Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.cl3 + s.teleop.cl3));
+			return $Math.average(scores.traceScore.map((s) => s.auto.cl3 + s.teleop.cl3));
 		});
 		t.column('Average Coral L4 Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.cl4 + s.teleop.cl4));
+			return $Math.average(scores.traceScore.map((s) => s.auto.cl4 + s.teleop.cl4));
 		});
 		t.column('Average Processor Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.prc + s.teleop.prc));
+			return $Math.average(scores.traceScore.map((s) => s.auto.prc + s.teleop.prc));
 		});
 		t.column('Average Barge Points Per Match', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.brg + s.teleop.brg));
+			return $Math.average(scores.traceScore.map((s) => s.auto.brg + s.teleop.brg));
 		});
 		t.column('Average Coral L1 Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.cl1 / yearBreakdown.auto.cl1 + s.teleop.cl1 / yearBreakdown.auto.cl1
 				)
 			);
@@ -197,7 +239,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Average Coral L2 Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.cl2 / yearBreakdown.auto.cl2 + s.teleop.cl2 / yearBreakdown.auto.cl2
 				)
 			);
@@ -205,7 +247,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Average Coral L3 Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.cl3 / yearBreakdown.auto.cl3 + s.teleop.cl3 / yearBreakdown.auto.cl3
 				)
 			);
@@ -213,7 +255,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Average Coral L4 Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.cl4 / yearBreakdown.auto.cl4 + s.teleop.cl4 / yearBreakdown.auto.cl4
 				)
 			);
@@ -221,7 +263,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Average Processor Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.prc / yearBreakdown.auto.prc + s.teleop.prc / yearBreakdown.auto.prc
 				)
 			);
@@ -229,7 +271,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Average Barge Placed Per Match', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) => s.auto.brg / yearBreakdown.auto.brg + s.teleop.brg / yearBreakdown.auto.brg
 				)
 			);
@@ -237,7 +279,7 @@ export const summarize = async (eventKey: string) => {
 		t.column('Max Overall Coral Points', async (t) => {
 			const scores = await getScores(t);
 			return Math.max(
-				...scores.map(
+				...scores.traceScore.map(
 					(s) =>
 						s.auto.cl1 +
 						s.auto.cl2 +
@@ -252,16 +294,16 @@ export const summarize = async (eventKey: string) => {
 		});
 		t.column('Max Overall Processor Points', async (t) => {
 			const scores = await getScores(t);
-			return Math.max(...scores.map((s) => s.auto.prc + s.teleop.prc));
+			return Math.max(...scores.traceScore.map((s) => s.auto.prc + s.teleop.prc));
 		});
 		t.column('Max Overall Barge Points', async (t) => {
 			const scores = await getScores(t);
-			return Math.max(...scores.map((s) => s.auto.brg + s.teleop.brg));
+			return Math.max(...scores.traceScore.map((s) => s.auto.brg + s.teleop.brg));
 		});
 		t.column('Average Overall Coral Points', async (t) => {
 			const scores = await getScores(t);
 			return $Math.average(
-				scores.map(
+				scores.traceScore.map(
 					(s) =>
 						s.auto.cl1 +
 						s.auto.cl2 +
@@ -276,15 +318,48 @@ export const summarize = async (eventKey: string) => {
 		});
 		t.column('Average Overall Processor Points', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.prc + s.teleop.prc));
+			return $Math.average(scores.traceScore.map((s) => s.auto.prc + s.teleop.prc));
 		});
 		t.column('Average Overall Barge Points', async (t) => {
 			const scores = await getScores(t);
-			return $Math.average(scores.map((s) => s.auto.brg + s.teleop.brg));
+			return $Math.average(scores.traceScore.map((s) => s.auto.brg + s.teleop.brg));
 		});
 		t.column('Average Shallow Climb Points', async (t) => {
+			const scores = await getScores(t);
+			return $Math.average(scores.endgame.map((s) => s.shc));
 		});
 		t.column('Average Deep Climb Points', async (t) => {
+			const scores = await getScores(t);
+			return $Math.average(scores.endgame.map((s) => s.dpc));
+		});
+		t.column('Average Park Points', async (t) => {
+			const scores = await getScores(t);
+			return $Math.average(scores.endgame.map((s) => s.park));
+		});
+		// these next 3 might not be necessary, but I feel it would be nice to have. could be good for tatorscore calc, can weight the total climbs against the total matches
+		t.column('Total Deep Climbs', async (t) => {
+			const scores = await getScores(t);
+			return scores.endgame.filter((s) => s.dpc > 0).length;
+		});
+		t.column('Total Shallow Climbs', async (t) => {
+			const scores = await getScores(t);
+			return scores.endgame.filter((s) => s.shc > 0).length;
+		});
+		t.column('Total Parks', async (t) => {
+			const scores = await getScores(t);
+			return scores.endgame.filter((s) => s.park > 0).length;
+		});
+		t.column('Total Matches', async (t) => {
+			const scores = await getScores(t);
+			return scores.endgame.length;
+		});
+		t.column('Average Endgame Points', async (t) => {
+			const scores = await getScores(t);
+			return $Math.average(scores.endgame.map((s) => s.dpc + s.shc + s.park));
+		});
+		t.column('Average Mobility Points', async (t) => {
+			const scores = await getScores(t);
+			return $Math.average(scores.mobility);
 		});
 		return t;
 	});

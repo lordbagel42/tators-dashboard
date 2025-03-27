@@ -11,6 +11,7 @@ import { fail, type RequestEvent } from '@sveltejs/kit';
 import { ServerCode } from 'ts-utils/status';
 import { matchesGlob } from 'path';
 import e from 'express';
+import { teamsFromMatch } from 'tatorscout/tba';
 
 export const auth = (event: RequestEvent) => {
 	const key = event.request.headers.get('X-Auth-Key');
@@ -26,6 +27,7 @@ type ColType = number | string | undefined | void;
 export const summarize = async (eventKey: string) => {
 	return attemptAsync(async () => {
 		const event = (await Event.getEvent(eventKey)).unwrap();
+		const matches = (await event.getMatches()).unwrap();
 
 		if (event.tba.year !== 2025) throw new Error('Only 2025 events are currently supported');
 
@@ -49,8 +51,8 @@ export const summarize = async (eventKey: string) => {
 			try {
 				const traces = await getAllTraces(team);
 				if (!traces) throw new Error('No traces found');
-				const matches = await team.getMatches();
-				if (matches.isErr()) throw fail(ServerCode.internalServerError);
+				const teamMatches = matches.filter(m => teamsFromMatch(m.tba).includes(team.tba.team_number));
+				if (teamMatches.length === 0) throw new Error('No matches found'); 
 
 				// TODO: include tba climb and mobility score here
 				// Return a new object with { traceScore: (current score), endgame: number, mobility: number }
@@ -66,7 +68,7 @@ export const summarize = async (eventKey: string) => {
 				type EndGameRobotKey = `endGameRobot${1 | 2 | 3}`;
 				type AutoLineKey = `autoLineRobot${1 | 2 | 3}`;
 
-				for (const match of matches.value) {
+				for (const match of teamMatches) {
 					const scoreBreakdown = match.tba.score_breakdown;
 					if (!scoreBreakdown) continue;
 

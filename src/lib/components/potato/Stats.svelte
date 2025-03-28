@@ -7,7 +7,7 @@
 	}
 
 	const { potato }: Props = $props();
-	let nextPhase = $state(Potato.getNextPhase(potato.data.level || 0));
+	let nextPhase = $state(Potato.getPhase(potato.data.level || 0));
 	let nextLevel = $derived(Potato.Levels[nextPhase]);
 </script>
 

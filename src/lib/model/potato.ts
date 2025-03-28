@@ -44,10 +44,14 @@ export namespace Potato {
 		seed: 0,
 		sprout: 100,
 		baby: 250,
-		kid: 1_000,
-		teen: 2_122,
-		adult: 5_000,
-		elder: 8_000
+		kid: 500,
+		teen: 750,
+		adult: 1_000,
+		elder: 1_250,
+		wizard: 1_500,
+		ascending: 2_000,
+		god: 2_500,
+		timeTraveler: 3_000
 	};
 
 	export const getNextPhase = (level: number): keyof typeof Levels => {
@@ -67,14 +71,6 @@ export namespace Potato {
 			default:
 				return 'elder';
 		}
-	};
-
-	export const Icons = {
-		...Levels,
-		wizard: 8_500,
-		ascending: 9_000,
-		god: 9_500,
-		timeTraveler: 10_000
 	};
 
 	export const getPhase = (level: number) => {

@@ -118,7 +118,7 @@
 							<small> After level 8,000, you can change your potato's icon at any time. </small>
 						</p>
 						<div class="grid">
-							{#each Object.entries(Potato.Icons) as [icon, level]}
+							{#each Object.entries(Potato.Levels) as [icon, level]}
 								{#if Number($potato.level) >= level}
 									<button
 										type="button"

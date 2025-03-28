@@ -38,18 +38,14 @@ export namespace Potato {
 		seed: 0,
 		sprout: 100,
 		baby: 250,
-		kid: 1_000,
-		teen: 2_122,
-		adult: 5_000,
-		elder: 8_000
-	};
-
-	export const Icons = {
-		...Levels,
-		wizard: 8_500,
-		ascending: 9_000,
-		god: 9_500,
-		timeTraveler: 10_000
+		kid: 500,
+		teen: 750,
+		adult: 1_000,
+		elder: 1_500,
+		wizard: 2_000,
+		ascending: 2_500,
+		god: 3_000,
+		timeTraveler: 3_500
 	};
 
 	const getPhase = (level: number) => {
@@ -275,7 +271,7 @@ export namespace Potato {
 			};
 		}
 
-		if (!Object.keys(Icons).includes(parsed.data.icon)) {
+		if (!Object.keys(Levels).includes(parsed.data.icon)) {
 			return {
 				success: false,
 				message: 'Invalid icon'

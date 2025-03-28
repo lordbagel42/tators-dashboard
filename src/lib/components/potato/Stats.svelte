@@ -7,8 +7,11 @@
 	}
 
 	const { potato }: Props = $props();
+	let nextPhase = $state(Potato.getNextPhase(potato.data.level || 0));
+	let nextLevel = $derived(Potato.Levels[nextPhase]);
 </script>
 
+<Stats level={nextLevel} name="Next Level ({nextPhase})" stat={$potato.level || 0} color="#e60ecc" />
 <Stats level={$potato.level || 0} name="Health" stat={$potato.health || 0} color="red" />
 <Stats level={$potato.level || 0} name="Attack" stat={$potato.attack || 0} color="gold" />
 <Stats level={$potato.level || 0} name="Defense" stat={$potato.defense || 0} color="gray" />

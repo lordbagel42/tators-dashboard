@@ -42,16 +42,16 @@ export namespace Potato {
 		// god: 7_500,
 		// tator: 10_000
 		seed: 0,
-		sprout: 100,
-		baby: 250,
+		sprout: 192,
+		baby: 254,
 		kid: 500,
 		teen: 750,
-		adult: 1_000,
+		adult: 987,
 		elder: 1_250,
-		wizard: 1_500,
-		ascending: 2_000,
-		god: 2_500,
-		timeTraveler: 3_000
+		wizard: 1_569,
+		ascending: 1_891,
+		god: 2_122,
+		timeTraveler: 2_250
 	};
 
 	export const getNextPhase = (level: number): keyof typeof Levels => {

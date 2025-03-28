@@ -99,13 +99,13 @@
 			<p class="text-muted">
 				The way to gain levels for your potato is to contribute to scouting.
 				<br />
-				&nbsp; Match scouting: 10 levels
+				&nbsp; Match scouting: 15 levels
 				<br />
 				&nbsp; Prescouting: additional 5 levels
 				<br />
 				&nbsp; Remote Scouting: additional 5 levels
 				<br />
-				&nbsp; Pit Scouting: 1 level per question answered
+				&nbsp; Pit Scouting: 3 levels per question answered
 				<br />
 				&nbsp; Taking Team Pictures: 5 levels
 			</p>

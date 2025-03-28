@@ -14,12 +14,12 @@ import { DB } from '../db';
 
 export namespace Potato {
 	export const LevelUpMap = {
-		scouting: 10,
+		scouting: 15,
 		prescouting: 5,
 		remote: 5,
-		rescout: 10,
-		pit: 1,
-		teamPicture: 5
+		rescout: 5,
+		pit: 3,
+		teamPicture: 20
 	};
 
 	export const Levels = {
@@ -36,16 +36,16 @@ export namespace Potato {
 		// god: 7_500,
 		// tator: 10_000
 		seed: 0,
-		sprout: 100,
-		baby: 250,
+		sprout: 192,
+		baby: 254,
 		kid: 500,
 		teen: 750,
-		adult: 1_000,
-		elder: 1_500,
-		wizard: 2_000,
-		ascending: 2_500,
-		god: 3_000,
-		timeTraveler: 3_500
+		adult: 987,
+		elder: 1_250,
+		wizard: 1_569,
+		ascending: 1_891,
+		god: 2_122,
+		timeTraveler: 2_250
 	};
 
 	const getPhase = (level: number) => {
@@ -213,7 +213,7 @@ export namespace Potato {
 		}
 
 		const potato = (await getPotato(event.locals.account.id)).unwrap();
-		if (potato.data.level < 2122) {
+		if (potato.data.level < 987) {
 			return {
 				success: false,
 				message: `${potato.data.name} is not old enough to change their name`
@@ -250,7 +250,7 @@ export namespace Potato {
 		}
 
 		const potato = (await getPotato(event.locals.account.id)).unwrap();
-		if (potato.data.level < Levels.elder) {
+		if (potato.data.level < 987) {
 			return {
 				success: false,
 				message: `${potato.data.name} is not old enough to choose their profession`

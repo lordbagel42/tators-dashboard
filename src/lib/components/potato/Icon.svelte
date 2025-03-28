@@ -74,12 +74,12 @@
 				<hr />
 				<div class="mb-3">
 					<div class="col">
-						<p class="text-muted">If your potato is over level 2122, you are able to rename it!</p>
+						<p class="text-muted">If your potato is over level 987, you are able to rename it!</p>
 						<button
 							type="button"
 							class="btn btn-primary"
 							onclick={async (event) => {
-								if (Number($potato.level) < 2122) {
+								if (Number($potato.level) < 987) {
 									const target = event.currentTarget as HTMLElement;
 									target.classList.add('animate__animated', 'animate__shakeX');
 									const onend = () => {
@@ -103,8 +103,8 @@
 							}}
 						>
 							Name your potato
-							{#if Number($potato.level) < 2122}
-								<strong class="text-secondary">Requires level 2122</strong>
+							{#if Number($potato.level) < 987}
+								<strong class="text-secondary">Requires level 987</strong>
 							{/if}
 						</button>
 					</div>

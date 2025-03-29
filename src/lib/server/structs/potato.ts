@@ -11,6 +11,7 @@ import terminal from '../utils/terminal';
 import { Permissions } from './permissions';
 import { Universes } from './universe';
 import { DB } from '../db';
+import { Logs } from './log';
 
 export namespace Potato {
 	export const LevelUpMap = {
@@ -287,7 +288,29 @@ export namespace Potato {
 
 	export type FriendData = typeof Friend.sample;
 
-	const giveLevels = (potato: FriendData, levels: number, reason: string) => {
+	export const log = (potato: FriendData, amount: number, reason: string, accountId: string) => {
+		return attemptAsync(async () => {
+			const log = (
+				await Log.new({
+					potato: potato.data.account,
+					amount,
+					reason
+				})
+			).unwrap();
+
+			(await Logs.log({
+				struct: Friend.name,
+				dataId: potato.id,
+				message: `Gave ${amount} levels to ${potato.data.name} (${potato.data.account}): ${reason}`,
+				type: 'update',
+				accountId,
+			})).unwrap();
+
+			return log;
+		});
+	}
+
+	export const giveLevels = (potato: FriendData, levels: number, reason: string, accountId?: string) => {
 		return attemptAsync(async () => {
 			const currentPhase = getPhase(potato.data.level);
 			const newLevel = potato.data.level + levels;
@@ -310,13 +333,7 @@ export namespace Potato {
 				})
 			).unwrap();
 
-			return (
-				await Log.new({
-					potato: potato.data.account,
-					amount: levels,
-					reason
-				})
-			).unwrap();
+			(await log(potato, levels, reason, accountId ? accountId : potato.data.account)).unwrap();
 		});
 	};
 

@@ -378,6 +378,14 @@ export const summarize = async (eventKey: string) => {
 			const scores = await getScores(t);
 			return average(scores.mobility);
 		});
+		t.column('Seconds not moving', async (t) => {
+			const matchScouting = (await Scouting.getTeamScouting(t.tba.team_number, eventKey)).unwrap();
+			return average(
+				matchScouting.map((s) =>
+					Trace.secondsNotMoving(TraceSchema.parse(JSON.parse(s.data.trace)) as TraceArray, false)
+				)
+			);
+		});
 		return t;
 	});
 };

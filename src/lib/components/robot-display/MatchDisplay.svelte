@@ -12,6 +12,7 @@
 	import { dateTime } from 'ts-utils/clock';
 	import MatchActions from './MatchActions.svelte';
 	import MatchEndgame from './MatchEndgame.svelte';
+	import { confirm } from '$lib/utils/prompts';
 
 	interface Props {
 		match: TBAMatch;

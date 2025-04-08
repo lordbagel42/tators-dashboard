@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Stats from './Stat.svelte';
 	import { Potato } from '$lib/model/potato';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		potato: Potato.FriendData;
@@ -10,6 +11,13 @@
 	let currentPhase = $state(Potato.getPhase(potato.data.level || 0));
 	let nextPhase = $state(Potato.getNextPhase(potato.data.level || 0));
 	let nextLevel = $derived(Potato.Levels[currentPhase as keyof typeof Potato.Levels]);
+
+	onMount(() => {
+		return potato.subscribe((potat) => {
+			currentPhase = Potato.getPhase(potat.level || 0);
+			nextPhase = Potato.getNextPhase(potat.level || 0);
+		});
+	});
 </script>
 
 <Stats level={nextLevel} name="Next Phase ({nextPhase})" stat={$potato.level || 0} color="#e60ecc" />

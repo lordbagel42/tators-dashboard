@@ -155,7 +155,9 @@
 				<hr />
 				<div class="mb-3">
 					<div class="col">
-						<Stats {potato} />
+						{#key potato}
+							<Stats {potato} />
+						{/key}
 					</div>
 				</div>
 			</div>

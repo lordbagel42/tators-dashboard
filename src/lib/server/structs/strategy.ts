@@ -18,11 +18,17 @@ export namespace Strategy {
 	export const Strategy = new Struct({
 		name: 'strategy',
 		structure: {
+			eventKey: text('event_key').notNull(),
+			matchNumber: integer('match_number').notNull(),
+			compLevel: text('comp_level').notNull(),
 			name: text('name').notNull(),
 			createdBy: text('created_by').notNull(),
-			matchId: text('match_id').notNull(),
-			customMatchId: text('custom_match_id').notNull(),
-			comment: text('comment').notNull()
+			red1: integer('red1').notNull(),
+			red2: integer('red2').notNull(),
+			red3: integer('red3').notNull(),
+			blue1: integer('blue').notNull(),
+			blue2: integer('blue2').notNull(),
+			blue3: integer('blue3').notNull(),
 		},
 		generators: {
 			universe: () => '2122'

@@ -19,9 +19,9 @@
 	const { group, section, team, event, questions, answers, answerAccounts }: Props = $props();
 </script>
 
-<ul class="list-group border-0">
+<ul class="list-group border-0 layer-2">
 	{#each $questions.filter((q) => q.data.groupId === group.data.id) as question}
-		<li class="list-group-item border-0">
+		<li class="list-group-item border-0 layer-2">
 			<Question
 				{question}
 				answer={$answers.find((a) => a.data.questionId === question.data.id)}

@@ -183,8 +183,8 @@ export namespace Strategy {
 
 			return {
 				strategy,
-				partners,
-				opponents,
+				partners: partners.sort((a, b) => a.data.position - b.data.position),
+				opponents: opponents.sort((a, b) => a.data.position - b.data.position)
 			}
 		});
 	};

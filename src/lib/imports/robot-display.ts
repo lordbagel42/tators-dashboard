@@ -3,15 +3,43 @@ import { Navbar } from '$lib/model/navbar';
 import type { TBAEvent } from 'tatorscout/tba';
 
 export default (event: TBAEvent) => {
+	Navbar.getSections().set([]);
 	Navbar.addSection({
-		name: 'Robot Display',
+		name: event.name,
 		links: [
 			{
-				name: 'Event',
+				name: 'Summary',
 				href: '/dashboard/event/' + event.key,
 				icon: 'event',
 				type: 'material-icons'
 			},
+		],
+		priority: 0
+	});
+
+	Navbar.addSection({
+		name: `Matches`,
+		priority: 1,
+		links: [
+			{
+				name: 'Matches',
+				href: `/dashboard/event/${event.key}/matches`,
+				icon: 'view_list',
+				type: 'material-icons'
+			},
+			{
+				name: 'Archived Matches',
+				href: `/dashboard/event/${event.key}/archived-matches`,
+				icon: 'archive',
+				type: 'material-icons'
+			}
+		],
+	});
+
+	Navbar.addSection({
+		name: `Scouting`,
+		priority: 1,
+		links: [
 			{
 				name: 'Pit Scouting',
 				href: '/dashboard/event/' + event.key + '/pit-scouting',
@@ -25,26 +53,22 @@ export default (event: TBAEvent) => {
 				type: 'material-icons'
 			}
 		],
-		priority: 0
 	});
 
-	const s1 = Navbar.getSections().data.find((s) => s.priority === 1);
-	if (s1) Navbar.removeSection(s1);
-
 	Navbar.addSection({
-		name: `${event.name} Dashboard`,
-		priority: 1,
+		name: `Utilities`,
+		priority: 2,
 		links: [
-			{
-				name: 'Matches',
-				href: `/dashboard/event/${event.key}/matches`,
-				icon: 'view_list',
-				type: 'material-icons'
-			},
 			{
 				name: 'Team Compare',
 				href: `/dashboard/event/${event.key}/compare`,
 				icon: 'compare',
+				type: 'material-icons'
+			},
+			{
+				name: 'Strategy',
+				href: '/dashboard/event/' + event.key + '/strategy',
+				icon: 'assessment',
 				type: 'material-icons'
 			},
 			{
@@ -53,18 +77,12 @@ export default (event: TBAEvent) => {
 				icon: 'list',
 				type: 'material-icons'
 			},
-			{
-				name: 'Archived Matches',
-				href: `/dashboard/event/${event.key}/archived-matches`,
-				icon: 'archive',
-				type: 'material-icons'
-			}
 		]
 	});
 
 	Navbar.addSection({
-		name: 'Other',
-		priority: 2,
+		name: 'Potato',
+		priority: 3,
 		links: [
 			{
 				name: 'Potato Leaderboard',
@@ -77,7 +95,8 @@ export default (event: TBAEvent) => {
 				href: '/dashboard/potato/logs',
 				icon: 'history',
 				type: 'material-icons'
-			}
+			},
+
 		]
 	});
 };

@@ -32,6 +32,6 @@
 		<option 
 			value={team.tba.team_number}
 			selected={team.tba.team_number === selected?.tba.team_number}
-			>{team.tba.team_number}</option>
+			>{team.tba.team_number} {team.tba.nickname}</option>
 	{/each}
 </select>

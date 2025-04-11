@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MatchSelect from '$lib/components/FIRST/MatchSelect.svelte';
 	import TeamSelect from '$lib/components/FIRST/TeamSelect.svelte';
-	import { alert, prompt } from '$lib/utils/prompts.js';
+	import { alert, prompt, select } from '$lib/utils/prompts.js';
 	import { listen } from '$lib/utils/struct-listener.js';
 	import type { TBAMatch, TBATeam } from '$lib/utils/tba.js';
 	import { onMount } from 'svelte';
@@ -80,7 +80,7 @@
 
         Strategy.Strategy.on('new', s => {
             if (s.data.name === name) {
-                goto(`/dashboard/event/${event.tba.key}/strategy/${s.data.id}`);
+                gotoStrategy(s);
             }
         });
 
@@ -101,6 +101,19 @@
         });
     };
 
+    const gotoStrategy = async (s: Strategy.StrategyData) => {
+        goto(`/dashboard/event/${event.tba.key}/strategy/${s.data.id}`);
+    };
+
+    const selectStrategy = async () => {
+        const strategy = await select('Select a strategy', $strategies, {
+            render: s => String(s.data.name),
+        });
+        if (!strategy) return;
+
+        gotoStrategy(strategy);
+    };
+
     onMount(() => {
         const unsub = listen(strategies, (d) => d.data.eventKey === event.tba.key);
         return () => {
@@ -112,7 +125,15 @@
 <div class="container">
     <div class="row mb-3">
         <div class="col-12">
-            <h1>Create a Strategy</h1>
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Create a Strategy</h1>
+                <button type="button" class="btn" onclick={selectStrategy}>
+                    <i class="material-icons">
+                        open_in_new
+                    </i>
+                    Open Existing ({$strategies.length})
+                </button>
+            </div>
         </div>
     </div>
     <div class="row mb-3">

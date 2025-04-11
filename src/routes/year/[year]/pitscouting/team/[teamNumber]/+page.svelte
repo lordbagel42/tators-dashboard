@@ -1,92 +1,56 @@
 <script lang="ts">
-	import nav from '$lib/imports/robot-display.js';
-	import Trace from '$lib/components/robot-display/Trace.svelte';
-	import { Scouting } from '$lib/model/scouting.js';
 	import Modal from '$lib/components/bootstrap/Modal.svelte';
-	import { writable } from 'svelte/store';
-	import { afterNavigate } from '$app/navigation';
-	import { sleep } from 'ts-utils/sleep';
-	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
+	import MatchContribution from '$lib/components/charts/MatchContribution.svelte';
 	import Checks from '$lib/components/robot-display/Checks.svelte';
 	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
-	import MatchContribution from '$lib/components/charts/MatchContribution.svelte';
-	import type { TBAMatch } from '$lib/utils/tba.js';
+	import MatchComments from '$lib/components/robot-display/MatchComments.svelte';
+	import Trace from '$lib/components/robot-display/Trace.svelte';
+	import type { Scouting } from '$lib/model/scouting.js';
+	import { listen } from '$lib/utils/struct-listener';
+	import type { TBAEvent, TBAMatch } from '$lib/utils/tba.js';
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 
 	const { data } = $props();
-	const teams = $derived(data.teams);
-	const event = $derived(data.event);
-	const team = $derived(data.team);
-	const scoutingArr = $derived(data.scouting);
-	const matches = $derived(data.matches);
 
-	$effect(() => nav(event.tba));
+	const year = $derived(data.year);
+	const teamNumber = $derived(data.teamNumber);
+	const scoutingArr = $derived(data.scouting);
+	const team = $derived(data.team);
+	const events = $derived(data.events);
+
+	const focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all');
+	onMount(() => {
+		return listen(scoutingArr, (data) => {
+			return data.data.year === year && data.data.team === teamNumber;
+		});
+	});
 
 	let modal: Modal;
+
 	let selectedScouting: Scouting.MatchScoutingData | undefined = $state(undefined);
-	let scroller: HTMLDivElement;
 	let match: TBAMatch | undefined = $state(undefined);
+	let event: TBAEvent | undefined = $state(undefined);
 
 	const open = async (scouting: Scouting.MatchScoutingData) => {
 		selectedScouting = scouting;
-		match = matches.find(
+		const e = events.find((e) => e.event.tba.key === scouting.data.eventKey);
+		event = e?.event;
+		match = e?.matches.find(
 			(m) =>
 				m.tba.match_number === scouting.data.matchNumber &&
 				m.tba.comp_level === scouting.data.compLevel
 		);
 		modal.show();
 	};
-
-	const focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all');
-
-	afterNavigate(() => {
-		const btn = scroller.querySelector(`[data-team="${team.tba.team_number}"]`);
-		if (btn) {
-			sleep(500).then(() =>
-				btn.scrollIntoView({
-					behavior: 'smooth',
-					block: 'nearest',
-					inline: 'center'
-				})
-			);
-		}
-	});
 </script>
 
 <div class="container-fluid">
 	<div class="row mb-3">
-		<div class="ws-nowrap scroll-x p-3 mb-3" bind:this={scroller}>
-			{#each teams as t}
-				<a
-					type="button"
-					href="/dashboard/event/{event.tba.key}/team/{t.tba.team_number}/traces"
-					class="btn mx-2"
-					class:btn-primary={t.tba.team_number !== team.tba.team_number}
-					class:btn-outline-secondary={t.tba.team_number === team.tba.team_number}
-					class:btn-disabled={t.tba.team_number === team.tba.team_number}
-					class:text-muted={t.tba.team_number === team.tba.team_number}
-					onclick={(e) => {
-						if (t.tba.team_number === team.tba.team_number) {
-							return e.preventDefault();
-						}
-					}}
-					data-team={t.tba.team_number}
-				>
-					{t.tba.team_number}
-				</a>
-			{/each}
-		</div>
-	</div>
-	<div class="row mb-3">
 		<div class="col">
-			<h1>Traces for team {team.tba.team_number} at event {event.tba.name}</h1>
+			<h1>Prescouting for team {teamNumber} for year {year}</h1>
 			<div class="d-flex">
 				<button onclick={() => history.back()} class="btn btn-primary me-3"> Back </button>
-				<a
-					href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
-					class="btn btn-secondary"
-				>
-					To Robot Display
-				</a>
 			</div>
 		</div>
 	</div>
@@ -139,8 +103,8 @@
 	</div>
 	<div class="row">
 		{#key scoutingArr}
-			{#if scoutingArr.length}
-				{#each scoutingArr as scouting}
+			{#if $scoutingArr.length}
+				{#each $scoutingArr as scouting}
 					<div class="col-3">
 						<h3>
 							{scouting.data.compLevel}{scouting.data.matchNumber} - {scouting.data.eventKey}
@@ -152,7 +116,7 @@
 					</div>
 				{/each}
 			{:else}
-				<p>No scouting data found for team {team.tba.team_number} at event {event.tba.name}</p>
+				<p>No scouting data found for team {teamNumber} for year {year}</p>
 			{/if}
 		{/key}
 	</div>
@@ -171,7 +135,7 @@
 						<Trace scouting={selectedScouting} {focus} />
 					</div>
 					<div class="row mb-3">
-						{#if match}
+						{#if match && event}
 							<MatchContribution {match} scouting={selectedScouting} {team} {event} />
 						{/if}
 					</div>

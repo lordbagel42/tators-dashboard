@@ -10,13 +10,13 @@
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
-		event: TBAEvent;
+		// event: TBAEvent;
 		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
 	}
 
 	const {
 		scouting,
-		event,
+		// event,
 		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all')
 	}: Props = $props();
 
@@ -32,10 +32,14 @@
 		// canvas = new Canvas(ctx);
 		const trace = TraceSchema.safeParse(JSON.parse(scouting.data.trace || '[]'));
 		if (trace.success) {
-			matchCanvas = new MatchCanvas(trace.data as TraceArray, event.tba.year, ctx);
-			matchCanvas.animate();
+			matchCanvas = new MatchCanvas(trace.data as TraceArray, Number(scouting.data.year), ctx);
+			matchCanvas.draw();
 			matchCanvas.canvas.height = 500;
 			matchCanvas.canvas.width = 1000;
+
+			matchCanvas.background['img'].addEventListener('load', () => {
+				matchCanvas?.draw();
+			});
 		} else {
 			console.error(trace.error);
 		}
@@ -46,8 +50,8 @@
 			min: 0,
 			value: [0, matchCanvas?.trace.length || 0],
 			onInput: ([min, max]) => {
-				console.log('Input', min, max);
 				matchCanvas?.between(min, max);
+				matchCanvas?.draw();
 			}
 		});
 

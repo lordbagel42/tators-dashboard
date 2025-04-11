@@ -28,7 +28,7 @@ export namespace Strategy {
 			red3: integer('red3').notNull(),
 			blue1: integer('blue').notNull(),
 			blue2: integer('blue2').notNull(),
-			blue3: integer('blue3').notNull(),
+			blue3: integer('blue3').notNull()
 		},
 		generators: {
 			universe: () => '2122'

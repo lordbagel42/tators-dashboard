@@ -32,7 +32,6 @@
 				if (res.isErr()) return console.error(res.error);
 				versions.set(res.value);
 			});
-			console.log(scouting);
 		}
 	});
 </script>
@@ -54,7 +53,7 @@
 			</div>
 		</div>
 		<div class="row mb-3">
-			<Trace {scouting} {event} />
+			<Trace {scouting} />
 		</div>
 		<div class="row mb-3">
 			<div class="col-12">
@@ -86,7 +85,7 @@
 						{:else}
 							Unknown date
 						{/if}
-						<Trace {scouting} {event} />
+						<Trace {scouting} />
 						<button
 							type="button"
 							class="btn btn-success"

@@ -6,6 +6,7 @@ import { Strategy } from '$lib/model/strategy';
 	import { onMount } from 'svelte';
 	import { teamsFromMatch } from 'tatorscout/tba';
     import nav from '$lib/imports/robot-display.js';
+	import MatchSelect from '$lib/components/FIRST/MatchSelect.svelte';
 
 
     const { data } = $props();
@@ -340,6 +341,29 @@ import { Strategy } from '$lib/model/strategy';
             <div class="col-12">
                 <h1>Strategy</h1>
                 <p class="small text-muted mb-2">*No field is required</p>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="strategy-name" class="form-label">Strategy Name</label>
+                <input type="text" id="strategy-name" class="form-control" value={$strategy.name} oninput={(e) => {
+                    strategy.update(s => ({
+                        ...s,
+                        name: e.currentTarget.value,
+                    }));
+                }} placeholder="Strategy Name">
+            </div>
+            <div class="col-md-6">
+                <label for="strategy-match-select" class="form-label">Match Select</label>
+                <MatchSelect 
+                    matches={matches.filter(match => teamsFromMatch(match.tba).includes(2122))}
+                    selected={matches.find(m => m.tba.match_number === $strategy.matchNumber && m.tba.comp_level === $strategy.compLevel)}
+                    onSelect={async (selectedMatch) => {
+                        if (selectedMatch.tba.match_number === $strategy.matchNumber && selectedMatch.tba.comp_level === $strategy.compLevel) return;
+                        selectMatch(selectedMatch);
+                    }}
+                    message="Select teams from a match"
+                />
             </div>
         </div>
         <div class="row mb-3">

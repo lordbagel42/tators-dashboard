@@ -178,6 +178,8 @@ export namespace Strategy {
 		return attemptAsync(async () => {
 			const partners = await Partners.fromProperty('strategyId', strategy.id, { type: 'stream' }).await().unwrap();
 			const opponents = await Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' }).await().unwrap();
+			if (partners.length !== 3) throw new Error('Partners length is not correct: ' + partners.length);
+			if (opponents.length !== 3) throw new Error('Opponents length is not correct: ' + opponents.length);
 
 			return {
 				strategy,

@@ -90,7 +90,12 @@ export class TBAMatch {
 			if (this._teams) return this._teams;
 			const teams = (await this.event.getTeams()).unwrap();
 			const fromMatch = teamsFromMatch(this.tba);
-			const t = teams.filter((t) => fromMatch.includes(t.tba.team_number)) as [
+
+			this._teams = fromMatch.map(num => {
+				const t = teams.find((t) => t.tba.team_number === num);
+				if (!t) throw new Error('Team not found');
+				return t;
+			}) as [
 				TBATeam,
 				TBATeam,
 				TBATeam,
@@ -98,8 +103,7 @@ export class TBAMatch {
 				TBATeam,
 				TBATeam
 			];
-			this._teams = t;
-			return t;
+			return this._teams;
 		});
 	}
 

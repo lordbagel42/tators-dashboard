@@ -3,6 +3,7 @@
 	import Notifications from './Notifications.svelte';
 	import { Account } from '$lib/model/account';
 	import { onMount } from 'svelte';
+	import Icon from '../potato/Icon.svelte';
 	interface Props {
 		title: string;
 	}
@@ -32,6 +33,7 @@
 			>
 		</div>
 		<div class="end d-flex align-items-center">
+			<Icon />
 			<div class="dropdown">
 				<button
 					class="btn dropdown-toggle px-2"
@@ -56,6 +58,39 @@
 						<!-- <li><a class="dropdown-item" href="/account/profile">Profile</a></li> -->
 						<li><a class="dropdown-item" href="/account/sign-out">Sign Out</a></li>
 					{/if}
+				</ul>
+			</div>
+			<div class="dropdown">
+				<button
+					class="btn dropdown-toggle"
+					type="button"
+					data-bs-toggle="dropdown"
+					aria-expanded="false"
+				>
+					<i class="material-icons">menu</i>
+				</button>
+				<ul
+					class="dropdown-menu"
+					style="
+					position: fixed;
+					top: 52px;
+					left: calc(100% - 160px);
+					width:	min-content;
+				"
+				>
+					<li>
+						<a class="dropdown-item" aria-current="page" href="/">Home</a>
+					</li>
+					<li>
+						<a class="dropdown-item ws-nowrap" aria-current="page" href="/dashboard/mentor"
+							>Mentors</a
+						>
+					</li>
+					<li>
+						<a class="dropdown-item ws-nowrap" aria-current="page" href="https://app.tatorscout.org"
+							>Remote App</a
+						>
+					</li>
 				</ul>
 			</div>
 			<!-- <button

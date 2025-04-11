@@ -1,8 +1,26 @@
 export type Entitlement = 
-    'manage-roles'
+    'create-custom-tba-responses'
+  | 'edit-potato-level'
+  | 'manage-pit-scouting'
+  | 'manage-roles'
+  | 'manage-scouting'
+  | 'manage-tba'
   | 'manage-universe'
+  | 'upload-pictures'
+  | 'view-checklist'
+  | 'view-pit-scouting'
+  | 'view-potatoes'
   | 'view-roles'
+  | 'view-scouting'
+  | 'view-strategy'
+  | 'view-tba-info'
   | 'view-universe';
 export type Group = 
-    'Roles'
-  | 'Universe';
+    'TBA'
+  | 'Potatoes'
+  | 'Scouting'
+  | 'Roles'
+  | 'Universe'
+  | 'FIRST'
+  | 'Checklists'
+  | 'Strategy';

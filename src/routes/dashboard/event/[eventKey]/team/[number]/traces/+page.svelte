@@ -103,7 +103,7 @@
 					oninput={() => focus.set('all')}
 					checked
 				/>
-				<label class="btn btn-outline-primary" for="all">All</label>
+				<label class="btn btn-outline-secondary" for="all">All</label>
 				<input
 					type="radio"
 					class="btn-check"
@@ -113,7 +113,7 @@
 					value={$focus === 'auto'}
 					oninput={() => focus.set('auto')}
 				/>
-				<label class="btn btn-outline-primary" for="auto">Auto</label>
+				<label class="btn btn-outline-success" for="auto">Auto</label>
 				<input
 					type="radio"
 					class="btn-check"
@@ -133,7 +133,7 @@
 					value={$focus === 'endgame'}
 					oninput={() => focus.set('endgame')}
 				/>
-				<label class="btn btn-outline-primary" for="endgame">Endgame</label>
+				<label class="btn btn-outline-danger" for="endgame">Endgame</label>
 			</div>
 		</div>
 	</div>
@@ -168,7 +168,7 @@
 			{#if selectedScouting}
 				<div class="container">
 					<div class="row mb-3">
-						<Trace scouting={selectedScouting} {focus} />
+						<Trace scouting={selectedScouting} {focus} classes="layer-2" />
 					</div>
 					<div class="row mb-3">
 						{#if match}

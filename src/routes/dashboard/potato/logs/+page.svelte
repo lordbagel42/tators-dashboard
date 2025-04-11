@@ -1,5 +1,27 @@
 <script lang="ts">
-	import { dateTime } from 'ts-utils/clock';
+	import { dateTime } from 'ts-utils/clock';	
+	import { Navbar } from '$lib/model/navbar';
+
+	Navbar.getSections().set([]);
+
+	Navbar.addSection({
+		name: 'Potato',
+		links: [
+			{
+				name: 'Home',
+				href: '/',
+				icon: 'home',
+				type: 'material-icons'
+			},
+			{
+				name: 'Leaderboard',
+				href: '/dashboard/potato',
+				icon: 'leaderboard',
+				type: 'material-icons'
+			}
+		],
+		priority: 0
+	});
 
 	const { data } = $props();
 	const logs = $derived(data.logs);

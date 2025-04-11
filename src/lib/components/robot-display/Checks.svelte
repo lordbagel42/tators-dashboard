@@ -9,9 +9,10 @@
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
+		classes?: string;
 	}
 
-	const { scouting }: Props = $props();
+	const { scouting, classes }: Props = $props();
 	let checks: string[] = $state([]);
 
 	const checkColors: {
@@ -43,9 +44,9 @@
 
 <div>
 	<h5 class="text-center">Checks</h5>
-	<ul class="list-group">
+	<ul class="list-group {classes}">
 		{#each checks as check (check)}
-			<li class="list-group-item text-{checkColors[check] ?? checkColors.default}">
+			<li class="list-group-item text-{checkColors[check] ?? checkColors.default} {classes}">
 				{capitalize(fromCamelCase(check))}
 			</li>
 		{/each}

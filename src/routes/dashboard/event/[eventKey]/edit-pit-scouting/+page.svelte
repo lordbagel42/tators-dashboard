@@ -95,7 +95,7 @@
 	</div>
 	{#each $sections as section, i}
 		<div class="row mb-3">
-			<div class="card">
+			<div class="card layer-1">
 				<div class="card-body">
 					<div class="d-flex justify-content-between">
 						<h5 class="card-title">

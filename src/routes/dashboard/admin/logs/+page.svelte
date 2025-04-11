@@ -3,6 +3,9 @@
 	import { copy } from '$lib/utils/clipboard.js';
 	import { dateTime } from 'ts-utils/clock';
 	import { capitalize, fromCamelCase, fromSnakeCase, abbreviate } from 'ts-utils/text';
+	import nav from '$lib/imports/admin';
+
+	nav();
 
 	const { data } = $props();
 	const logs = $derived(data.logs);

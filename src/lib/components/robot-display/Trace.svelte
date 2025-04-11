@@ -12,12 +12,14 @@
 		scouting: Scouting.MatchScoutingData;
 		// event: TBAEvent;
 		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
+		classes?: string;
 	}
 
 	const {
 		scouting,
 		// event,
-		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all')
+		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all'),
+		classes,
 	}: Props = $props();
 
 	let target: HTMLCanvasElement;
@@ -82,7 +84,7 @@
 	});
 </script>
 
-<div class="card">
+<div class="card {classes}">
 	<div class="card-body py-3 px-1">
 		<canvas
 			bind:this={target}

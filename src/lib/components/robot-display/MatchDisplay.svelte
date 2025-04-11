@@ -43,13 +43,13 @@
 		</div>
 		<div class="row mb-3">
 			<div class="col-md-4">
-				<Checks {scouting} />
+				<Checks {scouting} classes="layer-1" />
 			</div>
 			<div class="col-md-4">
-				<MatchActions {scouting} />
+				<MatchActions {scouting} classes="layer-1" />
 			</div>
 			<div class="col-md-4">
-				<MatchEndgame {match} {team} {event} />
+				<MatchEndgame {match} {team} {event} classes="layer-1" />
 			</div>
 		</div>
 		<div class="row mb-3">
@@ -79,13 +79,14 @@
 		{#if $versions.length}
 			<div class="row mb-3">
 				{#each $versions as version}
-					<div class="card card-body">
-						{#if version.vhCreated}
+					<div class="card layer-3">
+						<div class="card-body">
+							{#if version.vhCreated}
 							Created: {dateTime(new Date(version.vhCreated))}
 						{:else}
 							Unknown date
 						{/if}
-						<Trace {scouting} />
+						<Trace {scouting} classes="layer-1" />
 						<button
 							type="button"
 							class="btn btn-success"
@@ -102,6 +103,7 @@
 							<i class="material-icons"> update </i>
 							Restore Version
 						</button>
+						</div>
 					</div>
 				{/each}
 			</div>
@@ -109,7 +111,7 @@
 	{:else}
 		<div class="row mb-3">
 			<div class="col-12">
-				<div class="card">
+				<div class="card layer-2">
 					<div class="card-body">
 						<p>No scouting data available</p>
 					</div>

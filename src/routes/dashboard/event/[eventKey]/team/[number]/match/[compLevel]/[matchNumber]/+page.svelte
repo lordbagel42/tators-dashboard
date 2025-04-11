@@ -71,7 +71,7 @@
 		{#if scouting}
 			{#key scouting}
 				<div class="col-md-6">
-					<div class="card h-100">
+					<div class="card h-100 layer-1">
 						<div class="card-body p-1">
 							<MatchContribution {match} {scouting} {team} {event} />
 						</div>
@@ -81,7 +81,7 @@
 		{/if}
 		{#each match.tba.videos || [] as video}
 			<div class="col-md-6">
-				<div class="card h-100">
+				<div class="card h-100 layer-1">
 					<div class="card-body p-1">
 						{#if video.type === 'youtube'}
 							<iframe

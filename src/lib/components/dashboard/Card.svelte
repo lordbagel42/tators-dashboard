@@ -49,7 +49,7 @@
 	{/if}
 
 	<div
-		class="card animate__animated animate__fadeIn"
+		class="card animate__animated animate__fadeIn layer-2"
 		class:maximized={$card.maximized}
 		style="
 			grid-column: span {$card.width};

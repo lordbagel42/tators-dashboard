@@ -5,6 +5,8 @@
 	import Grid from '../general/Grid.svelte';
 	import type { INumberFilterParams, ITextFilterParams } from 'ag-grid-community';
 	import { onMount } from 'svelte';
+	import { Account } from '$lib/model/account';
+	import { prompt } from '$lib/utils/prompts';
 
 	interface Props {
 		team: number;
@@ -14,8 +16,6 @@
 	}
 
 	const { team, event, comments, scouting }: Props = $props();
-
-	console.log(scouting);
 
 	let commentProxy: {
 		comment: string;
@@ -100,9 +100,36 @@
 			render++;
 		});
 	});
+
+	const self = Account.getSelf();
+
+	const comment = async () => {
+		const c = await prompt('Enter a comment', {
+			multiline: true,
+		});
+		if (!c) return;
+		Scouting.TeamComments.new({
+			matchScoutingId: '',
+			comment: c,
+			eventKey: String(event),
+			scoutUsername: String(self.get().data.username),
+			team: Number(team),
+			type: 'general',
+			accountId: String(self.get().data.id)
+		}).then(() => {
+			render++;
+		}).catch((e) => {
+			console.error(e);
+			alert('Failed to add comment');
+		});
+	};
 </script>
 
 <div class="h-85 w-100">
+	<button type="button" class="btn btn-primary" onclick={comment} >
+		<i class="material-icons">add</i>
+		Add Comment
+	</button>
 	{#key render}
 		<Grid
 			columnDefs={columns}

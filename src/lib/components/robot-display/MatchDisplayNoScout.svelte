@@ -49,14 +49,10 @@
 	</div>
 	<div class="row mb-3">
 		{#if strategies && strategies.length}
-		<button 
-			type="button"
-			class="btn btn-primary"
-			onclick={() => {}}
-		>
-			<i class="material-icons"> auto_graph </i>
-			Open Strategy ({strategies.length})
-		</button>
-	{/if}
+			<button type="button" class="btn btn-primary" onclick={() => {}}>
+				<i class="material-icons"> auto_graph </i>
+				Open Strategy ({strategies.length})
+			</button>
+		{/if}
 	</div>
 </div>

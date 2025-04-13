@@ -12,7 +12,7 @@ export default (event: TBAEvent) => {
 				href: '/dashboard/event/' + event.key,
 				icon: 'event',
 				type: 'material-icons'
-			},
+			}
 		],
 		priority: 0
 	});
@@ -33,7 +33,7 @@ export default (event: TBAEvent) => {
 				icon: 'archive',
 				type: 'material-icons'
 			}
-		],
+		]
 	});
 
 	Navbar.addSection({
@@ -52,7 +52,7 @@ export default (event: TBAEvent) => {
 				icon: 'edit',
 				type: 'material-icons'
 			}
-		],
+		]
 	});
 
 	Navbar.addSection({
@@ -76,7 +76,7 @@ export default (event: TBAEvent) => {
 				href: `/dashboard/event/${event.key}/checklist`,
 				icon: 'list',
 				type: 'material-icons'
-			},
+			}
 		]
 	});
 
@@ -95,8 +95,7 @@ export default (event: TBAEvent) => {
 				href: '/dashboard/potato/logs',
 				icon: 'history',
 				type: 'material-icons'
-			},
-
+			}
 		]
 	});
 };

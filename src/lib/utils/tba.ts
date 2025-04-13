@@ -91,18 +91,11 @@ export class TBAMatch {
 			const teams = (await this.event.getTeams()).unwrap();
 			const fromMatch = teamsFromMatch(this.tba);
 
-			this._teams = fromMatch.map(num => {
+			this._teams = fromMatch.map((num) => {
 				const t = teams.find((t) => t.tba.team_number === num);
 				if (!t) throw new Error('Team not found');
 				return t;
-			}) as [
-				TBATeam,
-				TBATeam,
-				TBATeam,
-				TBATeam,
-				TBATeam,
-				TBATeam
-			];
+			}) as [TBATeam, TBATeam, TBATeam, TBATeam, TBATeam, TBATeam];
 			return this._teams;
 		});
 	}

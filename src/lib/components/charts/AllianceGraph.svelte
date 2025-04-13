@@ -1,5 +1,5 @@
 <script lang="ts">
-    /*
+	/*
         2025 items:
         - coral
         - deep cage

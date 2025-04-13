@@ -106,19 +106,15 @@
 						<i class="material-icons"> archive </i> Archive Scouting Data
 					</button>
 					{#if strategies && strategies.length}
-						<button 
+						<button
 							type="button"
 							class="btn btn-primary"
 							onclick={async () => {
 								if (!strategies) return;
-								const s = await select(
-									'Select a strategy to view',
-									strategies,
-									{
-										render: (s) => String(s.data.name),
-										title: 'Select a strategy',
-									}
-								);
+								const s = await select('Select a strategy to view', strategies, {
+									render: (s) => String(s.data.name),
+									title: 'Select a strategy'
+								});
 								if (!s) return;
 								goto(`/dashboard/event/${event.tba.key}/strategy/${s.data.id}`);
 							}}

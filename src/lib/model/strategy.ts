@@ -41,15 +41,22 @@ export namespace Strategy {
 	});
 
 	export const fromMatch = (eventKey: string, matchNumber: number, compLevel: string) => {
-		return Strategy.query('from-match', {
-			eventKey,
-			matchNumber,
-			compLevel,
-		}, {
-			asStream: false,
-			satisfies: (data) => data.data.eventKey === eventKey && data.data.matchNumber === matchNumber && data.data.compLevel === compLevel,
-		});
-	}
+		return Strategy.query(
+			'from-match',
+			{
+				eventKey,
+				matchNumber,
+				compLevel
+			},
+			{
+				asStream: false,
+				satisfies: (data) =>
+					data.data.eventKey === eventKey &&
+					data.data.matchNumber === matchNumber &&
+					data.data.compLevel === compLevel
+			}
+		);
+	};
 
 	export type StrategyData = StructData<typeof Strategy.data.structure>;
 	export type StrategyArr = DataArr<typeof Strategy.data.structure>;

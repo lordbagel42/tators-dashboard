@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TBAMatch } from "$lib/utils/tba";
+	import { TBAMatch } from '$lib/utils/tba';
 
 	interface Props {
 		matches: TBAMatch[];
@@ -29,11 +29,10 @@
 		{/if}
 	</option>
 	{#each matches as match}
-		<option 
-			value={match.tba.key}
-			selected={match.tba.key === selected?.tba.key}
-		>
-			{match.tba.event_key} {match.tba.comp_level} {match.tba.match_number}
-	</option>
+		<option value={match.tba.key} selected={match.tba.key === selected?.tba.key}>
+			{match.tba.event_key}
+			{match.tba.comp_level}
+			{match.tba.match_number}
+		</option>
 	{/each}
 </select>

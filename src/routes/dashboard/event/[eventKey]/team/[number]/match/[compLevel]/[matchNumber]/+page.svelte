@@ -34,7 +34,11 @@
 	});
 
 	onMount(() => {
-		strategies = Strategy.fromMatch(match.tba.event_key, match.tba.match_number, match.tba.comp_level);
+		strategies = Strategy.fromMatch(
+			match.tba.event_key,
+			match.tba.match_number,
+			match.tba.comp_level
+		);
 	});
 </script>
 

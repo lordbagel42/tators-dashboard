@@ -32,7 +32,7 @@ export namespace Strategy {
 
 			matchNumber: integer('match_number').notNull(), // -1 for not applicable (type != 'match')
 			compLevel: text('comp_level').notNull(), // na for not applicable (type != 'match')
-		
+
 			partner1: integer('partner1').notNull(),
 			partner2: integer('partner2').notNull(),
 			partner3: integer('partner3').notNull(),
@@ -45,23 +45,30 @@ export namespace Strategy {
 			universe: () => '2122'
 		},
 		validators: {
-			alliance: (value) => ['red', 'blue'].includes(String(value)),
+			alliance: (value) => ['red', 'blue'].includes(String(value))
 		}
 	});
 
 	Strategy.queryListen('from-match', async (event, data) => {
 		if (!event.locals.account) return new Error('Not logged in');
-		if (!await Account.isAdmin(event.locals.account).unwrap()) {
-			if (!await Permissions.isEntitled(await Permissions.allAccountRoles(event.locals.account).unwrap(), 'view-strategy')) {
+		if (!(await Account.isAdmin(event.locals.account).unwrap())) {
+			if (
+				!(await Permissions.isEntitled(
+					await Permissions.allAccountRoles(event.locals.account).unwrap(),
+					'view-strategy'
+				))
+			) {
 				return new Error('Not entitled to view strategy');
 			}
 		}
 
-		const parsed = z.object({
-			eventKey: z.string(),
-			matchNumber: z.number(),
-			compLevel: z.string()
-		}).safeParse(data);
+		const parsed = z
+			.object({
+				eventKey: z.string(),
+				matchNumber: z.number(),
+				compLevel: z.string()
+			})
+			.safeParse(data);
 		if (!parsed.success) return new Error('Invalid data: ' + parsed.error.message);
 
 		const { eventKey, matchNumber, compLevel } = parsed.data;
@@ -79,25 +86,27 @@ export namespace Strategy {
 
 	Strategy.on('create', (strategy) => {
 		// generate partners
-		const partner = (position: number) => Partners.new({
-			strategyId: strategy.id,
-			position,
+		const partner = (position: number) =>
+			Partners.new({
+				strategyId: strategy.id,
+				position,
 
-			startingPosition: '',
-			auto: '',
-			postAuto: '',
-			role: '',
-			endgame: '',
-			notes: '',
-		});
+				startingPosition: '',
+				auto: '',
+				postAuto: '',
+				role: '',
+				endgame: '',
+				notes: ''
+			});
 
-		const opponent = (position: number) => Opponents.new({
-			strategyId: strategy.id,
-			position,
-			postAuto: '',
-			role: '',
-			notes: '',
-		});
+		const opponent = (position: number) =>
+			Opponents.new({
+				strategyId: strategy.id,
+				position,
+				postAuto: '',
+				role: '',
+				notes: ''
+			});
 
 		partner(1);
 		partner(2);
@@ -108,18 +117,26 @@ export namespace Strategy {
 	});
 
 	Strategy.on('delete', (strategy) => {
-		Partners.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.delete());
-		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.delete());
+		Partners.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) => p.delete());
+		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) => p.delete());
 	});
 
 	Strategy.on('archive', (strategy) => {
-		Partners.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.setArchive(true));
-		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.setArchive(true));
+		Partners.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) =>
+			p.setArchive(true)
+		);
+		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) =>
+			p.setArchive(true)
+		);
 	});
 
 	Strategy.on('restore', (strategy) => {
-		Partners.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.setArchive(false));
-		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream', }).pipe(p => p.setArchive(false));
+		Partners.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) =>
+			p.setArchive(false)
+		);
+		Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' }).pipe((p) =>
+			p.setArchive(false)
+		);
 	});
 
 	// I'm unsure I want this, probably should just be a confirmation on the front end
@@ -166,7 +183,7 @@ export namespace Strategy {
 		structure: {
 			strategyId: text('strategy_id').notNull(),
 			position: integer('position').notNull(), // 1, 2, 3
-			
+
 			startingPosition: text('starting_position').notNull(),
 			auto: text('auto').notNull(),
 			postAuto: text('post_auto').notNull(),
@@ -196,27 +213,35 @@ export namespace Strategy {
 		return attemptAsync(async () => {
 			const res = await DB.select()
 				.from(Strategy.table)
-				.where(and(
-					eq(Strategy.table.matchNumber, matchNumber),
-					eq(Strategy.table.compLevel, compLevel),
-					eq(Strategy.table.eventKey, eventKey)
-				));
-			return res.map(s => Strategy.Generator(s));
+				.where(
+					and(
+						eq(Strategy.table.matchNumber, matchNumber),
+						eq(Strategy.table.compLevel, compLevel),
+						eq(Strategy.table.eventKey, eventKey)
+					)
+				);
+			return res.map((s) => Strategy.Generator(s));
 		});
 	};
 
 	export const getStrategy = (strategy: StrategyData) => {
 		return attemptAsync(async () => {
-			const partners = await Partners.fromProperty('strategyId', strategy.id, { type: 'stream' }).await().unwrap();
-			const opponents = await Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' }).await().unwrap();
-			if (partners.length !== 3) throw new Error('Partners length is not correct: ' + partners.length);
-			if (opponents.length !== 3) throw new Error('Opponents length is not correct: ' + opponents.length);
+			const partners = await Partners.fromProperty('strategyId', strategy.id, { type: 'stream' })
+				.await()
+				.unwrap();
+			const opponents = await Opponents.fromProperty('strategyId', strategy.id, { type: 'stream' })
+				.await()
+				.unwrap();
+			if (partners.length !== 3)
+				throw new Error('Partners length is not correct: ' + partners.length);
+			if (opponents.length !== 3)
+				throw new Error('Opponents length is not correct: ' + opponents.length);
 
 			return {
 				strategy,
 				partners: partners.sort((a, b) => a.data.position - b.data.position),
 				opponents: opponents.sort((a, b) => a.data.position - b.data.position)
-			}
+			};
 		});
 	};
 

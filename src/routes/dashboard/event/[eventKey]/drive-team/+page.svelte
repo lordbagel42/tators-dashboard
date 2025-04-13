@@ -77,17 +77,19 @@
 	{#if team}
 		<div class="card" class:us={team.tba.team_number === 2122}>
 			<div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <h6>
-                        Driver Station {position}
-                    </h6>
-                <a
-                    href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
-                type="button" class="btn">
-                    <i class="material-icons">visibility</i>
-                </a>
-                </div>
-                <p>
+				<div class="d-flex align-items-center justify-content-between">
+					<h6>
+						Driver Station {position}
+					</h6>
+					<a
+						href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+						type="button"
+						class="btn"
+					>
+						<i class="material-icons">visibility</i>
+					</a>
+				</div>
+				<p>
 					{team.tba.team_number} | {team.tba.nickname}
 				</p>
 			</div>
@@ -161,7 +163,7 @@
 				<div class="position-relative">
 					<img
 						src="/assets/field/{event.tba.year}.png"
-                        class="mirror"
+						class="mirror"
 						alt=""
 						style="
                             width: 100%;
@@ -174,7 +176,9 @@
                         "
 					/>
 					<a
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[0])?.tba.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.blue.team_keys[0]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -185,12 +189,14 @@
                         top: 66%;
                         left: 92%;
                     "
-                        >Blue 1: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[0])?.tba.team_number}
-                        </a
-					>
+						>Blue 1: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[0])?.tba
+							.team_number}
+					</a>
 
 					<a
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[1])?.tba.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.blue.team_keys[1]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -200,12 +206,15 @@
                         z-index: 10;
                         top: 48%;
                         left: 92%;
-                    ">Blue 2: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[1])?.tba.team_number}
-                    </a
-					>
+                    "
+						>Blue 2: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[1])?.tba
+							.team_number}
+					</a>
 
 					<a
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[2])?.tba.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.blue.team_keys[2]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -215,11 +224,14 @@
                         z-index: 10;
                         top: 28%;
                         left: 92%;
-                    ">Blue 3: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[2])?.tba.team_number}
-                    </a
-					>
-					<a  
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number}"
+                    "
+						>Blue 3: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[2])?.tba
+							.team_number}
+					</a>
+					<a
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.red.team_keys[0]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -229,13 +241,15 @@
                             z-index: 10;
                             top: 66%;
                             left: 2%;
-                        ">Red 3: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[2])?.tba.team_number}
-                        
-                        </a
-					>
+                        "
+						>Red 3: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[2])?.tba
+							.team_number}
+					</a>
 
 					<a
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[1])?.tba.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.red.team_keys[1]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -245,13 +259,15 @@
                             z-index: 10;
                             top: 48%;
                             left: 2%;
-                        ">Red 2: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[1])?.tba.team_number}
-                        
-                        </a
-					>
+                        "
+						>Red 2: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[1])?.tba
+							.team_number}
+					</a>
 
 					<a
-                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number}"
+						href="/dashboard/event/{event.tba.key}/team/{teams.find(
+							(t) => t.tba.key === match?.tba.alliances.red.team_keys[0]
+						)?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -261,16 +277,14 @@
                             z-index: 10;
                             top: 28%;
                             left: 2%;
-                        ">Red 1: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number} 
-                        
-                        </a
-					>
+                        "
+						>Red 1: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba
+							.team_number}
+					</a>
 				</div>
 			</div>
-        {:else}
-            <div class="row mb-3">
-                No match data available.
-            </div>
+		{:else}
+			<div class="row mb-3">No match data available.</div>
 		{/if}
 	</div>
 </div>
@@ -301,8 +315,8 @@
 		background-color: rgba(0, 0, 255, 0.2);
 	}
 
-    .mirror {
-        transform: scaleX(-1);
-        transform-origin: center;
-    }
+	.mirror {
+		transform: scaleX(-1);
+		transform-origin: center;
+	}
 </style>

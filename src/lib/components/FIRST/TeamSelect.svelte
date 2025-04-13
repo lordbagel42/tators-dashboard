@@ -3,13 +3,15 @@
 	interface Props {
 		teams: TBATeam[];
 		onSelect?: (match: TBATeam) => void;
-		selected: TBATeam | undefined;
+		selected?: TBATeam;
+		message?: string;
 	}
 
-	let { teams, onSelect, selected = $bindable() }: Props = $props();
+	let { teams, onSelect, selected = $bindable(), message }: Props = $props();
 </script>
 
 <select
+	class="form-select"
 	onchange={(event) => {
 		const num = parseInt(event.currentTarget.value);
 		const team = teams.find((team) => team.tba.team_number === num);
@@ -19,8 +21,18 @@
 		}
 	}}
 >
-	<option value="" selected disabled>Select a team</option>
+	<option value="" selected disabled>
+		{#if message}
+			{message}
+		{:else}
+			Select a team
+		{/if}
+	</option>
 	{#each teams as team}
-		<option value={team.tba.team_number}>{team.tba.team_number}</option>
+		<option
+			value={team.tba.team_number}
+			selected={team.tba.team_number === selected?.tba.team_number}
+			>{team.tba.team_number} {team.tba.nickname}</option
+		>
 	{/each}
 </select>

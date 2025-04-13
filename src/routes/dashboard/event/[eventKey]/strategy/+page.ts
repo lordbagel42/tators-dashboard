@@ -1,5 +1,6 @@
-import { Strategy } from '$lib/model/strategy';
+import { Strategy } from '$lib/model/strategy.js';
 import { TBAEvent, TBAMatch, TBATeam } from '$lib/utils/tba.js';
+import { DataArr } from 'drizzle-struct/front-end';
 
 export const load = (event) => {
 	const e = new TBAEvent(event.data.event);
@@ -10,8 +11,9 @@ export const load = (event) => {
 		event: e,
 		teams: teams,
 		matches: matches,
-		strategy: Strategy.Strategy.Generator(event.data.strategy),
-		partners: event.data.partners.map((p) => Strategy.Partners.Generator(p)),
-		opponents: event.data.opponents.map((o) => Strategy.Opponents.Generator(o))
+		strategies: new DataArr(
+			Strategy.Strategy,
+			event.data.strategies.map((s) => Strategy.Strategy.Generator(s))
+		)
 	};
 };

@@ -325,7 +325,7 @@ export namespace Permissions {
 		});
 	};
 
-	export const allAccountRoles = async (account: Account.AccountData) => {
+	export const allAccountRoles = (account: Account.AccountData) => {
 		return attemptAsync(async () => {
 			const roleAccounts = (
 				await RoleAccount.fromProperty('account', account.id, {

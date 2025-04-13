@@ -3,54 +3,28 @@ import { Navbar } from '$lib/model/navbar';
 import type { TBAEvent } from 'tatorscout/tba';
 
 export default (event: TBAEvent) => {
+	Navbar.getSections().set([]);
 	Navbar.addSection({
-		name: 'Robot Display',
+		name: event.name,
 		links: [
 			{
-				name: 'Event',
+				name: 'Summary',
 				href: '/dashboard/event/' + event.key,
 				icon: 'event',
-				type: 'material-icons'
-			},
-			{
-				name: 'Pit Scouting',
-				href: '/dashboard/event/' + event.key + '/pit-scouting',
-				icon: 'question_answer',
-				type: 'material-icons'
-			},
-			{
-				name: 'Edit Pit Scouting',
-				href: '/dashboard/event/' + event.key + '/edit-pit-scouting',
-				icon: 'edit',
 				type: 'material-icons'
 			}
 		],
 		priority: 0
 	});
 
-	const s1 = Navbar.getSections().data.find((s) => s.priority === 1);
-	if (s1) Navbar.removeSection(s1);
-
 	Navbar.addSection({
-		name: `${event.name} Dashboard`,
+		name: `Matches`,
 		priority: 1,
 		links: [
 			{
 				name: 'Matches',
 				href: `/dashboard/event/${event.key}/matches`,
 				icon: 'view_list',
-				type: 'material-icons'
-			},
-			{
-				name: 'Team Compare',
-				href: `/dashboard/event/${event.key}/compare`,
-				icon: 'compare',
-				type: 'material-icons'
-			},
-			{
-				name: 'Checklist',
-				href: `/dashboard/event/${event.key}/checklist`,
-				icon: 'list',
 				type: 'material-icons'
 			},
 			{
@@ -63,8 +37,52 @@ export default (event: TBAEvent) => {
 	});
 
 	Navbar.addSection({
-		name: 'Other',
+		name: `Scouting`,
+		priority: 1,
+		links: [
+			{
+				name: 'Pit Scouting',
+				href: '/dashboard/event/' + event.key + '/pit-scouting',
+				icon: 'question_answer',
+				type: 'material-icons'
+			},
+			{
+				name: 'Edit Pit Scouting',
+				href: '/dashboard/event/' + event.key + '/edit-pit-scouting',
+				icon: 'edit',
+				type: 'material-icons'
+			}
+		]
+	});
+
+	Navbar.addSection({
+		name: `Utilities`,
 		priority: 2,
+		links: [
+			{
+				name: 'Team Compare',
+				href: `/dashboard/event/${event.key}/compare`,
+				icon: 'compare',
+				type: 'material-icons'
+			},
+			{
+				name: 'Strategy',
+				href: '/dashboard/event/' + event.key + '/strategy',
+				icon: 'assessment',
+				type: 'material-icons'
+			},
+			{
+				name: 'Checklist',
+				href: `/dashboard/event/${event.key}/checklist`,
+				icon: 'list',
+				type: 'material-icons'
+			}
+		]
+	});
+
+	Navbar.addSection({
+		name: 'Potato',
+		priority: 3,
 		links: [
 			{
 				name: 'Potato Leaderboard',

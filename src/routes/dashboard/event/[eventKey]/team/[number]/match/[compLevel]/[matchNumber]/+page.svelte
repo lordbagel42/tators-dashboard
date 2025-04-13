@@ -5,6 +5,8 @@
 	import type { TBAMatch } from '$lib/utils/tba';
 	import { onMount } from 'svelte';
 	import MatchDisplayNoScout from '$lib/components/robot-display/MatchDisplayNoScout.svelte';
+	import { DataArr } from 'drizzle-struct/front-end';
+	import { Strategy } from '$lib/model/strategy.js';
 
 	const { data } = $props();
 	const event = $derived(data.event);
@@ -19,6 +21,8 @@
 	let prev: TBAMatch | null = $state(null);
 	let next: TBAMatch | null = $state(null);
 
+	let strategies = $state(new DataArr(Strategy.Strategy, []));
+
 	$effect(() => {
 		const i = matches.findIndex((m) => m.tba.key === match.tba.key);
 		if (i > 0) {
@@ -27,6 +31,14 @@
 		if (i < matches.length - 1) {
 			next = matches[i + 1];
 		}
+	});
+
+	onMount(() => {
+		strategies = Strategy.fromMatch(
+			match.tba.event_key,
+			match.tba.match_number,
+			match.tba.comp_level
+		);
 	});
 </script>
 
@@ -71,9 +83,9 @@
 	<div class="row">
 		{#key scouting}
 			{#if scouting}
-				<MatchDisplay {scouting} {team} {event} {match} />
+				<MatchDisplay {scouting} {team} {event} {match} strategies={$strategies} />
 			{:else}
-				<MatchDisplayNoScout {match} {team} {event} />
+				<MatchDisplayNoScout {match} {team} {event} strategies={$strategies} />
 			{/if}
 		{/key}
 	</div>

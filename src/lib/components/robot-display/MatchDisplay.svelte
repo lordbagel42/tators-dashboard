@@ -40,28 +40,28 @@
 	});
 
 	type ytframetype = HTMLIFrameElement & {
-    webkitRequestFullscreen?: () => Promise<void> | void;
-    mozRequestFullScreen?: () => Promise<void> | void;
-    msRequestFullscreen?: () => Promise<void> | void;
+		webkitRequestFullscreen?: () => Promise<void> | void;
+		mozRequestFullScreen?: () => Promise<void> | void;
+		msRequestFullscreen?: () => Promise<void> | void;
 	};
-	let ytframe: ytframetype;
+	let ytframe: ytframetype | undefined = $state(undefined);
 
 	const fullscreen = () => {
-		if (ytframe.requestFullscreen) {
-			ytframe.requestFullscreen();
-		} else if (ytframe.webkitRequestFullscreen) {
-			ytframe.webkitRequestFullscreen();
-		} else if (ytframe.mozRequestFullScreen) {
-			ytframe.mozRequestFullScreen();
-		} else if (ytframe.msRequestFullscreen) {
-			ytframe.msRequestFullscreen();
+		if (ytframe?.requestFullscreen) {
+			ytframe?.requestFullscreen();
+		} else if (ytframe?.webkitRequestFullscreen) {
+			ytframe?.webkitRequestFullscreen();
+		} else if (ytframe?.mozRequestFullScreen) {
+			ytframe?.mozRequestFullScreen();
+		} else if (ytframe?.msRequestFullscreen) {
+			ytframe?.msRequestFullscreen();
 		}
 	};
 
 	const unfullscreen = () => {
 		if (document.fullscreenElement) {
-      		document.exitFullscreen();
-    }
+			document.exitFullscreen();
+		}
 	};
 	const togglefullscreen = () => {
 		if (document.fullscreenElement) {
@@ -71,13 +71,13 @@
 		}
 	};
 	onMount(() => {
-    const keypress = (e: KeyboardEvent) => {
-    	if (e.key.toLowerCase() === 'f') {
-			togglefullscreen();
+		const keypress = (e: KeyboardEvent) => {
+			if (e.key.toLowerCase() === 'f') {
+				togglefullscreen();
 			}
-    	};
-	document.addEventListener('keydown', keypress);
-    return () => document.removeEventListener('keydown', keypress);
+		};
+		document.addEventListener('keydown', keypress);
+		return () => document.removeEventListener('keydown', keypress);
 	});
 </script>
 

@@ -18,7 +18,7 @@ import { StructData } from 'drizzle-struct/back-end';
 import { z } from 'zod';
 
 export class Event {
-	public static getEvents(year: number) {
+	public static getEvents(year: number, force = false) {
 		return attemptAsync<Event[]>(async () => {
 			const custom = (
 				await TBA.Events.fromProperty('year', year, {
@@ -28,7 +28,8 @@ export class Event {
 
 			const tba = (
 				await TBA.get<E[]>(`/team/frc2122/events/${year}`, {
-					updateThreshold: 1000 * 60 * 60 * 24
+					updateThreshold: 1000 * 60 * 60 * 24,
+					force
 				})
 			).unwrap();
 
@@ -39,7 +40,7 @@ export class Event {
 		});
 	}
 
-	public static getEvent(eventKey: string) {
+	public static getEvent(eventKey: string, force = false) {
 		return attemptAsync(async () => {
 			const custom = (
 				await TBA.Events.fromProperty('eventKey', eventKey, {
@@ -50,7 +51,8 @@ export class Event {
 
 			const fromtba = (
 				await TBA.get<E>(`/event/${eventKey}`, {
-					updateThreshold: 1000 * 60 * 60 * 24
+					updateThreshold: 1000 * 60 * 60 * 24,
+					force
 				})
 			).unwrap();
 			return new Event(fromtba, false);
@@ -89,7 +91,7 @@ export class Event {
 		public readonly data?: StructData<typeof TBA.Events.data.structure>
 	) {}
 
-	public getTeams() {
+	public getTeams(force = false) {
 		return attemptAsync(async () => {
 			if (this.custom) {
 				return (
@@ -104,7 +106,8 @@ export class Event {
 			} else {
 				return (
 					await TBA.get<T[]>(`/event/${this.tba.key}/teams`, {
-						updateThreshold: 1000 * 60 * 60 * 24
+						updateThreshold: 1000 * 60 * 60 * 24,
+						force
 					})
 				)
 					.unwrap()
@@ -114,7 +117,7 @@ export class Event {
 		});
 	}
 
-	public getMatches() {
+	public getMatches(force = false) {
 		return attemptAsync(async () => {
 			if (this.custom) {
 				return (
@@ -133,7 +136,8 @@ export class Event {
 			} else {
 				return (
 					await TBA.get<M[]>(`/event/${this.tba.key}/matches`, {
-						updateThreshold: 1000 * 60 * 10
+						updateThreshold: 1000 * 60 * 10,
+						force
 					})
 				)
 					.unwrap()

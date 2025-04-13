@@ -59,6 +59,28 @@ export class Event {
 		});
 	}
 
+	public static getTeamEvents(year: number, team: number, force = false) {
+		return attemptAsync(async () => {
+			const custom = (
+				await TBA.Events.fromProperty('year', year, {
+					type: 'stream'
+				}).await()
+			).unwrap();
+
+			const tba = (
+				await TBA.get<E[]>(`/team/frc${team}/events/${year}`, {
+					updateThreshold: 1000 * 60 * 60 * 24,
+					force
+				})
+			).unwrap();
+
+			return [
+				...custom.map((e) => new Event(EventSchema.parse(JSON.parse(e.data.data)), true, e)),
+				...tba.map((e) => new Event(e, false))
+			].sort((a, b) => new Date(a.tba.start_date).getTime() - new Date(b.tba.start_date).getTime());
+		});
+	}
+
 	public static createEvent(event: {
 		key: string;
 		name: string;
@@ -223,6 +245,19 @@ export class Match {
 }
 
 export class Team {
+	public static getTeam(number: number, force = false) {
+		return attemptAsync(async () => {
+
+			const tba = (
+				await TBA.get<T>(`/team/frc${number}`, {
+					updateThreshold: 1000 * 60 * 60 * 24,
+					force
+				})
+			).unwrap();
+			return tba;
+		});
+	}
+
 	constructor(
 		public readonly tba: T,
 		public readonly event: Event,

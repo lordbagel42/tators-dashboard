@@ -11,6 +11,15 @@ export const load = (event) => {
 			matches
 		};
 	});
+
+	const team = new TBATeam(event.data.team, new TBAEvent({
+		key: 'unknown',
+		name: 'unknown',
+		start_date: 'unknown',
+		end_date: 'unknown',
+		year: 0,
+	}));
+
 	return {
 		year: Number(event.params.year),
 		teamNumber: Number(event.params.teamNumber),
@@ -19,6 +28,6 @@ export const load = (event) => {
 			event.data.scouting.map((s) => Scouting.MatchScouting.Generator(s))
 		),
 		events,
-		team: new TBATeam(event.data.team, events[0].event)
+		team,
 	};
 };

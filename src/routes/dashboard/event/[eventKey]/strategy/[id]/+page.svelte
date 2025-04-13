@@ -1,12 +1,13 @@
 <script lang="ts">
 	import TeamSelect from '$lib/components/FIRST/TeamSelect.svelte';
-import { Strategy } from '$lib/model/strategy';
+    import { Strategy } from '$lib/model/strategy';
 	import { alert } from '$lib/utils/prompts.js';
 	import type { TBAMatch } from '$lib/utils/tba';
 	import { onMount } from 'svelte';
 	import { teamsFromMatch } from 'tatorscout/tba';
     import nav from '$lib/imports/robot-display.js';
 	import MatchSelect from '$lib/components/FIRST/MatchSelect.svelte';
+	import TeamDisplay from '$lib/components/strategy/TeamDisplay.svelte';
 
 
     const { data } = $props();
@@ -81,6 +82,7 @@ import { Strategy } from '$lib/model/strategy';
     };
 
     const renderMaxHeight = () => {
+        return;
         let maxHeight = 0;
         const cards = document.querySelectorAll('.max-height-item');
         cards.forEach((card) => {
@@ -190,6 +192,7 @@ import { Strategy } from '$lib/model/strategy';
 {/snippet}
 
 {#snippet teamSelect(team: number, position: TeamPosition)}
+<div class="d-flex justify-content-between">
     <TeamSelect 
         {teams}
         selected={teams.find(t => t.tba.team_number === team)}
@@ -255,6 +258,10 @@ import { Strategy } from '$lib/model/strategy';
             }
         }}
     />
+    <a href="/dashboard/event/{event.tba.key}/team/{team}" class="btn">
+        <i class="material-icons"> visibility </i>
+    </a>
+</div>
 {/snippet}
 
 
@@ -299,6 +306,18 @@ import { Strategy } from '$lib/model/strategy';
                         {@render notes(data)}
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="card layer-2">
+                        <div class="card-body">
+                            <TeamDisplay
+                                teamNumber={team}
+                                {teams}
+                                matches={matches.filter(match => teamsFromMatch(match.tba).includes(team))}
+                                {event}
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -328,6 +347,18 @@ import { Strategy } from '$lib/model/strategy';
                 <div class="row mb-3">
                     <div class="col-md-12">
                         {@render notes(data)}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="card layer-2">
+                        <div class="card-body">
+                            <TeamDisplay
+                                teamNumber={team}
+                                {teams}
+                                matches={matches.filter(match => teamsFromMatch(match.tba).includes(team))}
+                                {event}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

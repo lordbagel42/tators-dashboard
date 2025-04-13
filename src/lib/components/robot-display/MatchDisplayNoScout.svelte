@@ -1,28 +1,17 @@
 <script lang="ts">
-	import { Scouting } from '$lib/model/scouting';
-	import { FIRST } from '$lib/model/FIRST';
-	import { onMount } from 'svelte';
-	import { MatchCanvas } from '$lib/model/match-canvas';
-	import type { Focus } from '$lib/types/robot-display';
-	import Trace from './Trace.svelte';
+	import type { Strategy } from '$lib/model/strategy';
 	import { TBAEvent, TBATeam, TBAMatch } from '$lib/utils/tba';
-	import { writable } from 'svelte/store';
-	import MatchComments from './MatchComments.svelte';
-	import Checks from './Checks.svelte';
-	import { dateTime } from 'ts-utils/clock';
-	import MatchActions from './MatchActions.svelte';
 	import MatchEndgame from './MatchEndgame.svelte';
-	import { confirm } from '$lib/utils/prompts';
-	import MatchContribution from '../charts/MatchContribution.svelte';
 
 	interface Props {
 		match: TBAMatch;
 		team: TBATeam;
 		// focus: Focus;
 		event: TBAEvent;
+		strategies?: Strategy.StrategyData[];
 	}
 
-	const { team, event, match }: Props = $props();
+	const { team, event, match, strategies }: Props = $props();
 </script>
 
 <div class="container-fluid">
@@ -57,5 +46,17 @@
 		<div class="col-md-4">
 			<MatchEndgame {match} {team} {event} classes="layer-1" />
 		</div>
+	</div>
+	<div class="row mb-3">
+		{#if strategies && strategies.length}
+		<button 
+			type="button"
+			class="btn btn-primary"
+			onclick={() => {}}
+		>
+			<i class="material-icons"> auto_graph </i>
+			Open Strategy ({strategies.length})
+		</button>
+	{/if}
 	</div>
 </div>

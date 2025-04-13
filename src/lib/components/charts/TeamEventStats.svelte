@@ -180,6 +180,7 @@
 					}
 				];
 
+
 				const labels = [
 					'Min Auto',
 					'Avg Auto',
@@ -194,6 +195,7 @@
 					'Avg Total',
 					'Max Total'
 				];
+
 
 				let max = 0;
 				for (let i = 0; i < labels.length; i++) {

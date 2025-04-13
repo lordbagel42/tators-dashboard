@@ -12,8 +12,10 @@
 	import { dateTime } from 'ts-utils/clock';
 	import MatchActions from './MatchActions.svelte';
 	import MatchEndgame from './MatchEndgame.svelte';
-	import { confirm } from '$lib/utils/prompts';
+	import { confirm, select } from '$lib/utils/prompts';
 	import MatchContribution from '../charts/MatchContribution.svelte';
+	import type { Strategy } from '$lib/model/strategy';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		match: TBAMatch;
@@ -21,9 +23,10 @@
 		team: TBATeam;
 		// focus: Focus;
 		event: TBAEvent;
+		strategies?: Strategy.StrategyData[];
 	}
 
-	const { scouting, team, event, match }: Props = $props();
+	const { scouting, team, event, match, strategies }: Props = $props();
 
 	let versions = writable<Scouting.MatchScoutingHistory[]>([]);
 
@@ -102,6 +105,28 @@
 					>
 						<i class="material-icons"> archive </i> Archive Scouting Data
 					</button>
+					{#if strategies && strategies.length}
+						<button 
+							type="button"
+							class="btn btn-primary"
+							onclick={async () => {
+								if (!strategies) return;
+								const s = await select(
+									'Select a strategy to view',
+									strategies,
+									{
+										render: (s) => String(s.data.name),
+										title: 'Select a strategy',
+									}
+								);
+								if (!s) return;
+								goto(`/dashboard/event/${event.tba.key}/strategy/${s.data.id}`);
+							}}
+						>
+							<i class="material-icons"> auto_graph </i>
+							Open Strategy ({strategies.length})
+						</button>
+					{/if}
 				</div>
 			</div>
 		</div>

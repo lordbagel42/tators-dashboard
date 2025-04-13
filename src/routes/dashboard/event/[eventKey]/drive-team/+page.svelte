@@ -77,10 +77,17 @@
 	{#if team}
 		<div class="card" class:us={team.tba.team_number === 2122}>
 			<div class="card-body">
-				<h6>
-					Driver Station {position}
-				</h6>
-				<p>
+                <div class="d-flex align-items-center justify-content-between">
+                    <h6>
+                        Driver Station {position}
+                    </h6>
+                <a
+                    href="/dashboard/event/{event.tba.key}/team/{team.tba.team_number}"
+                type="button" class="btn">
+                    <i class="material-icons">visibility</i>
+                </a>
+                </div>
+                <p>
 					{team.tba.team_number} | {team.tba.nickname}
 				</p>
 			</div>
@@ -166,7 +173,8 @@
                             z-index: -1;
                         "
 					/>
-					<button
+					<a
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[0])?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -178,10 +186,11 @@
                         left: 92%;
                     "
                         >Blue 1: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[0])?.tba.team_number}
-                        </button
+                        </a
 					>
 
-					<button
+					<a
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[1])?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -192,10 +201,11 @@
                         top: 48%;
                         left: 92%;
                     ">Blue 2: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[1])?.tba.team_number}
-                    </button
+                    </a
 					>
 
-					<button
+					<a
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[2])?.tba.team_number}"
 						type="button"
 						class="btn btn-primary"
 						style="
@@ -206,9 +216,10 @@
                         top: 28%;
                         left: 92%;
                     ">Blue 3: {teams.find((t) => t.tba.key === match?.tba.alliances.blue.team_keys[2])?.tba.team_number}
-                    </button
+                    </a
 					>
-					<button
+					<a  
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -220,10 +231,11 @@
                             left: 2%;
                         ">Red 3: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[2])?.tba.team_number}
                         
-                        </button
+                        </a
 					>
 
-					<button
+					<a
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[1])?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -235,10 +247,11 @@
                             left: 2%;
                         ">Red 2: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[1])?.tba.team_number}
                         
-                        </button
+                        </a
 					>
 
-					<button
+					<a
+                        href="/dashboard/event/{event.tba.key}/team/{teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"
 						style="
@@ -250,10 +263,14 @@
                             left: 2%;
                         ">Red 1: {teams.find((t) => t.tba.key === match?.tba.alliances.red.team_keys[0])?.tba.team_number} 
                         
-                        </button
+                        </a
 					>
 				</div>
 			</div>
+        {:else}
+            <div class="row mb-3">
+                No match data available.
+            </div>
 		{/if}
 	</div>
 </div>

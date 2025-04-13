@@ -15,7 +15,6 @@
 		{#each checklist as item}
 			{#if item.left.data.length}
 				<div class="col">
-
 					<h4>{item.team.tba.team_number} {item.team.tba.nickname} ({item.left.data.length})</h4>
 					<ul class="list-group">
 						{#each item.left.data as question}
@@ -27,5 +26,5 @@
 				</div>
 			{/if}
 		{/each}
-</div>	
+	</div>
 </div>

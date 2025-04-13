@@ -21,7 +21,7 @@
 		// event,
 		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all'),
 		classes,
-		style,
+		style
 	}: Props = $props();
 
 	let target: HTMLCanvasElement;

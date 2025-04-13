@@ -26,9 +26,10 @@
 </script>
 
 <div class="container-fluid">
-    <div class="row mb-3">
-        No scouting data found for {team.tba.nickname} - {event.tba.name} {match.tba.comp_level}{match.tba.match_number}. Here's what I can show you:
-    </div>
+	<div class="row mb-3">
+		No scouting data found for {team.tba.nickname} - {event.tba.name}
+		{match.tba.comp_level}{match.tba.match_number}. Here's what I can show you:
+	</div>
 	<div class="row mb-3">
 		{#each match.tba.videos || [] as video}
 			<div class="col-md-6">
@@ -52,9 +53,9 @@
 			</div>
 		{/each}
 	</div>
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <MatchEndgame {match} {team} {event} classes="layer-1" />
-        </div>
-    </div>
+	<div class="row mb-3">
+		<div class="col-md-4">
+			<MatchEndgame {match} {team} {event} classes="layer-1" />
+		</div>
+	</div>
 </div>

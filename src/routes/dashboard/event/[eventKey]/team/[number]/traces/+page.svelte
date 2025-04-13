@@ -169,19 +169,10 @@
 		{#key selectedScouting}
 			{#if match}
 				{#if selectedScouting}
-					<MatchDisplay
-						scouting={selectedScouting}
-						{team}
-						{event}
-						{match}
-					/>
+					<MatchDisplay scouting={selectedScouting} {team} {event} {match} />
 				{:else}
 					You should never see this. If you do, there is a substantial bug.
-					<MatchDisplayNoScout
-						{match}
-						{team}
-						{event}
-					/>
+					<MatchDisplayNoScout {match} {team} {event} />
 				{/if}
 			{:else}
 				<p>Match not found</p>

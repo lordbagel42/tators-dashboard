@@ -6,9 +6,10 @@
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
+		classes?: string;
 	}
 
-	const { scouting }: Props = $props();
+	const { scouting, classes }: Props = $props();
 	let actionObj: Record<string, number> = $state({});
 
 	$effect(() => {
@@ -34,12 +35,12 @@
 
 <div>
 	<h5 class="text-center">Actions</h5>
-	<ul class="list-group">
+	<ul class="list-group {classes}">
 		{#each Object.entries(actionObj).sort(([a], [b]) => {
 			const arr = Object.keys(actions);
 			return arr.indexOf(a) - arr.indexOf(b);
 		}) as [action, count] (action)}
-			<li class="list-group-item">
+			<li class="list-group-item {classes}">
 				{actions[action as keyof typeof actions]} - {count}
 			</li>
 		{/each}

@@ -11,6 +11,8 @@
 	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 	import MatchContribution from '$lib/components/charts/MatchContribution.svelte';
 	import type { TBAMatch } from '$lib/utils/tba.js';
+	import MatchDisplay from '$lib/components/robot-display/MatchDisplay.svelte';
+	import MatchDisplayNoScout from '$lib/components/robot-display/MatchDisplayNoScout.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -103,7 +105,7 @@
 					oninput={() => focus.set('all')}
 					checked
 				/>
-				<label class="btn btn-outline-primary" for="all">All</label>
+				<label class="btn btn-outline-secondary" for="all">All</label>
 				<input
 					type="radio"
 					class="btn-check"
@@ -113,7 +115,7 @@
 					value={$focus === 'auto'}
 					oninput={() => focus.set('auto')}
 				/>
-				<label class="btn btn-outline-primary" for="auto">Auto</label>
+				<label class="btn btn-outline-success" for="auto">Auto</label>
 				<input
 					type="radio"
 					class="btn-check"
@@ -133,7 +135,7 @@
 					value={$focus === 'endgame'}
 					oninput={() => focus.set('endgame')}
 				/>
-				<label class="btn btn-outline-primary" for="endgame">Endgame</label>
+				<label class="btn btn-outline-danger" for="endgame">Endgame</label>
 			</div>
 		</div>
 	</div>
@@ -148,7 +150,7 @@
 								<i class="material-icons">visibility</i>
 							</button>
 						</h3>
-						<Trace {scouting} {event} {focus} />
+						<Trace {scouting} {focus} />
 					</div>
 				{/each}
 			{:else}
@@ -165,30 +167,24 @@
 >
 	{#snippet body()}
 		{#key selectedScouting}
-			{#if selectedScouting}
-				<div class="container">
-					<div class="row mb-3">
-						<Trace scouting={selectedScouting} {event} {focus} />
-					</div>
-					<div class="row mb-3">
-						{#if match}
-							<MatchContribution {match} scouting={selectedScouting} {team} {event} />
-						{/if}
-					</div>
-					<div class="row mb-3">
-						<MatchComments scouting={selectedScouting} />
-					</div>
-					<div class="row mb-2">
-						<div class="col-md-6">
-							<Checks scouting={selectedScouting} />
-						</div>
-						<div class="col-md-6">
-							<MatchActions scouting={selectedScouting} />
-						</div>
-					</div>
-				</div>
+			{#if match}
+				{#if selectedScouting}
+					<MatchDisplay
+						scouting={selectedScouting}
+						{team}
+						{event}
+						{match}
+					/>
+				{:else}
+					You should never see this. If you do, there is a substantial bug.
+					<MatchDisplayNoScout
+						{match}
+						{team}
+						{event}
+					/>
+				{/if}
 			{:else}
-				<p>No scouting data selected</p>
+				<p>Match not found</p>
 			{/if}
 		{/key}
 	{/snippet}

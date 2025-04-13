@@ -10,14 +10,18 @@
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
-		event: TBAEvent;
+		// event: TBAEvent;
 		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
+		classes?: string;
+		style?: string;
 	}
 
 	const {
 		scouting,
-		event,
-		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all')
+		// event,
+		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all'),
+		classes,
+		style,
 	}: Props = $props();
 
 	let target: HTMLCanvasElement;
@@ -32,10 +36,14 @@
 		// canvas = new Canvas(ctx);
 		const trace = TraceSchema.safeParse(JSON.parse(scouting.data.trace || '[]'));
 		if (trace.success) {
-			matchCanvas = new MatchCanvas(trace.data as TraceArray, event.tba.year, ctx);
-			matchCanvas.animate();
+			matchCanvas = new MatchCanvas(trace.data as TraceArray, Number(scouting.data.year), ctx);
+			matchCanvas.draw();
 			matchCanvas.canvas.height = 500;
 			matchCanvas.canvas.width = 1000;
+
+			matchCanvas.background['img'].addEventListener('load', () => {
+				matchCanvas?.draw();
+			});
 		} else {
 			console.error(trace.error);
 		}
@@ -46,8 +54,8 @@
 			min: 0,
 			value: [0, matchCanvas?.trace.length || 0],
 			onInput: ([min, max]) => {
-				console.log('Input', min, max);
 				matchCanvas?.between(min, max);
+				matchCanvas?.draw();
 			}
 		});
 
@@ -78,16 +86,16 @@
 	});
 </script>
 
-<div class="card">
-	<div class="card-body py-3 px-1">
+<div class="card {classes}">
+	<div class="card-body py-3 px-1" {style}>
 		<canvas
 			bind:this={target}
 			style="
-            height: auto;
-            width: 100%;
-            aspect-ratio: 2 / 1;
-            display: block;
-        "
+				height: auto;
+				width: 100%;
+				aspect-ratio: 2 / 1;
+				display: block;
+			"
 			class="mb-3"
 		></canvas>
 		<div bind:this={slider}></div>

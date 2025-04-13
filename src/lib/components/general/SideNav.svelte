@@ -44,7 +44,7 @@
 		<h5 class="offcanvas-title" id="{id}Label">{PUBLIC_APP_NAME}</h5>
 		<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 	</div>
-	<div class="offcanvas-body">
+	<div class="offcanvas-body layer-2">
 		<ul class="list-unstyled">
 			{#each $sections as section}
 				<li class="mb-3">

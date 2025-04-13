@@ -58,8 +58,8 @@ export class MatchCanvas {
 	private _focus?: Focus;
 
 	public readonly canvas: Canvas;
-	private readonly container = new Container();
-	private readonly background: Img;
+	public readonly container = new Container();
+	public readonly background: Img;
 	public readonly trace: TraceArray;
 
 	constructor(

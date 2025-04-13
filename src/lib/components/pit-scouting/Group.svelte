@@ -20,7 +20,7 @@
 	});
 </script>
 
-<div class="card">
+<div class="card layer-1">
 	<div class="card-body">
 		<div class="card-title">
 			<div class="d-flex justify-content-between">

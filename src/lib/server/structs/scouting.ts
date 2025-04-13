@@ -258,6 +258,16 @@ export namespace Scouting {
 		});
 	};
 
+	export const getTeamPrescouting = (team: number, year: number) => {
+		return attemptAsync(async () => {
+			const res = await DB.select()
+				.from(MatchScouting.table)
+				.where(and(eq(MatchScouting.table.team, team), eq(MatchScouting.table.year, year)));
+
+			return res.map((r) => MatchScouting.Generator(r));
+		});
+	};
+
 	export const getPreScouting = (team: number, year: number) => {
 		return attemptAsync(async () => {
 			const res = await DB.select()

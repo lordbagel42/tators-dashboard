@@ -106,7 +106,8 @@
 		{:else if $question.type === 'textarea'}
 			<textarea
 				class="form-control"
-				placeholder="Enter a value..."
+				placeholder="Enter a value... (long answer)"
+				rows="3"
 				oninput={() => (disabled = false)}
 				onchange={(e) => {
 					value.set([e.currentTarget.value]);

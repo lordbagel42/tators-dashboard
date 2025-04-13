@@ -22,6 +22,8 @@
 
 	const you = $derived(data.you);
 
+	Navbar.getSections().set([]);
+
 	Navbar.addSection({
 		name: 'Potato',
 		links: [
@@ -29,6 +31,12 @@
 				name: 'Home',
 				href: '/',
 				icon: 'home',
+				type: 'material-icons'
+			},
+			{
+				name: 'Logs',
+				href: '/dashboard/potato/logs',
+				icon: 'history',
 				type: 'material-icons'
 			}
 		],

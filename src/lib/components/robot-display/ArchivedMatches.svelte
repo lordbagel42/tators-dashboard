@@ -29,7 +29,7 @@
 				<div class="card">
 					<div class="card-body">
 						<h5 class="card-title">{match.data.compLevel} {match.data.matchNumber}</h5>
-						<Trace scouting={match} {event} />
+						<Trace scouting={match} />
 						<button
 							type="button"
 							class="btn btn-success"

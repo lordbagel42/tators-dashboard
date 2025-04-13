@@ -123,7 +123,6 @@ export const prompt = async (message: string, config?: PromptConfig) => {
 						color: 'primary',
 						onClick: () => {
 							if (!valid) return;
-							console.log(value);
 							res(config?.parser ? config.parser(value.trim()) : value.trim());
 							modal.hide();
 						}
@@ -440,14 +439,36 @@ export const notify = <Type extends 'toast' | 'alert'>(config: NotificationConfi
 	});
 };
 
-export const modal = (title: string, body: Snippet, buttons: ButtonConfig[]) => {
+export const rawModal = (
+	title: string,
+	buttons: ButtonConfig[],
+	onMount: (body: HTMLDivElement) => ReturnType<typeof mount>
+) => {
 	if (!modalTarget) throw new Error('Cannot show modal in non-browser environment');
-	return mount(Modal, {
+	const modal = mount(Modal, {
 		target: modalTarget,
 		props: {
 			title,
-			body,
+			body: createRawSnippet(() => ({
+				render: () => `<div class="body-content"></div>`
+			})),
 			buttons: createButtons(buttons)
 		}
 	});
+
+	const body = modalTarget.querySelector('.body-content');
+	if (!body) throw new Error('Modal body not found');
+
+	onMount(body as HTMLDivElement);
+
+	modal.on('hide', () => {
+		clearModals();
+	});
+
+	return {
+		modal,
+		hide: () => modal.hide(),
+		show: () => modal.show(),
+		on: modal.on.bind(modal)
+	};
 };

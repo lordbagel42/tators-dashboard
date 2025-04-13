@@ -8,9 +8,10 @@
 		match: TBAMatch;
 		team: TBATeam;
 		event: TBAEvent;
+		classes?: string;
 	}
 
-	const { match, team, event }: Props = $props();
+	const { match, team, event, classes }: Props = $props();
 
 	type MatchSchema = z.infer<typeof Match2025Schema>;
 
@@ -36,7 +37,7 @@
 	};
 </script>
 
-<div class="card text-center h-100">
+<div class="card text-center h-100 {classes}">
 	<div class="card-header">
 		<h5 class="mb-0">Endgame</h5>
 	</div>

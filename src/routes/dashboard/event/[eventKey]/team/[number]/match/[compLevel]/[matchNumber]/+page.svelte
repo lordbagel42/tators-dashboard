@@ -4,6 +4,7 @@
 	import MatchDisplay from '$lib/components/robot-display/MatchDisplay.svelte';
 	import type { TBAMatch } from '$lib/utils/tba';
 	import { onMount } from 'svelte';
+	import MatchDisplayNoScout from '$lib/components/robot-display/MatchDisplayNoScout.svelte';
 
 	const { data } = $props();
 	const event = $derived(data.event);
@@ -67,22 +68,13 @@
 			</div>
 		</div>
 	</div>
-	<div class="row mb-3">
-		{#if scouting}
-			{#key scouting}
-				<div class="col-md-6">
-					<div class="card h-100">
-						<div class="card-body p-1">
-							<MatchContribution {match} {scouting} {team} {event} />
-						</div>
-					</div>
-				</div>
-			{/key}
-		{/if}
-	</div>
 	<div class="row">
 		{#key scouting}
-			<MatchDisplay {scouting} {team} {event} {match} />
+			{#if scouting}
+				<MatchDisplay {scouting} {team} {event} {match} />
+			{:else}
+				<MatchDisplayNoScout {match} {team} {event} />
+			{/if}
 		{/key}
 	</div>
 </div>

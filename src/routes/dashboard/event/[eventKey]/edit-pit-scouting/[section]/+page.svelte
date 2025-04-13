@@ -42,7 +42,7 @@
 		</div>
 	</div>
 	<div class="row mb-3">
-		<div class="card">
+		<div class="card layer-1">
 			<div class="card-body">
 				<div class="no-scroll-y scroll-x ws-nowrap">
 					<a href="/dashboard/event/{eventKey}/edit-pit-scouting" class="btn btn-primary">

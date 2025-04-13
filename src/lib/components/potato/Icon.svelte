@@ -115,7 +115,7 @@
 						<p>
 							Unlock special icons for your potato by ascending!
 							<br />
-							<small> After level 8,000, you can change your potato's icon at any time. </small>
+							<small> After level 987, you can change your potato's icon at any time. </small>
 						</p>
 						<div class="grid">
 							{#each Object.entries(Potato.Levels) as [icon, level]}
@@ -127,7 +127,6 @@
 											const res = await Potato.chooseYourIcon(icon);
 											if (res.isOk()) {
 												if (!res.value.success) {
-													console.log(res.value);
 													alert(`Your potato's icon could not be changed: ${res.value.message}`);
 												}
 											} else {
@@ -155,7 +154,9 @@
 				<hr />
 				<div class="mb-3">
 					<div class="col">
-						<Stats {potato} />
+						{#key potato}
+							<Stats {potato} />
+						{/key}
 					</div>
 				</div>
 			</div>

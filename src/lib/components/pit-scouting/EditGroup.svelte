@@ -44,7 +44,7 @@
 	});
 </script>
 
-<div class="card p-0">
+<div class="card p-0 layer-1">
 	<div class="card-header">
 		<div class="d-flex justify-content-between">
 			<h3 class="card-title">{$group.name}</h3>

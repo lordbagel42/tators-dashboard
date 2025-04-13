@@ -13,6 +13,7 @@
 	import MatchActions from './MatchActions.svelte';
 	import MatchEndgame from './MatchEndgame.svelte';
 	import { confirm } from '$lib/utils/prompts';
+	import MatchContribution from '../charts/MatchContribution.svelte';
 
 	interface Props {
 		match: TBAMatch;
@@ -32,7 +33,6 @@
 				if (res.isErr()) return console.error(res.error);
 				versions.set(res.value);
 			});
-			console.log(scouting);
 		}
 	});
 </script>
@@ -63,21 +63,27 @@
 		{/each}
 	</div>
 		<div class="row mb-3">
-			<MatchComments {scouting} />
-		</div>
-		<div class="row mb-3">
-			<div class="col-md-4">
-				<Checks {scouting} />
+			<div class="col-md-6">
+				<MatchContribution {match} {scouting} {team} {event} />
 			</div>
-			<div class="col-md-4">
-				<MatchActions {scouting} />
-			</div>
-			<div class="col-md-4">
-				<MatchEndgame {match} {team} {event} />
+			<div class="col-md-6">
+				<MatchComments {scouting} />
+
 			</div>
 		</div>
 		<div class="row mb-3">
-			<Trace {scouting} {event} />
+			<div class="col-md-4">
+				<Checks {scouting} classes="layer-1" />
+			</div>
+			<div class="col-md-4">
+				<MatchActions {scouting} classes="layer-1" />
+			</div>
+			<div class="col-md-4">
+				<MatchEndgame {match} {team} {event} classes="layer-1" />
+			</div>
+		</div>
+		<div class="row mb-3">
+			<Trace {scouting} />
 		</div>
 		<div class="row mb-3">
 			<div class="col-12">
@@ -103,37 +109,41 @@
 		{#if $versions.length}
 			<div class="row mb-3">
 				{#each $versions as version}
-					<div class="card card-body">
-						{#if version.vhCreated}
-							Created: {dateTime(new Date(version.vhCreated))}
-						{:else}
-							Unknown date
-						{/if}
-						<Trace {scouting} {event} />
-						<button
-							type="button"
-							class="btn btn-success"
-							onclick={async () => {
-								if (
-									await confirm(
-										'Restore this version? This will store the current state as a new version and revert.'
-									)
-								) {
-									version.restore();
-								}
-							}}
-						>
-							<i class="material-icons"> update </i>
-							Restore Version
-						</button>
+				<div class="col">
+					<div class="card layer-3">
+						<div class="card-body">
+							{#if version.vhCreated}
+								Created: {dateTime(new Date(version.vhCreated))}
+							{:else}
+								Unknown date
+							{/if}
+							<Trace {scouting} classes="layer-1 flex-1"/>
+							<button
+								type="button"
+								class="btn btn-success"
+								onclick={async () => {
+									if (
+										await confirm(
+											'Restore this version? This will store the current state as a new version and revert.'
+										)
+									) {
+										version.restore();
+									}
+								}}
+							>
+								<i class="material-icons"> update </i>
+								Restore Version
+							</button>
+						</div>
 					</div>
+				</div>
 				{/each}
 			</div>
 		{/if}
 	{:else}
 		<div class="row mb-3">
 			<div class="col-12">
-				<div class="card">
+				<div class="card layer-2">
 					<div class="card-body">
 						<p>No scouting data available</p>
 					</div>

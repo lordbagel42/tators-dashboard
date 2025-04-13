@@ -76,6 +76,7 @@ export namespace TBA {
 	type RequestConfig = {
 		timeout?: number;
 		updateThreshold: number;
+		force?: boolean;
 	};
 
 	export const get = <T>(path: string, config: RequestConfig): Promise<Result<T>> => {
@@ -86,7 +87,7 @@ export namespace TBA {
 				type: 'single'
 			});
 
-			if (exists.isOk() && exists.value) {
+			if (exists.isOk() && exists.value && !config.force) {
 				const between = Date.now() - exists.value.updated.getTime();
 				if (between < config.updateThreshold) {
 					return JSON.parse(exists.value.data.response) as T;

@@ -76,6 +76,12 @@ export default (event: TBAEvent) => {
 				href: `/dashboard/event/${event.key}/checklist`,
 				icon: 'list',
 				type: 'material-icons'
+			},
+			{
+				name: 'Drive Team',
+				href: `/dashboard/event/${event.key}/drive-team`,
+				icon: 'people',
+				type: 'material-icons'
 			}
 		]
 	});

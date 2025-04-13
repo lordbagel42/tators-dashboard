@@ -1,6 +1,7 @@
 import { Account } from '$lib/server/structs/account.js';
 import { Scouting } from '$lib/server/structs/scouting.js';
 import { Event } from '$lib/server/utils/tba.js';
+import { z } from 'zod';
 
 export const GET = async (event) => {
     const data = await Scouting.PIT.getQuestionsFromEvent(event.params.eventKey).unwrap();
@@ -17,6 +18,7 @@ export const GET = async (event) => {
         'Team Number',
         'Team Name',
         'Question',
+        'Key',
         'Answer',
         'Scout Username',
     ];
@@ -25,11 +27,13 @@ export const GET = async (event) => {
     const res = await Promise.all(answers.map(async (a) => {
         const team = teams.find(t => t.tba.team_number === a.data.team);
         const scout = accounts.find(t => t.id === a.data.accountId);
+        const question = data.find(d => d.id === a.data.questionId);
         return [
             a.data.team,
             team?.tba.nickname,
-            data.find(d => d.id === a.data.questionId)?.data.question,
-            a.data.answer,
+            question?.data.question,
+            question?.data.key,
+            z.array(z.string()).parse(JSON.parse(a.data.answer)).join(', '),
             scout?.data.username,
         ];
     }));

@@ -13,6 +13,7 @@
 		// event: TBAEvent;
 		focus?: Writable<'auto' | 'teleop' | 'endgame' | 'all'>;
 		classes?: string;
+		style?: string;
 	}
 
 	const {
@@ -20,6 +21,7 @@
 		// event,
 		focus = writable<'auto' | 'teleop' | 'endgame' | 'all'>('all'),
 		classes,
+		style
 	}: Props = $props();
 
 	let target: HTMLCanvasElement;
@@ -85,15 +87,15 @@
 </script>
 
 <div class="card {classes}">
-	<div class="card-body py-3 px-1">
+	<div class="card-body py-3 px-1" {style}>
 		<canvas
 			bind:this={target}
 			style="
-            height: auto;
-            width: 100%;
-            aspect-ratio: 2 / 1;
-            display: block;
-        "
+				height: auto;
+				width: 100%;
+				aspect-ratio: 2 / 1;
+				display: block;
+			"
 			class="mb-3"
 		></canvas>
 		<div bind:this={slider}></div>

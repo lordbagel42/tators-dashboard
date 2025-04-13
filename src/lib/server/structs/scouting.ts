@@ -1132,6 +1132,19 @@ export namespace Scouting {
 			});
 		};
 
+		export const getAnswersFromEvent = (eventKey: string) => {
+			return attemptAsync(async () => {
+				const res = await DB.select()
+					.from(Answers.table)
+					.innerJoin(Questions.table, eq(Questions.table.id, Answers.table.questionId))
+					.innerJoin(Groups.table, eq(Questions.table.groupId, Groups.table.id))
+					.innerJoin(Sections.table, eq(Groups.table.sectionId, Sections.table.id))
+					.where(eq(Sections.table.eventKey, eventKey));
+
+				return res.map((r) => Answers.Generator(r.pit_answers));
+			});
+		}
+
 		createEntitlement({
 			name: 'view-pit-scouting',
 			structs: [Sections, Groups, Questions, Answers],

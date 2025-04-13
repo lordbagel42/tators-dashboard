@@ -38,6 +38,47 @@
 			});
 		}
 	});
+
+	type ytframetype = HTMLIFrameElement & {
+    webkitRequestFullscreen?: () => Promise<void> | void;
+    mozRequestFullScreen?: () => Promise<void> | void;
+    msRequestFullscreen?: () => Promise<void> | void;
+	};
+	let ytframe: ytframetype;
+
+	const fullscreen = () => {
+		if (ytframe.requestFullscreen) {
+			ytframe.requestFullscreen();
+		} else if (ytframe.webkitRequestFullscreen) {
+			ytframe.webkitRequestFullscreen();
+		} else if (ytframe.mozRequestFullScreen) {
+			ytframe.mozRequestFullScreen();
+		} else if (ytframe.msRequestFullscreen) {
+			ytframe.msRequestFullscreen();
+		}
+	};
+
+	const unfullscreen = () => {
+		if (document.fullscreenElement) {
+      		document.exitFullscreen();
+    }
+	};
+	const togglefullscreen = () => {
+		if (document.fullscreenElement) {
+			unfullscreen();
+		} else {
+			fullscreen();
+		}
+	};
+	onMount(() => {
+    const keypress = (e: KeyboardEvent) => {
+    	if (e.key.toLowerCase() === 'f') {
+			togglefullscreen();
+			}
+    	};
+	document.addEventListener('keydown', keypress);
+    return () => document.removeEventListener('keydown', keypress);
+	});
 </script>
 
 <div class="container-fluid">
@@ -55,9 +96,8 @@
 									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 									allowfullscreen
 									class="w-100 mb-0"
-									style="
-									height: 200px;
-								"
+									style="aspect-ratio: 16/9;"
+									bind:this={ytframe}
 								></iframe>
 							{/if}
 						</div>

@@ -298,11 +298,11 @@
 				>
 					Picklist Spreadsheet
 				</a>
-				<a 
+				<a
 					href="/year/{event.tba.year}/prescouting/team/{team.tba.team_number}"
 					type="button"
-					class="btn btn-primary ms-2"
-				>View Prescouting</a>
+					class="btn btn-primary ms-2">View Prescouting</a
+				>
 			</div>
 
 			<!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">

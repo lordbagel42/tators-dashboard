@@ -11,6 +11,8 @@
 	import MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 	import MatchContribution from '$lib/components/charts/MatchContribution.svelte';
 	import type { TBAMatch } from '$lib/utils/tba.js';
+	import MatchDisplay from '$lib/components/robot-display/MatchDisplay.svelte';
+	import MatchDisplayNoScout from '$lib/components/robot-display/MatchDisplayNoScout.svelte';
 
 	const { data } = $props();
 	const teams = $derived(data.teams);
@@ -165,30 +167,15 @@
 >
 	{#snippet body()}
 		{#key selectedScouting}
-			{#if selectedScouting}
-				<div class="container">
-					<div class="row mb-3">
-						<Trace scouting={selectedScouting} {focus} classes="layer-2" />
-					</div>
-					<div class="row mb-3">
-						{#if match}
-							<MatchContribution {match} scouting={selectedScouting} {team} {event} />
-						{/if}
-					</div>
-					<div class="row mb-3">
-						<MatchComments scouting={selectedScouting} />
-					</div>
-					<div class="row mb-2">
-						<div class="col-md-6">
-							<Checks scouting={selectedScouting} />
-						</div>
-						<div class="col-md-6">
-							<MatchActions scouting={selectedScouting} />
-						</div>
-					</div>
-				</div>
+			{#if match}
+				{#if selectedScouting}
+					<MatchDisplay scouting={selectedScouting} {team} {event} {match} />
+				{:else}
+					You should never see this. If you do, there is a substantial bug.
+					<MatchDisplayNoScout {match} {team} {event} />
+				{/if}
 			{:else}
-				<p>No scouting data selected</p>
+				<p>Match not found</p>
 			{/if}
 		{/key}
 	{/snippet}

@@ -2,7 +2,7 @@ import { Account } from '$lib/server/structs/account.js';
 import { Scouting } from '$lib/server/structs/scouting.js';
 import { Event } from '$lib/server/utils/tba.js';
 
-export const load = async (event) => {
+export const GET = async (event) => {
     const data = await Scouting.PIT.getQuestionsFromEvent(event.params.eventKey).unwrap();
 
     const answers = await Scouting.PIT.getAnswersFromEvent(event.params.eventKey).unwrap();

@@ -289,14 +289,22 @@
 					</a>
 				{/each}
 			</div>
-			<a
-				href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
-				type="button"
-				target="_blank"
-				class="btn btn-primary"
-			>
-				Picklist Spreadsheet
-			</a>
+			<div class="d-flex">
+				<a
+					href="https://docs.google.com/spreadsheets/d/1ntbCYyqMxMLbD6R0rVxfx_sIgq0mrYtXbbh2Wb5iuok/edit?gid=722231706#gid=722231706"
+					type="button"
+					target="_blank"
+					class="btn btn-primary"
+				>
+					Picklist Spreadsheet
+				</a>
+				<a
+					href="/year/{event.tba.year}/prescouting/team/{team.tba.team_number}"
+					type="button"
+					class="btn btn-primary ms-2">View Prescouting</a
+				>
+			</div>
+
 			<!-- <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
 				<input
 					type="checkbox"

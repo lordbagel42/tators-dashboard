@@ -173,7 +173,7 @@ import { Strategy } from '$lib/model/strategy';
             endgame: e.currentTarget.value,
         }));
     }}
-        placeholder="Endgame Role"
+        placeholder="Endgame Task..."
     >
 {/snippet}
 

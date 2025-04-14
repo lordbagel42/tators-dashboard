@@ -45,7 +45,7 @@ export namespace Strategy {
 			universe: () => '2122'
 		},
 		validators: {
-			alliance: (value) => ['red', 'blue'].includes(String(value))
+			alliance: (value) => ['red', 'blue', 'unknown'].includes(String(value))
 		}
 	});
 

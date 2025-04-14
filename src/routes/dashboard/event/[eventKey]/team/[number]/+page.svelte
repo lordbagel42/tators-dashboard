@@ -38,15 +38,51 @@
 		icon: 'summarize',
 		id: 'event_summary',
 		size: {
-			width: 1,
+			width: 2,
 			height: 1,
-			sm: {
-				width: 2,
+			lg: {
+				width: 4,
 				height: 1
 			},
-			xs: {
-				width: 2,
+			md: {
+				width: 4,
 				height: 1
+			},
+			sm: {
+				width: 5,
+				height: 1,
+			},
+			xs: {
+				width: 12,
+				height: 1,
+			}
+		}
+	});
+
+
+	const picturesCard = new Dashboard.Card({
+		name: 'Pictures',
+		iconType: 'material-icons',
+		icon: 'image',
+		id: 'pictures',
+		size: {
+			width: 4,
+			height: 1,
+			lg: {
+				width: 8,
+				height: 1
+			},
+			md: {
+				width: 8,
+				height: 1
+			},
+			sm: {
+				width: 7,
+				height: 1,
+			},
+			xs: {
+				width: 12,
+				height: 1,
 			}
 		}
 	});
@@ -57,46 +93,24 @@
 		icon: 'chat',
 		id: 'comments',
 		size: {
-			width: 2,
+			width: 4,
 			height: 1,
+			lg: {
+				width: 8,
+				height: 1
+			},
+			md: {
+				width: 8,
+				height: 1
+			},
 			sm: {
-				width: 2,
+				width: 12,
 				height: 1
 			},
 			xs: {
-				width: 2,
-				height: 1
+				width: 12,
+				height: 1,
 			}
-		}
-	});
-
-	const picturesCard = new Dashboard.Card({
-		name: 'Pictures',
-		iconType: 'material-icons',
-		icon: 'image',
-		id: 'pictures',
-		size: {
-			width: 2,
-			height: 1,
-			sm: {
-				width: 2,
-				height: 1
-			},
-			xs: {
-				width: 2,
-				height: 1
-			}
-		}
-	});
-
-	const actionHeatmap = new Dashboard.Card({
-		name: 'Action Heatmap',
-		iconType: 'material-icons',
-		icon: 'layers',
-		id: 'heatmap',
-		size: {
-			width: 1,
-			height: 1
 		}
 	});
 
@@ -106,15 +120,23 @@
 		icon: 'question_answer',
 		id: 'pit_scouting',
 		size: {
-			width: 1,
-			height: 2,
+			width: 2,
+			height: 1,
+			lg: {
+				width: 4,
+				height: 1
+			},
+			md: {
+				width: 4,
+				height: 1
+			},
 			sm: {
-				width: 2,
-				height: 2
+				width: 4,
+				height: 1
 			},
 			xs: {
-				width: 2,
-				height: 2
+				width: 12,
+				height: 1,
 			}
 		}
 	});
@@ -125,15 +147,23 @@
 		icon: 'preview',
 		id: 'matches',
 		size: {
-			width: 2,
+			width: 4,
 			height: 1,
+			lg: {
+				width: 6,
+				height: 1
+			},
+			md: {
+				width: 6,
+				height: 1
+			},
 			sm: {
-				width: 2,
+				width: 8,
 				height: 1
 			},
 			xs: {
-				width: 2,
-				height: 1
+				width: 12,
+				height: 1,
 			}
 		}
 	});
@@ -144,15 +174,23 @@
 		icon: 'trending_up',
 		id: 'progress',
 		size: {
-			width: 1,
+			width: 4,
 			height: 1,
+			lg: {
+				width: 6,
+				height: 1
+			},
+			md: {
+				width: 6,
+				height: 1
+			},
 			sm: {
-				width: 2,
+				width: 6,
 				height: 1
 			},
 			xs: {
-				width: 2,
-				height: 1
+				width: 12,
+				height: 1,
 			}
 		}
 	});
@@ -163,19 +201,39 @@
 		icon: 'trending_up',
 		id: 'event_stats',
 		size: {
-			width: 2,
+			width: 4,
 			height: 1,
+			lg: {
+				width: 6,
+				height: 1
+			},
+			md: {
+				width: 6,
+				height: 1
+			},
 			sm: {
-				width: 2,
+				width: 6,
 				height: 1
 			},
 			xs: {
-				width: 2,
-				height: 1
+				width: 12,
+				height: 1,
 			}
 		}
 	});
 
+
+	
+	// const actionHeatmap = new Dashboard.Card({
+	// 	name: 'Action Heatmap',
+	// 	iconType: 'material-icons',
+	// 	icon: 'layers',
+	// 	id: 'heatmap',
+	// 	size: {
+	// 		width: 1,
+	// 		height: 1,
+	// 	}
+	// });
 	let dashboard = $state(
 		new Dashboard.Dashboard({
 			name: `Robot Display: ${data.team.team_number} - ${data.team.nickname}`,
@@ -183,7 +241,7 @@
 				summary,
 				picturesCard,
 				commentsCard,
-				actionHeatmap,
+				// actionHeatmap,
 				pitScouting,
 				matchViewer,
 				progress,
@@ -200,7 +258,7 @@
 				summary,
 				picturesCard,
 				commentsCard,
-				actionHeatmap,
+				// actionHeatmap,
 				pitScouting,
 				matchViewer,
 				progress,

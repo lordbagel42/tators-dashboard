@@ -26,10 +26,10 @@
 		<div class="container-fluid" style="height: 300px;">
 			<div class="row h-100">
 				<div class="col-md-6 h-100">
-					<TeamEventStats {team} {event} {staticY} {scouting} {matches} />
+					<TeamEventStats {team} {event} bind:staticY={staticY} {scouting} {matches} />
 				</div>
 				<div class="col-md-6 h-100">
-					<Progress {team} {event} {staticY} {scouting} {matches} />
+					<Progress {team} {event} bind:staticY={staticY} {scouting} {matches} />
 				</div>
 			</div>
 		</div>

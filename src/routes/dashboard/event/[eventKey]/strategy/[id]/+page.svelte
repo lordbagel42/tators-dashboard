@@ -131,6 +131,8 @@
 	$effect(() => {
 		if (render) renderMaxHeight();
 	});
+
+	let staticY: number | undefined = $state(undefined);
 </script>
 
 {#snippet startingPos(data: Strategy.PartnerData)}
@@ -351,6 +353,7 @@
 								matches={matches.filter((match) => teamsFromMatch(match.tba).includes(team))}
 								{event}
 								{scouting}
+								bind:staticY={staticY}
 							/>
 						</div>
 					</div>
@@ -394,6 +397,7 @@
 								matches={matches.filter((match) => teamsFromMatch(match.tba).includes(team))}
 								{event}
 								{scouting}
+								bind:staticY={staticY}
 							/>
 						</div>
 					</div>

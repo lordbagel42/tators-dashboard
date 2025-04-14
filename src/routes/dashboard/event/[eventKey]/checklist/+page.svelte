@@ -9,7 +9,37 @@
 
 <div class="container">
 	<div class="row mb-3">
-		<h1>Pit Scouting Checklist for {event.tba.name}</h1>
+		<div class="col">
+			<h1>Checklists for {event.tba.name}</h1>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col">
+			<h4>Pictures</h4>
+		</div>
+	</div>
+	<div class="row mb-3">
+		{#each checklist as item}
+			<div class="col">
+				<h4
+					class:text-danger={item.tbaPictures + item.uploaded === 0}
+				>{item.team.tba.team_number} {item.team.tba.nickname}</h4>
+				<ul class="list">
+					<li class="list-group-item">
+						TBA: {item.tbaPictures}
+					</li>
+					<li class="list-group-item">
+						Uploaded: {item.uploaded}
+					</li>
+				</ul>
+			</div>
+		{/each}
+	</div>
+	<hr>
+	<div class="row mb-3">
+		<div class="col">
+			<h4>Pit Scouting</h4>
+		</div>
 	</div>
 	<div class="row mb-3">
 		{#each checklist as item}

@@ -8,28 +8,37 @@ import { Logs } from '$lib/server/structs/log.js';
 const UPLOAD_DIR = path.resolve(process.cwd(), './static/uploads');
 
 export async function POST(event) {
+	console.log('Received POST request to upload files');
 	if (!event.locals.account) throw fail(ServerCode.unauthorized);
 	const roles = await Permissions.allAccountRoles(event.locals.account);
 	if (roles.isErr()) throw fail(ServerCode.internalServerError);
 	if (!Permissions.isEntitled(roles.value, 'view-tba-info')) throw fail(ServerCode.forbidden);
+	console.log('User has permission to upload files');
 
 	const request = event.request;
 	const formData = await request.formData();
-	const file = formData.get('filepond') as File;
+	const file = formData.get('file'); // Assuming 'files[]' is the field name used
 
 	if (!file) {
 		return json({ error: 'No file uploaded' }, { status: 400 });
 	}
 
-	const arrayBuffer = await file.arrayBuffer();
-	const buffer = Buffer.from(arrayBuffer);
-	const fileId = `${Date.now()}-${file.name}`;
-	const filePath = path.join(UPLOAD_DIR, fileId);
 	await fs.mkdir(UPLOAD_DIR, { recursive: true });
 
-	await fs.writeFile(filePath, buffer);
+	let fileId: string;
 
-	return json({ fileId });
+	if (file instanceof File) {
+		const arrayBuffer = await file.arrayBuffer();
+		const buffer = Buffer.from(arrayBuffer);
+		fileId = `${Date.now()}-${file.name}`;
+		const filePath = path.join(UPLOAD_DIR, fileId);
+		await fs.writeFile(filePath, buffer);
+		console.log(`Saved file to ${filePath}`);
+	} else {
+		return json({ error: 'Invalid file uploaded' }, { status: 400 });
+	}
+
+	return json({ url: fileId });
 }
 
 // export async function GET({ params }) {

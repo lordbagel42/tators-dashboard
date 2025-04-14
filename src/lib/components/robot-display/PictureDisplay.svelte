@@ -20,6 +20,7 @@
 	// $inspect(pictures);
 
 	const { team, event, teamPictures }: Props = $props();
+	let uploadComponent: FileUploaderComponent;
 
 	onMount(() => {
 		team.getMedia().then((m) => {
@@ -35,7 +36,7 @@
 			);
 		});
 
-		const off = uploadComponent.on('upload', (file) => {
+		const off = uploadComponent.on('load', (file) => {
 			FIRST.TeamPictures.new({
 				team: team.tba.team_number,
 				eventKey: event.tba.key,
@@ -46,18 +47,8 @@
 
 		return () => {
 			unsub();
-			off();
 		};
 	});
-
-	const uploader = new FileUploader(
-		`/dashboard/event/${event.tba.key}/team/${team.tba.team_number}/picture`,
-		{
-			method: 'POST'
-		}
-	);
-
-	let uploadComponent: FileUploaderComponent;
 </script>
 
 <div class="container-fluid h-100">
@@ -96,12 +87,12 @@
 				</button>
 			</div>
 		</div>
-		<div class="col-4">
+		<div class="col-4 h-100">
 			<FileUploaderComponent
-				bind:this={uploadComponent}
 				multiple={true}
-				{uploader}
 				message="Upload a picture"
+				endpoint={`/dashboard/event/${event.tba.key}/team/${team.tba.team_number}/picture`}
+				bind:this={uploadComponent}
 			/>
 		</div>
 	</div>

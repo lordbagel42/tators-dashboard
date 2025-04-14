@@ -1,102 +1,67 @@
 <script lang="ts">
-	import 'filepond/dist/filepond.css';
-	import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-	import FilePond, { registerPlugin, supported, type FilePondFile } from 'svelte-filepond';
-
-	import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-	import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-	import FilePondPluginImageCrop from 'filepond-plugin-image-crop';
-	import FilePondPluginImageResize from 'filepond-plugin-image-resize';
-	import FilePondPluginImageTransform from 'filepond-plugin-image-transform';
+	import Uppy from '@uppy/core';
+	import { Dashboard } from '@uppy/svelte';
+	import XHRUpload from '@uppy/xhr-upload';
+	import ImageEditor from '@uppy/image-editor';
+	import Compressor from '@uppy/compressor';
 	import { EventEmitter } from 'ts-utils/event-emitter';
-	import { FileUploader } from '$lib/utils/files';
+	import { z } from 'zod';
 
-	interface Props {
-		multiple: boolean;
-		uploader: FileUploader;
-		message: string;
-		quality?: number;
-	}
-
-	const { multiple, uploader, message, quality = 10 }: Props = $props();
+	import '@uppy/core/dist/style.min.css';
+	import '@uppy/dashboard/dist/style.min.css';
+	import '@uppy/image-editor/dist/style.min.css';
 
 	const emitter = new EventEmitter<{
-		init: void;
-		addFile: FilePondFile;
-		upload: string;
-		error: Error;
+		load: string;
+		error: string;
 	}>();
 
 	export const on = emitter.on.bind(emitter);
 
-	// Register the plugins
-	registerPlugin(
-		FilePondPluginImageExifOrientation,
-		FilePondPluginImagePreview,
-		FilePondPluginImageCrop,
-		FilePondPluginImageResize,
-		FilePondPluginImageTransform
-	);
+	interface Props {
+		multiple: boolean; // this doesn't actually do anything, i'm unsure how to handle this server-side
+		message: string; // this is also not used, but I am unsure what its purpose is.
+		endpoint: string;
+	}
 
-	// a reference to the component, used to call FilePond methods
-	let pond: FilePond;
+	let uppyHeight = $state('100%'); // number representing pixels
 
-	// pond.getFiles() will return the active files
+	const { multiple, message, endpoint }: Props = $props();
 
-	// the name to use for the internal file input
-	let name = 'filepond';
+	let uppy = new Uppy({ autoProceed: true, restrictions: { maxNumberOfFiles: 1 } })
+		.use(XHRUpload, {
+			endpoint,
+			onAfterResponse(xhr, retryCount) {
+				console.log(xhr.responseText);
 
-	// handle filepond events
-	const handleInit = () => {
-		emitter.emit('init', undefined);
-	};
+				if (xhr.status >= 200 && xhr.status < 300) {
+					emitter.emit(
+						'load',
+						z
+							.object({
+								url: z.string()
+							})
+							.parse(JSON.parse(xhr.responseText)).url
+					);
+				} else {
+					console.error(xhr.responseText);
+					emitter.emit('error', 'Failed to upload file.');
+				}
+			}
+		})
+		.use(Compressor)
+		.use(ImageEditor);
 </script>
 
-<FilePond
-	bind:this={pond}
-	{name}
-	allowMultiple={multiple}
-	labelIdle={message}
-	oninit={handleInit}
-	allowImageTransform={true}
-	imageTransformOutputQuality={quality}
-	imageTransformOutputMimeType="image/jpeg"
-	server={{
-		process: async (fieldName, file, metadata, load, error, progress, abort) => {
-			const f = new File([file], file.name, { type: file.type });
-
-			const res = await uploader.sendFile(f, fieldName);
-
-			if (res.isOk()) {
-				res.value.on('load', (data) => {
-					load(data);
-					emitter.emit('upload', data);
-				});
-				res.value.on('error', error);
-
-				return res.value.abort;
-			} else {
-				console.error(res.error);
-				error('Failed to upload file');
-				emitter.emit('error', res.error);
-			}
-
-			return () => {};
-		},
-
-		load: (source, load, error, progress, abort) => {
-			fetch(`/static/uploads/${source}`)
-				.then((response) => {
-					if (!response.ok) throw new Error('Failed to load file');
-					return response.blob();
-				})
-				.then((blob) => {
-					load(blob);
-				})
-				.catch((err) => {
-					console.error(err);
-					error('Failed to load file.');
-				});
-		}
-	}}
-/>
+<div class="">
+	<Dashboard
+		{uppy}
+		props={{
+			theme: 'dark',
+			proudlyDisplayPoweredByUppy: false,
+			height: uppyHeight,
+			autoOpen: 'imageEditor',
+			inline: false
+		}}
+	/>
+</div>

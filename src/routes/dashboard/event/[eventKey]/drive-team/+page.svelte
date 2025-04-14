@@ -230,7 +230,7 @@
 					</a>
 					<a
 						href="/dashboard/event/{event.tba.key}/team/{teams.find(
-							(t) => t.tba.key === match?.tba.alliances.red.team_keys[0]
+							(t) => t.tba.key === match?.tba.alliances.red.team_keys[2]
 						)?.tba.team_number}"
 						type="button"
 						class="btn btn-danger"

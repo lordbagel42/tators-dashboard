@@ -32,7 +32,8 @@ export namespace Scouting {
 			checks: 'string',
 			scoutUsername: 'string',
 			alliance: 'string',
-			year: 'number'
+			year: 'number',
+			sliders: 'string',
 		},
 		socket: sse,
 		browser

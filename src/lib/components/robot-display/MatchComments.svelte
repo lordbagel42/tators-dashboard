@@ -11,9 +11,10 @@
 
 	interface Props {
 		scouting: Scouting.MatchScoutingData;
+		style?: string;
 	}
 
-	const { scouting }: Props = $props();
+	const { scouting, style }: Props = $props();
 	let team = $state(scouting.data.team);
 	let event = $state(scouting.data.eventKey);
 	let comments = $state(new DataArr(Scouting.TeamComments, []));
@@ -116,7 +117,7 @@
 	};
 </script>
 
-<div class="h-85 w-100">
+<div class="h-85 w-100" {style}>
 	<button type="button" class="btn btn-primary" onclick={comment}>
 		<i class="material-icons">add</i>
 		Add Comment

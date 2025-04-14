@@ -31,7 +31,8 @@ export namespace Scouting {
 			checks: text('checks').notNull(),
 			scoutUsername: text('scout_username').notNull(),
 			alliance: text('alliance').notNull(),
-			year: integer('year').notNull().default(0)
+			year: integer('year').notNull().default(0),
+			sliders: text('sliders').notNull().default('{}'),
 		},
 		versionHistory: {
 			type: 'versions',

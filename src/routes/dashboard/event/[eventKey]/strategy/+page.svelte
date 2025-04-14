@@ -10,6 +10,7 @@
 	import { Strategy } from '$lib/model/strategy.js';
 	import { goto } from '$app/navigation';
 	import { Account } from '$lib/model/account.js';
+	import nav from '$lib/imports/robot-display.js';
 
 	const { data } = $props();
 
@@ -18,6 +19,8 @@
 	const teams = $derived(data.teams);
 	const strategies = $derived(data.strategies);
 	const self = Account.getSelf();
+
+	$effect(() => nav(event.tba));
 
 	let name = $state('');
 	let partner1: TBATeam | undefined = $state(undefined);

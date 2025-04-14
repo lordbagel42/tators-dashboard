@@ -12,7 +12,9 @@ export const load = (event) => {
 				left: new DataArr(
 					Scouting.PIT.Questions,
 					d.left.map((q) => Scouting.PIT.Questions.Generator(q))
-				)
+				),
+				uploaded: d.uploaded,
+				tbaPictures: d.tba,
 			};
 		})
 	};

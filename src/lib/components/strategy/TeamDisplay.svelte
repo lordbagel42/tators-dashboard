@@ -12,27 +12,23 @@
 		event: TBAEvent;
 		staticY?: number;
 		matches: TBAMatch[];
+		scouting: Scouting.MatchScoutingArr;
 	}
 
-	let { teamNumber, teams, event, staticY = $bindable(), matches }: Props = $props();
+	let { teamNumber, teams, event, staticY = $bindable(), matches, scouting }: Props = $props();
 
 	let team = $derived(teams.find((t) => t.tba.team_number === teamNumber));
 
-	let scouting = $state(new DataArr(Scouting.MatchScouting, []));
-
-	onMount(() => {
-		scouting = Scouting.scoutingFromTeam(teamNumber, event.tba.key);
-	});
 </script>
 
 {#if team}
 	{#key scouting}
-		<div class="container-fluid">
-			<div class="row">
-				<div class="col-md-6">
+		<div class="container-fluid" style="height: 300px;">
+			<div class="row h-100">
+				<div class="col-md-6 h-100">
 					<TeamEventStats {team} {event} {staticY} {scouting} {matches} />
 				</div>
-				<div class="col-md-6">
+				<div class="col-md-6 h-100">
 					<Progress {team} {event} {staticY} {scouting} {matches} />
 				</div>
 			</div>

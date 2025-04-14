@@ -8,6 +8,8 @@
 	import nav from '$lib/imports/robot-display.js';
 	import MatchSelect from '$lib/components/FIRST/MatchSelect.svelte';
 	import TeamDisplay from '$lib/components/strategy/TeamDisplay.svelte';
+	import { listen } from '$lib/utils/struct-listener.js';
+	import { Scouting } from '$lib/model/scouting.js';
 
 	const { data } = $props();
 	const event = $derived(data.event);
@@ -16,6 +18,7 @@
 	const strategy = $derived(data.strategy);
 	const partners = $derived(data.partners);
 	const opponents = $derived(data.opponents);
+	const scouting = $derived(data.scouting);
 	$effect(() => nav(event.tba));
 
 	const selectTeams = (partners: number[], opponents: number[]) => {
@@ -101,9 +104,25 @@
 		const onresize = () => renderMaxHeight();
 		window.addEventListener('resize', onresize);
 		setTimeout(renderMaxHeight);
+
+		const p1 = listen(scouting.partner1, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.partner1);
+		const p2 = listen(scouting.partner2, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.partner2);
+		const p3 = listen(scouting.partner3, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.partner3);
+		const o1 = listen(scouting.opponent1, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.opponent1);
+		const o2 = listen(scouting.opponent2, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.opponent2);
+		const o3 = listen(scouting.opponent3, (sc) => sc.data.eventKey === event.tba.key && sc.data.team === strategy.data.opponent3);
+
+
+
 		return () => {
 			window.removeEventListener('resize', onresize);
 			unsub();
+			p1();
+			p2();
+			p3();
+			o1();
+			o2();
+			o3();
 		};
 	});
 
@@ -283,7 +302,7 @@
 	</div>
 {/snippet}
 
-{#snippet partner(team: number, data: Strategy.PartnerData, position: TeamPosition)}
+{#snippet partner(team: number, data: Strategy.PartnerData, position: TeamPosition, scouting: Scouting.MatchScoutingArr)}
 	<div class="card layer-1 mb-3 grid-item max-height-item">
 		<div class="card-body">
 			<div class="container-fluid">
@@ -331,6 +350,7 @@
 								{teams}
 								matches={matches.filter((match) => teamsFromMatch(match.tba).includes(team))}
 								{event}
+								{scouting}
 							/>
 						</div>
 					</div>
@@ -340,7 +360,7 @@
 	</div>
 {/snippet}
 
-{#snippet opponent(team: number, data: Strategy.OpponentData, position: TeamPosition)}
+{#snippet opponent(team: number, data: Strategy.OpponentData, position: TeamPosition, scouting: Scouting.MatchScoutingArr)}
 	<div class="card layer-1 mb-3 grid-item max-height-item">
 		<div class="card-body">
 			<div class="container-fluid">
@@ -373,6 +393,7 @@
 								{teams}
 								matches={matches.filter((match) => teamsFromMatch(match.tba).includes(team))}
 								{event}
+								{scouting}
 							/>
 						</div>
 					</div>
@@ -432,15 +453,15 @@
 			<!-- <div class="grid"> -->
 			<div class="col-md-6">
 				<h2 class="mb-3">Partners</h2>
-				{@render partner(Number($strategy.partner1), partners[0], 'p1')}
-				{@render partner(Number($strategy.partner2), partners[1], 'p2')}
-				{@render partner(Number($strategy.partner3), partners[2], 'p3')}
+				{@render partner(Number($strategy.partner1), partners[0], 'p1', scouting.partner1)}
+				{@render partner(Number($strategy.partner2), partners[1], 'p2', scouting.partner2)}
+				{@render partner(Number($strategy.partner3), partners[2], 'p3', scouting.partner3)}
 			</div>
 			<div class="col-md-6">
 				<h2 class="mb-3">Opponents</h2>
-				{@render opponent(Number($strategy.opponent1), opponents[0], 'o1')}
-				{@render opponent(Number($strategy.opponent2), opponents[1], 'o2')}
-				{@render opponent(Number($strategy.opponent3), opponents[2], 'o3')}
+				{@render opponent(Number($strategy.opponent1), opponents[0], 'o1', scouting.opponent1)}
+				{@render opponent(Number($strategy.opponent2), opponents[1], 'o2', scouting.opponent2)}
+				{@render opponent(Number($strategy.opponent3), opponents[2], 'o3', scouting.opponent3)}
 			</div>
 
 			<!-- </div> -->

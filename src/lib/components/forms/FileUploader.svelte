@@ -24,11 +24,11 @@
 		endpoint: string;
 	}
 
-	let uppyHeight = $state('100%'); // number representing pixels
+	let uploaderHeight = $state(217); // number representing
 
 	const { multiple, message, endpoint }: Props = $props();
 
-	let uppy = new Uppy({ autoProceed: true, restrictions: { maxNumberOfFiles: 1 } })
+	let uppy = new Uppy({ restrictions: { maxNumberOfFiles: 1 } })
 		.use(XHRUpload, {
 			endpoint,
 			onAfterResponse(xhr, retryCount) {
@@ -59,9 +59,8 @@
 		props={{
 			theme: 'dark',
 			proudlyDisplayPoweredByUppy: false,
-			height: uppyHeight,
-			autoOpen: 'imageEditor',
-			inline: false
+			height: '100%',
+			autoOpen: 'imageEditor'
 		}}
 	/>
 </div>

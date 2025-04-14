@@ -23,11 +23,11 @@ export namespace Dashboard {
 	};
 
 	export const sizes = {
-		xs: 2,
-		sm: 3,
-		md: 4,
-		lg: 5,
-		xl: 6
+		xs: 12,
+		sm: 12,
+		md: 12,
+		lg: 12,
+		xl: 12
 	};
 
 	// const order: (keyof typeof sizes)[] = ['xs', 'sm', 'md', 'lg', 'xl'];

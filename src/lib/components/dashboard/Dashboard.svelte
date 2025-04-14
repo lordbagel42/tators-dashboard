@@ -30,30 +30,6 @@
 
 <style>
 	:root {
-		--grid-size: 6; /* Default for extra-large screens */
-	}
-
-	@media (max-width: 1200px) {
-		:root {
-			--grid-size: 5; /* Large screens */
-		}
-	}
-
-	@media (max-width: 992px) {
-		:root {
-			--grid-size: 4; /* Medium screens */
-		}
-	}
-
-	@media (max-width: 768px) {
-		:root {
-			--grid-size: 3; /* Small screens */
-		}
-	}
-
-	@media (max-width: 576px) {
-		:root {
-			--grid-size: 2; /* Extra small screens */
-		}
+		--grid-size: 12;
 	}
 </style>

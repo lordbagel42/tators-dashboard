@@ -11,9 +11,10 @@
 		scouting: Scouting.MatchScoutingData;
 		team: TBATeam;
 		event: TBAEvent;
+		style?: string;
 	}
 
-	const { scouting, team, event, match }: Props = $props();
+	const { scouting, team, event, match, style }: Props = $props();
 
 	let canvas: HTMLCanvasElement;
 
@@ -131,4 +132,4 @@
 	});
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<canvas bind:this={canvas} {style}></canvas>

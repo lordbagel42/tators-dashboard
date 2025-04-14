@@ -16,6 +16,7 @@
 	import MatchContribution from '../charts/MatchContribution.svelte';
 	import type { Strategy } from '$lib/model/strategy';
 	import { goto } from '$app/navigation';
+	import Slider from './Slider.svelte';
 
 	interface Props {
 		match: TBAMatch;
@@ -66,22 +67,47 @@
 			{/each}
 		</div>
 		<div class="row mb-3">
-			<div class="col-md-6">
-				<MatchContribution {match} {scouting} {team} {event} />
+			<div class="col-md-6 h-100">
+				<div class="card layer-1 h-100">
+					<div class="card-body h-100">
+						<MatchContribution {match} {scouting} {team} {event} style="height: 321px" />
+					</div>
+				</div>
 			</div>
-			<div class="col-md-6">
-				<MatchComments {scouting} />
+			<div class="col-md-6 h-100">
+				<div class="card layer-1 h-100">
+					<div class="card-body h-100">
+						<MatchComments {scouting} />
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="row mb-3">
-			<div class="col-md-4">
-				<Checks {scouting} classes="layer-1" />
+			<div class="col-md-3 col-sm-6">
+				<div class="card layer-1">
+					<div class="card-body">
+						<Checks {scouting} />
+					</div>
+				</div>
 			</div>
-			<div class="col-md-4">
-				<MatchActions {scouting} classes="layer-1" />
+			<div class="col-md-3 col-sm-6">
+				<div class="card layer-1">
+					<div class="card-body">
+						<MatchActions {scouting} />
+					</div>
+				</div>
 			</div>
-			<div class="col-md-4">
-				<MatchEndgame {match} {team} {event} classes="layer-1" />
+			<div class="col-md-3 col-sm-6">
+				<div class="card layer-1">
+					<MatchEndgame {match} {team} {event} />
+				</div>
+			</div>
+			<div class="col-md-3 col-sm-6">
+				<div class="card layer-1">
+					<div class="card-body">
+						<Slider {scouting} />
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="row mb-3">

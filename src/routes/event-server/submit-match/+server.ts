@@ -36,7 +36,12 @@ export const POST = async (event) => {
 			practice: z.boolean(),
 			alliance: z.union([z.literal('red'), z.literal('blue'), z.literal(null)]),
 			group: z.number().int(),
-			remote: z.boolean()
+			remote: z.boolean(),
+			sliders: z.record(z.string(), z.object({
+				value: z.number().int().min(0).max(5),
+				text: z.string(),
+				color: z.string(),
+			})),
 		})
 		.safeParse(body);
 
@@ -60,7 +65,8 @@ export const POST = async (event) => {
 		practice,
 		alliance,
 		group,
-		remote
+		remote,
+		sliders,
 	} = parsed.data;
 
 	const year = Number(/(\d+)/.exec(eventKey)?.[1]);
@@ -125,7 +131,8 @@ export const POST = async (event) => {
 			checks: JSON.stringify(checks),
 			scoutUsername: scout,
 			alliance: alliance ? alliance : 'unknown',
-			year
+			year,
+			sliders: JSON.stringify(sliders)
 		});
 		if (create.isErr()) {
 			terminal.error('Error creating match scouting', create.error);

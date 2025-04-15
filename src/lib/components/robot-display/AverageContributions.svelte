@@ -41,24 +41,24 @@
 <table class="table">
 	<tbody>
 		<tr>
-			<td>Average L1:</td>
+			<td>Average Overall Coral:</td>
+			<td>{overall.toFixed(1)}</td>
+		</tr>
+		<tr>
+			<td>Average Level 1:</td>
 			<td>{cl1.toFixed(1)}</td>
 		</tr>
 		<tr>
-			<td>Average L2:</td>
+			<td>Average Level 2:</td>
 			<td>{cl2.toFixed(1)}</td>
 		</tr>
 		<tr>
-			<td>Average L3:</td>
+			<td>Average Level 3:</td>
 			<td>{cl3.toFixed(1)}</td>
 		</tr>
 		<tr>
-			<td>Average L4:</td>
+			<td>Average Level 4:</td>
 			<td>{cl4.toFixed(1)}</td>
-		</tr>
-		<tr>
-			<td>Average Overall Coral:</td>
-			<td>{overall.toFixed(1)}</td>
 		</tr>
 		<tr>
 			<td>Average Barge:</td>

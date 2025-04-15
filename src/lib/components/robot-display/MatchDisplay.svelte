@@ -17,6 +17,7 @@
 	import type { Strategy } from '$lib/model/strategy';
 	import { goto } from '$app/navigation';
 	import Slider from './Slider.svelte';
+	import { Trace as T, TraceSchema, type TraceArray } from 'tatorscout/trace';
 
 	interface Props {
 		match: TBAMatch;
@@ -40,6 +41,20 @@
 			});
 		}
 	});
+
+	const average = (array: number[]): number => {
+			if (array.length === 0) return 0;
+			return array.reduce((a, b) => a + b, 0) / array.length;
+		};
+
+	const avgvelocity = () => {
+			if (!scouting) return 0;
+			const trace = TraceSchema.safeParse(
+				JSON.parse(scouting.data.trace || '[]'));
+			if (!trace.success) return 0;
+			const traceData = trace.data;
+			return (T.velocity.average(traceData as TraceArray)).toFixed(2);
+		};
 </script>
 
 <div class="container-fluid">
@@ -81,6 +96,12 @@
 				<div class="card layer-1 h-100">
 					<div class="card-body h-100">
 						<MatchContribution {match} {scouting} {team} {event} style="height: 321px" />
+					</div>
+				</div>
+				<div class="card h-100">
+					<div class="card-body">
+						<h5 class="text-center">Stats</h5>
+						<h6>Average Velocity: {avgvelocity()} ft/sec</h6>
 					</div>
 				</div>
 			</div>

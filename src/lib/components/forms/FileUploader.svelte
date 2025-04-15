@@ -10,6 +10,7 @@
 	import '@uppy/core/dist/style.min.css';
 	import '@uppy/dashboard/dist/style.min.css';
 	import '@uppy/image-editor/dist/style.min.css';
+	import { onMount } from 'svelte';
 
 	const emitter = new EventEmitter<{
 		load: string;
@@ -51,9 +52,24 @@
 		})
 		.use(Compressor)
 		.use(ImageEditor);
+
+	let target: HTMLDivElement;
+
+	// TODO: Make the thingy the right height
+	// const onResize = () => {
+	// 	uploaderHeight = target.parentElement?.getBoundingClientRect().height || 217;
+	// };
+
+	// onMount(() => {
+	// 	onResize();
+	// 	window.addEventListener('resize', onResize);
+	// 	return () => {
+	// 		window.removeEventListener('resize', onResize);
+	// 	};
+	// });
 </script>
 
-<div class="">
+<div bind:this={target}>
 	<Dashboard
 		{uppy}
 		props={{

@@ -53,7 +53,7 @@
 				JSON.parse(scouting.data.trace || '[]'));
 			if (!trace.success) return 0;
 			const traceData = trace.data;
-			return Math.round(T.velocity.average(traceData as TraceArray)*100) / 100;
+			return (Math.round(T.velocity.average(traceData as TraceArray)*100) / 100).toFixed(2);
 		};
 </script>
 

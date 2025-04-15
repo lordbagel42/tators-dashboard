@@ -170,7 +170,13 @@
 		{#key selectedScouting}
 			{#if match}
 				{#if selectedScouting}
-					<MatchDisplay scouting={selectedScouting} {team} {event} {match} scout={scoutingAccounts[selectedScouting.data.id || '']} />
+					<MatchDisplay
+						scouting={selectedScouting}
+						{team}
+						{event}
+						{match}
+						scout={scoutingAccounts[selectedScouting.data.id || '']}
+					/>
 				{:else}
 					You should never see this. If you do, there is a substantial bug.
 					<MatchDisplayNoScout {match} {team} {event} />

@@ -48,15 +48,16 @@ export const load = async (event) => {
 		});
 	}
 
-
 	const accounts: Record<string, string> = Object.fromEntries(
-		(await Promise.all(
-			scouting.value.map(async (s) => [
-				s.data.id,
-				// s.data.scoutUsername
-				(await Account.Account.fromId(s.data.scoutId)).unwrap()?.data.username
-			])
-		)).filter((a) => a[1] !== undefined)
+		(
+			await Promise.all(
+				scouting.value.map(async (s) => [
+					s.data.id,
+					// s.data.scoutUsername
+					(await Account.Account.fromId(s.data.scoutId)).unwrap()?.data.username
+				])
+			)
+		).filter((a) => a[1] !== undefined)
 	);
 
 	return {
@@ -65,6 +66,6 @@ export const load = async (event) => {
 		teams: teams.value.map((t) => t.tba),
 		scouting: scouting.value.map((s) => s.safe()),
 		matches: matches.value.map((m) => m.tba),
-		scoutingAccounts: accounts,
+		scoutingAccounts: accounts
 	};
 };

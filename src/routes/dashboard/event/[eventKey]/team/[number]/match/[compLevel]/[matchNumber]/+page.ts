@@ -18,6 +18,6 @@ export const load = (event) => {
 		match,
 		matches,
 		scouting,
-		account: event.data.account,
+		account: event.data.account
 	};
 };

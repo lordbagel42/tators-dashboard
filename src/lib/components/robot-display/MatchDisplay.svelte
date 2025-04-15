@@ -44,15 +44,15 @@
 
 <div class="container-fluid">
 	{#if scouting}
-	<div class="row mb-3">
-		<div class="col">
-			{#if scout}
-				<h4>Scouted by: {scout}</h4>
+		<div class="row mb-3">
+			<div class="col">
+				{#if scout}
+					<h4>Scouted by: {scout}</h4>
 				{:else}
-				<h4>Scouted by: {scouting.data.scoutUsername}</h4>
-			{/if}
+					<h4>Scouted by: {scouting.data.scoutUsername}</h4>
+				{/if}
+			</div>
 		</div>
-	</div>
 		<div class="row mb-3">
 			{#each match.tba.videos || [] as video}
 				<div class="col-md-6">
@@ -87,7 +87,7 @@
 			<div class="col-md-6 h-100">
 				<div class="card layer-1 h-100">
 					<div class="card-body h-100">
-						<MatchComments {scouting}/>
+						<MatchComments {scouting} />
 					</div>
 				</div>
 			</div>

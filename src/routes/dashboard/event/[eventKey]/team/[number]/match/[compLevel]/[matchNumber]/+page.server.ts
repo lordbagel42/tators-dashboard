@@ -85,6 +85,6 @@ export const load = async (event) => {
 		match: match.tba,
 		matches: matches.value.map((m) => m.tba),
 		scouting: scouting.value?.safe(),
-		account: account.value?.data.username,
+		account: account.value?.data.username
 	};
 };

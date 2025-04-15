@@ -16,6 +16,7 @@
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { listen } from '$lib/utils/struct-listener';
+	import ScoutSummary from '$lib/components/robot-display/ScoutSummary.svelte';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -30,6 +31,7 @@
 	const pictures = $derived(data.pictures);
 	const answerAccounts = $derived(data.answerAccounts);
 	const matches = $derived(data.matches.map((m) => new TBAMatch(m, event)));
+	const scoutingAccounts = $derived(data.scoutingAccounts);
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -50,15 +52,14 @@
 			},
 			sm: {
 				width: 5,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
-
 
 	const picturesCard = new Dashboard.Card({
 		name: 'Pictures',
@@ -78,11 +79,11 @@
 			},
 			sm: {
 				width: 7,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -109,7 +110,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -136,7 +137,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -163,7 +164,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -190,7 +191,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -217,13 +218,38 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
 
+	const scoutSummary = new Dashboard.Card({
+		name: 'Scout Summary',
+		iconType: 'material-icons',
+		icon: 'summarize',
+		id: 'scout_summary',
+		size: {
+			width: 2,
+			height: 1,
+			lg: {
+				width: 4,
+				height: 1
+			},
+			md: {
+				width: 4,
+				height: 1
+			},
+			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
 
-	
 	// const actionHeatmap = new Dashboard.Card({
 	// 	name: 'Action Heatmap',
 	// 	iconType: 'material-icons',
@@ -245,7 +271,8 @@
 				pitScouting,
 				matchViewer,
 				progress,
-				eventStats
+				eventStats,
+				scoutSummary
 			],
 			id: 'robot-display'
 		})
@@ -440,6 +467,11 @@
 			<Card card={eventStats}>
 				{#snippet body()}
 					<TeamEventStats {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={scoutSummary}>
+				{#snippet body()}
+					<ScoutSummary scouts={scoutingAccounts} />
 				{/snippet}
 			</Card>
 		{/key}

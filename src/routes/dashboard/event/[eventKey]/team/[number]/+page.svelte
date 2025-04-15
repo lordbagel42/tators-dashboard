@@ -13,6 +13,7 @@
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
+	import AverageContributions from '$lib/components/robot-display/AverageContributions.svelte';
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { listen } from '$lib/utils/struct-listener';
@@ -50,15 +51,14 @@
 			},
 			sm: {
 				width: 5,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
-
 
 	const picturesCard = new Dashboard.Card({
 		name: 'Pictures',
@@ -78,11 +78,11 @@
 			},
 			sm: {
 				width: 7,
-				height: 1,
+				height: 1
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -109,7 +109,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -136,7 +136,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -163,7 +163,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -190,7 +190,7 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
@@ -217,13 +217,38 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
 
+	const averageContributions = new Dashboard.Card({
+		name: 'Average Contribution',
+		iconType: 'material-icons',
+		icon: 'all_inclusive',
+		id: 'average_contributions',
+		size: {
+			width: 2,
+			height: 1,
+			lg: {
+				width: 4,
+				height: 1
+			},
+			md: {
+				width: 4,
+				height: 1
+			},
+			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
 
-	
 	// const actionHeatmap = new Dashboard.Card({
 	// 	name: 'Action Heatmap',
 	// 	iconType: 'material-icons',
@@ -440,6 +465,11 @@
 			<Card card={eventStats}>
 				{#snippet body()}
 					<TeamEventStats {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={averageContributions}>
+				{#snippet body()}
+					<AverageContributions {team} {event} {scouting} {matches} />
 				{/snippet}
 			</Card>
 		{/key}

@@ -53,7 +53,7 @@
 				JSON.parse(scouting.data.trace || '[]'));
 			if (!trace.success) return 0;
 			const traceData = trace.data;
-			return T.velocity.average(traceData as TraceArray);
+			return Math.round(T.velocity.average(traceData as TraceArray)*100) / 100;
 		};
 </script>
 
@@ -101,7 +101,7 @@
 				<div class="card h-100">
 					<div class="card-body">
 						<h5 class="text-center">Stats</h5>
-						<h6>Average Velocity: {avgvelocity()}</h6>
+						<h6>Average Velocity: {avgvelocity()} ft/sec</h6>
 					</div>
 				</div>
 			</div>

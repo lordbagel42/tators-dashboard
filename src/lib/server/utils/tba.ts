@@ -247,7 +247,6 @@ export class Match {
 export class Team {
 	public static getTeam(number: number, force = false) {
 		return attemptAsync(async () => {
-
 			const tba = (
 				await TBA.get<T>(`/team/frc${number}`, {
 					updateThreshold: 1000 * 60 * 60 * 24,

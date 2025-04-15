@@ -32,7 +32,7 @@ export namespace Scouting {
 			scoutUsername: text('scout_username').notNull(),
 			alliance: text('alliance').notNull(),
 			year: integer('year').notNull().default(0),
-			sliders: text('sliders').notNull().default('{}'),
+			sliders: text('sliders').notNull().default('{}')
 		},
 		versionHistory: {
 			type: 'versions',
@@ -1144,7 +1144,7 @@ export namespace Scouting {
 
 				return res.map((r) => Answers.Generator(r.pit_answers));
 			});
-		}
+		};
 
 		createEntitlement({
 			name: 'view-pit-scouting',

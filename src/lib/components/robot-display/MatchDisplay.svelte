@@ -25,9 +25,10 @@
 		// focus: Focus;
 		event: TBAEvent;
 		strategies?: Strategy.StrategyData[];
+		scout?: string;
 	}
 
-	const { scouting, team, event, match, strategies }: Props = $props();
+	const { scouting, team, event, match, strategies, scout }: Props = $props();
 
 	let versions = writable<Scouting.MatchScoutingHistory[]>([]);
 
@@ -43,6 +44,15 @@
 
 <div class="container-fluid">
 	{#if scouting}
+		<div class="row mb-3">
+			<div class="col">
+				{#if scout}
+					<h4>Scouted by: {scout}</h4>
+				{:else}
+					<h4>Scouted by: {scouting.data.scoutUsername}</h4>
+				{/if}
+			</div>
+		</div>
 		<div class="row mb-3">
 			{#each match.tba.videos || [] as video}
 				<div class="col-md-6">

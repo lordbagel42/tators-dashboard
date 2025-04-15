@@ -33,7 +33,7 @@ export namespace Scouting {
 			scoutUsername: 'string',
 			alliance: 'string',
 			year: 'number',
-			sliders: 'string',
+			sliders: 'string'
 		},
 		socket: sse,
 		browser

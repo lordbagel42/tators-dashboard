@@ -150,12 +150,16 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
 				height: 1
 			},
 			md: {
-				width: 6,
+				width: 12,
 				height: 1
 			},
 			sm: {
@@ -177,12 +181,16 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
 				height: 1
 			},
 			md: {
-				width: 6,
+				width: 12,
 				height: 1
 			},
 			sm: {
@@ -204,12 +212,16 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
 				height: 1
 			},
 			md: {
-				width: 6,
+				width: 12,
 				height: 1
 			},
 			sm: {
@@ -231,12 +243,16 @@
 		size: {
 			width: 2,
 			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
 			lg: {
-				width: 4,
+				width: 3,
 				height: 1
 			},
 			md: {
-				width: 4,
+				width: 6,
 				height: 1
 			},
 			sm: {
@@ -258,12 +274,16 @@
 		size: {
 			width: 2,
 			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
 			lg: {
-				width: 4,
+				width: 3,
 				height: 1
 			},
 			md: {
-				width: 4,
+				width: 6,
 				height: 1
 			},
 			sm: {

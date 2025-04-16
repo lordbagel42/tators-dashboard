@@ -1,5 +1,6 @@
 import { Strategy } from '$lib/server/structs/strategy.js';
 import { Event } from '$lib/server/utils/tba.js';
+import { Account } from '$lib/server/structs/account.js';
 
 export const load = async (event) => {
 	const e = await Event.getEvent(event.params.eventKey).unwrap();
@@ -13,10 +14,20 @@ export const load = async (event) => {
 		.await()
 		.unwrap();
 
+	const createdBy = Object.fromEntries(
+		await Promise.all(
+			strategies.map(async s => {
+				const account = await Account.Account.fromId(s.data.createdBy).unwrap();
+				return [s.data.id, account?.data.username || ''];
+			})
+		)
+	);
+
 	return {
 		event: e.tba,
 		teams: teams.map((t) => t.tba),
 		matches: matches.map((m) => m.tba),
-		strategies: strategies.map((s) => s.safe())
+		strategies: strategies.map((s) => s.safe()),
+		createdBy,
 	};
 };

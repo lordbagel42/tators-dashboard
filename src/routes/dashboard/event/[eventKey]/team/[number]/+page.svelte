@@ -14,7 +14,6 @@
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
 	import AverageContributions from '$lib/components/robot-display/AverageContributions.svelte';
-	import AverageContributionsGraph from '$lib/components/charts/AverageContributionsBars.svelte';
 	import AverageContributionsPie from '$lib/components/charts/AverageContributionsPie.svelte';
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
@@ -242,33 +241,6 @@
 			},
 			sm: {
 				width: 4,
-				height: 1
-			},
-			xs: {
-				width: 12,
-				height: 1
-			}
-		}
-	});
-
-	const averageContributionsBar = new Dashboard.Card({
-		name: 'Average Match Contribution',
-		iconType: 'material-icons',
-		icon: 'all_inclusive',
-		id: 'average_contributions_bar',
-		size: {
-			width: 4,
-			height: 1,
-			lg: {
-				width: 6,
-				height: 1
-			},
-			md: {
-				width: 6,
-				height: 1
-			},
-			sm: {
-				width: 6,
 				height: 1
 			},
 			xs: {
@@ -526,11 +498,6 @@
 			<Card card={averageContributionsTable}>
 				{#snippet body()}
 					<AverageContributions {team} {event} {scouting} {matches} />
-				{/snippet}
-			</Card>
-			<Card card={averageContributionsBar}>
-				{#snippet body()}
-					<AverageContributionsGraph {team} {event} {scouting} {matches} />
 				{/snippet}
 			</Card>
 			<Card card={averageContributionsPie}>

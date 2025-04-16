@@ -45,14 +45,22 @@
 						return {
 							traceScore,
 							autoPoints: 0,
-							endgamePoints: 0
+							endgamePoints: {
+								parked: 0,
+								shallow: 0,
+								deep: 0
+							}
 						};
 					const match2025Res = match.asYear(2025);
 					if (match2025Res.isErr())
 						return {
 							traceScore,
 							autoPoints: 0,
-							endgamePoints: 0
+							endgamePoints: {
+								parked: 0,
+								shallow: 0,
+								deep: 0
+							}
 						};
 					const match2025 = match2025Res.unwrap();
 					const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
@@ -60,7 +68,11 @@
 					const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
 					const position =
 						alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition : -1;
-					let endgamePoints = 0;
+					let endgamePoints = {
+						parked: 0,
+						shallow: 0,
+						deep: 0
+					};
 					let autoPoints = 0;
 					if (alliance) {
 						const mobilityRobots = [
@@ -77,13 +89,19 @@
 							match2025.score_breakdown[alliance].endGameRobot3
 						];
 
-						endgamePoints = matchCase<string, number>(endgameRobots[position])
-							.case('Parked', () => 2)
-							.case('ShallowCage', () => 6)
-							.case('DeepCage', () => 12)
-							.default(() => 0)
+						const endgameResult = matchCase<string, { parked: number; shallow: number; deep: number }>(endgameRobots[position])
+							.case('Parked', () => ({ parked: 2, shallow: 0, deep: 0 }))
+							.case('ShallowCage', () => ({ parked: 0, shallow: 6, deep: 0 }))
+							.case('DeepCage', () => ({ parked: 0, shallow: 0, deep: 12 }))
+							.default(() => ({ parked: 0, shallow: 0, deep: 0 }))
 							.exec()
 							.unwrap();
+
+						endgamePoints = {
+							parked: endgameResult.parked,
+							shallow: endgameResult.shallow,
+							deep: endgameResult.deep
+						};
 					}
 
 					return {
@@ -96,34 +114,81 @@
 
 				const datasets = [
 					{
-						label: 'Coral',
-						data: score.map(
-							(s) =>
-								s.traceScore.auto.cl1 +
-								s.traceScore.auto.cl2 +
-								s.traceScore.auto.cl3 +
-								s.traceScore.auto.cl4 +
-								s.traceScore.teleop.cl1 +
-								s.traceScore.teleop.cl2 +
-								s.traceScore.teleop.cl3 +
-								s.traceScore.teleop.cl4
-						)
+						label: 'Level 1',
+						data: score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1)
 					},
 					{
-						label: 'Algae',
+						label: 'Level 2',
+						data: score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2)
+					},
+					{
+						label: 'Level 3',
+						data: score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3)
+					},
+					{
+						label: 'Level 4',
+						data: score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4)
+					},
+					{
+						label: 'Barge',
 						data: score.map(
 							(s) =>
 								s.traceScore.auto.brg +
+								s.traceScore.teleop.brg
+						)
+					},
+					{
+						label: 'Processor',
+						data: score.map(
+							(s) =>
 								s.traceScore.auto.prc +
-								s.traceScore.teleop.brg +
 								s.traceScore.teleop.prc
 						)
 					},
 					{
-						label: 'Endgame',
-						data: score.map((s) => s.endgamePoints)
+						label: 'Park',
+						data: score.map((s) => s.endgamePoints.parked)
+					},
+					{
+						label: 'Shallow Climb',
+						data: score.map((s) => s.endgamePoints.shallow)
+					},
+					{
+						label: 'Deep Climb',
+						data: score.map((s) => s.endgamePoints.deep)
 					}
 				];
+
+				const colors = [
+					'rgba(255, 99, 132, 0.2)', // Level 1
+					'rgba(54, 162, 235, 0.2)', // Level 2
+					'rgba(255, 206, 86, 0.2)', // Level 3
+					'rgba(75, 192, 192, 0.2)', // Level 4
+					'rgba(153, 102, 255, 0.2)', // Barge
+					'rgba(255, 159, 64, 0.2)', // Processor
+					'rgba(201, 203, 207, 0.2)', // Park
+					'rgba(100, 149, 237, 0.2)', // Shallow Climb
+					'rgba(255, 215, 0, 0.2)'  // Deep Climb
+				];
+
+				const borderColors = [
+					'rgba(255, 99, 132, 1)',
+					'rgba(54, 162, 235, 1)',
+					'rgba(255, 206, 86, 1)',
+					'rgba(75, 192, 192, 1)',
+					'rgba(153, 102, 255, 1)',
+					'rgba(255, 159, 64, 1)',
+					'rgba(201, 203, 207, 1)',
+					'rgba(100, 149, 237, 1)',
+					'rgba(255, 215, 0, 1)'
+				];
+
+				// Assign colors to datasets
+				for (let i = 0; i < datasets.length; i++) {
+					datasets[i].backgroundColor = colors[i];
+					datasets[i].borderColor = borderColors[i];
+					datasets[i].borderWidth = 1;
+				}
 
 				let max = 0;
 				for (let i = 0; i < labels.length; i++) {

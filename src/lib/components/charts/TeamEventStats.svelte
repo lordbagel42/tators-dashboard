@@ -106,8 +106,20 @@
 					return data.traceScore[section].brg + data.traceScore[section].prc;
 				};
 
+				const processor = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
+					return data.traceScore[section].prc;
+				};
+
+				const barge = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
+					return data.traceScore[section].brg;
+				};
+
 				const endgame = (data: (typeof score)[number]) => {
-					return data.endgamePoints;
+					return {
+						parked: data.endgamePoints === 2 ? 2 : 0,
+						shallowClimb: data.endgamePoints === 6 ? 6 : 0,
+						deepClimb: data.endgamePoints === 12 ? 12 : 0
+					};
 				};
 
 				const average = (numbers: number[]) => {
@@ -116,49 +128,133 @@
 
 				const datasets = [
 					{
-						label: 'Coral',
+						label: 'Level 1',
 						data: [
 							// Auto
-							Math.min(...score.map(coral('auto'))),
-							average(score.map(coral('auto'))),
-							Math.max(...score.map(coral('auto'))),
+							Math.min(...score.map((s) => s.traceScore.auto.cl1)),
+							average(score.map((s) => s.traceScore.auto.cl1)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl1)),
 							// Teleop
-							Math.min(...score.map(coral('teleop'))),
-							average(score.map(coral('teleop'))),
-							Math.max(...score.map(coral('teleop'))),
+							Math.min(...score.map((s) => s.traceScore.teleop.cl1)),
+							average(score.map((s) => s.traceScore.teleop.cl1)),
+							Math.max(...score.map((s) => s.traceScore.teleop.cl1)),
 							// Endgame
 							0,
 							0,
 							0,
 							// Total
-							Math.min(...score.map((s) => coral('auto')(s) + coral('teleop')(s))),
-							average(score.map((s) => coral('auto')(s) + coral('teleop')(s))),
-							Math.max(...score.map((s) => coral('auto')(s) + coral('teleop')(s)))
+							Math.min(...score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1)),
+							average(score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1))
 						]
 					},
 					{
-						label: 'Algae',
+						label: 'Level 2',
 						data: [
 							// Auto
-							Math.min(...score.map(algae('auto'))),
-							average(score.map(algae('auto'))),
-							Math.max(...score.map(algae('auto'))),
+							Math.min(...score.map((s) => s.traceScore.auto.cl2)),
+							average(score.map((s) => s.traceScore.auto.cl2)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl2)),
 							// Teleop
-							Math.min(...score.map(algae('teleop'))),
-							average(score.map(algae('teleop'))),
-							Math.max(...score.map(algae('teleop'))),
+							Math.min(...score.map((s) => s.traceScore.teleop.cl2)),
+							average(score.map((s) => s.traceScore.teleop.cl2)),
+							Math.max(...score.map((s) => s.traceScore.teleop.cl2)),
 							// Endgame
 							0,
 							0,
 							0,
 							// Total
-							Math.min(...score.map((s) => algae('auto')(s) + algae('teleop')(s))),
-							average(score.map((s) => algae('auto')(s) + algae('teleop')(s))),
-							Math.max(...score.map((s) => algae('auto')(s) + algae('teleop')(s)))
+							Math.min(...score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2)),
+							average(score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2))
 						]
 					},
 					{
-						label: 'Endgame',
+						label: 'Level 3',
+						data: [
+							// Auto
+							Math.min(...score.map((s) => s.traceScore.auto.cl3)),
+							average(score.map((s) => s.traceScore.auto.cl3)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl3)),
+							// Teleop
+							Math.min(...score.map((s) => s.traceScore.teleop.cl3)),
+							average(score.map((s) => s.traceScore.teleop.cl3)),
+							Math.max(...score.map((s) => s.traceScore.teleop.cl3)),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3)),
+							average(score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3))
+						]
+					},
+					{
+						label: 'Level 4',
+						data: [
+							// Auto
+							Math.min(...score.map((s) => s.traceScore.auto.cl4)),
+							average(score.map((s) => s.traceScore.auto.cl4)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl4)),
+							// Teleop
+							Math.min(...score.map((s) => s.traceScore.teleop.cl4)),
+							average(score.map((s) => s.traceScore.teleop.cl4)),
+							Math.max(...score.map((s) => s.traceScore.teleop.cl4)),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4)),
+							average(score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4)),
+							Math.max(...score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4))
+						]
+					},
+					{
+						label: 'Barge',
+						data: [
+							// Auto
+							Math.min(...score.map(barge('auto'))),
+							average(score.map(barge('auto'))),
+							Math.max(...score.map(barge('auto'))),
+							// Teleop
+							Math.min(...score.map(barge('teleop'))),
+							average(score.map(barge('teleop'))),
+							Math.max(...score.map(barge('teleop'))),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => barge('auto')(s) + barge('teleop')(s))),
+							average(score.map((s) => barge('auto')(s) + barge('teleop')(s))),
+							Math.max(...score.map((s) => barge('auto')(s) + barge('teleop')(s)))
+						]
+					},
+					{
+						label: 'Processor',
+						data: [
+							// Auto
+							Math.min(...score.map(processor('auto'))),
+							average(score.map(processor('auto'))),
+							Math.max(...score.map(processor('auto'))),
+							// Teleop
+							Math.min(...score.map(processor('teleop'))),
+							average(score.map(processor('teleop'))),
+							Math.max(...score.map(processor('teleop'))),
+							// Endgame
+							0,
+							0,
+							0,
+							// Total
+							Math.min(...score.map((s) => processor('auto')(s) + processor('teleop')(s))),
+							average(score.map((s) => processor('auto')(s) + processor('teleop')(s))),
+							Math.max(...score.map((s) => processor('auto')(s) + processor('teleop')(s)))
+						]
+					},
+					{
+						label: 'Parked',
 						data: [
 							// Auto
 							0,
@@ -169,16 +265,89 @@
 							0,
 							0,
 							// Endgame
-							Math.min(...score.map(endgame)),
-							average(score.map(endgame)),
-							Math.max(...score.map(endgame)),
+							Math.min(...score.map((s) => endgame(s).parked)),
+							average(score.map((s) => endgame(s).parked)),
+							Math.max(...score.map((s) => endgame(s).parked)),
 							// Total
-							Math.min(...score.map(endgame)),
-							average(score.map(endgame)),
-							Math.max(...score.map(endgame))
+							Math.min(...score.map((s) => endgame(s).parked)),
+							average(score.map((s) => endgame(s).parked)),
+							Math.max(...score.map((s) => endgame(s).parked))
+						]
+					},
+					{
+						label: 'Shallow Climb',
+						data: [
+							// Auto
+							0,
+							0,
+							0,
+							// Teleop
+							0,
+							0,
+							0,
+							// Endgame
+							Math.min(...score.map((s) => endgame(s).shallowClimb)),
+							average(score.map((s) => endgame(s).shallowClimb)),
+							Math.max(...score.map((s) => endgame(s).shallowClimb)),
+							// Total
+							Math.min(...score.map((s) => endgame(s).shallowClimb)),
+							average(score.map((s) => endgame(s).shallowClimb)),
+							Math.max(...score.map((s) => endgame(s).shallowClimb))
+						]
+					},
+					{
+						label: 'Deep Climb',
+						data: [
+							// Auto
+							0,
+							0,
+							0,
+							// Teleop
+							0,
+							0,
+							0,
+							// Endgame
+							Math.min(...score.map((s) => endgame(s).deepClimb)),
+							average(score.map((s) => endgame(s).deepClimb)),
+							Math.max(...score.map((s) => endgame(s).deepClimb)),
+							// Total
+							Math.min(...score.map((s) => endgame(s).deepClimb)),
+							average(score.map((s) => endgame(s).deepClimb)),
+							Math.max(...score.map((s) => endgame(s).deepClimb))
 						]
 					}
 				];
+
+				const colors = [
+					'rgba(255, 99, 132, 0.2)', // Level 1
+					'rgba(54, 162, 235, 0.2)', // Level 2
+					'rgba(255, 206, 86, 0.2)', // Level 3
+					'rgba(75, 192, 192, 0.2)', // Level 4
+					'rgba(153, 102, 255, 0.2)', // Barge
+					'rgba(255, 159, 64, 0.2)', // Processor
+					'rgba(201, 203, 207, 0.2)', // Park
+					'rgba(100, 149, 237, 0.2)', // Shallow Climb
+					'rgba(255, 215, 0, 0.2)'  // Deep Climb
+				];
+
+				const borderColors = [
+					'rgba(255, 99, 132, 1)',
+					'rgba(54, 162, 235, 1)',
+					'rgba(255, 206, 86, 1)',
+					'rgba(75, 192, 192, 1)',
+					'rgba(153, 102, 255, 1)',
+					'rgba(255, 159, 64, 1)',
+					'rgba(201, 203, 207, 1)',
+					'rgba(100, 149, 237, 1)',
+					'rgba(255, 215, 0, 1)'
+				];
+
+				// Assign colors to datasets
+				for (let i = 0; i < datasets.length; i++) {
+					datasets[i].backgroundColor = colors[i];
+					datasets[i].borderColor = borderColors[i];
+					datasets[i].borderWidth = 1;
+				}
 
 				const labels = [
 					'Min Auto',

@@ -139,6 +139,9 @@ export namespace Scouting {
 		cl4: number;
 		brg: number;
 		prc: number;
+		shc: number;
+		dpc: number;
+		prk: number;
 	}
 
 	export const averageContributions = (data: MatchScoutingData[]): Contribution => {
@@ -149,7 +152,7 @@ export namespace Scouting {
 				const actionObj = trace.reduce(
 					(acc, curr) => {
 						if (!curr[3]) return acc;
-						if (['cl1', 'cl2', 'cl3', 'cl4', 'brg', 'prc'].includes(curr[3])) {
+						if (['cl1', 'cl2', 'cl3', 'cl4', 'brg', 'prc', 'shc', 'dpc', 'prk'].includes(curr[3])) {
 							acc[curr[3]] = (acc[curr[3]] || 0) + 1;
 						}
 						return acc;
@@ -183,7 +186,10 @@ export namespace Scouting {
 				cl3: averages.cl3 || 0,
 				cl4: averages.cl4 || 0,
 				brg: averages.brg || 0,
-				prc: averages.prc || 0
+				prc: averages.prc || 0,
+				shc: averages.shc || 0,
+				dpc: averages.dpc || 0,
+				prk: averages.prk || 0,
 			};
 		}).unwrap();
 	};

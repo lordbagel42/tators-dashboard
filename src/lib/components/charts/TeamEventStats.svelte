@@ -31,306 +31,47 @@
 		return scouting.subscribe(async (data) => {
 			if (chart) chart.destroy();
 			try {
-				const score = data.map((s) => {
-					const match = matches.find(
-						(m) =>
-							m.tba.match_number === s.data.matchNumber && m.tba.comp_level === s.data.compLevel
-					);
+				const counts = data.map((s: any) => {
 					const trace = TraceSchema.parse(JSON.parse(s.data.trace || '[]')) as TraceArray;
-					const traceScore = Trace.score.parse2025(
-						trace,
-						(s.data.alliance || 'red') as 'red' | 'blue'
+
+					const sectionCounts = trace.reduce(
+						(acc, curr) => {
+							if (!curr[3]) return acc;
+							const section = Trace.getSection(curr);
+							if (!acc[section]) acc[section] = {};
+							acc[section][curr[3] as string] = (acc[section][curr[3] as string] || 0) + 1;
+							return acc;
+						},
+						{ auto: {}, teleop: {}, endgame: {} } as Record<
+							'auto' | 'teleop' | 'endgame',
+							Record<string, number>
+						>
 					);
-					if (!match)
-						return {
-							traceScore,
-							autoPoints: 0,
-							endgamePoints: 0
-						};
-					const match2025Res = match.asYear(2025);
-					if (match2025Res.isErr())
-						return {
-							traceScore,
-							autoPoints: 0,
-							endgamePoints: 0
-						};
-					const match2025 = match2025Res.unwrap();
-					const redPosition = match2025.alliances.red.team_keys.indexOf(team.tba.key);
-					const bluePosition = match2025.alliances.blue.team_keys.indexOf(team.tba.key);
-					const alliance = redPosition !== -1 ? 'red' : bluePosition !== -1 ? 'blue' : null;
-					const position =
-						alliance === 'red' ? redPosition : alliance === 'blue' ? bluePosition : -1;
-					let endgamePoints = 0;
-					let autoPoints = 0;
-					if (alliance) {
-						const mobilityRobots = [
-							match2025.score_breakdown[alliance].autoLineRobot1,
-							match2025.score_breakdown[alliance].autoLineRobot2,
-							match2025.score_breakdown[alliance].autoLineRobot3
-						];
-
-						autoPoints = 3 * Number(mobilityRobots[position] === 'Yes');
-
-						const endgameRobots = [
-							match2025.score_breakdown[alliance].endGameRobot1, // Parked, DeepClimb, ShallowClimb
-							match2025.score_breakdown[alliance].endGameRobot2,
-							match2025.score_breakdown[alliance].endGameRobot3
-						];
-
-						endgamePoints = matchCase<string, number>(endgameRobots[position])
-							.case('Parked', () => 2)
-							.case('ShallowCage', () => 6)
-							.case('DeepCage', () => 12)
-							.default(() => 0)
-							.exec()
-							.unwrap();
-					}
 
 					return {
-						traceScore,
-						autoPoints,
-						endgamePoints
+						autoCounts: sectionCounts.auto,
+						teleopCounts: sectionCounts.teleop,
+						endgameCounts: sectionCounts.endgame
 					};
 				});
 
-				const coral = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
-					return (
-						data.traceScore[section].cl1 +
-						data.traceScore[section].cl2 +
-						data.traceScore[section].cl3 +
-						data.traceScore[section].cl4
-					);
-				};
-
-				const algae = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
-					return data.traceScore[section].brg + data.traceScore[section].prc;
-				};
-
-				const processor = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
-					return data.traceScore[section].prc;
-				};
-
-				const barge = (section: 'auto' | 'teleop') => (data: (typeof score)[number]) => {
-					return data.traceScore[section].brg;
-				};
-
-				const endgame = (data: (typeof score)[number]) => {
-					return {
-						parked: data.endgamePoints === 2 ? 2 : 0,
-						shallowClimb: data.endgamePoints === 6 ? 6 : 0,
-						deepClimb: data.endgamePoints === 12 ? 12 : 0
-					};
-				};
-
-				const average = (numbers: number[]) => {
+				const calculateAverage = (numbers: number[]) => {
 					return numbers.reduce((acc, n) => acc + n, 0) / numbers.length;
 				};
 
-				const datasets = [
-					{
-						label: 'Level 1',
-						data: [
-							// Auto
-							Math.min(...score.map((s) => s.traceScore.auto.cl1)),
-							average(score.map((s) => s.traceScore.auto.cl1)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl1)),
-							// Teleop
-							Math.min(...score.map((s) => s.traceScore.teleop.cl1)),
-							average(score.map((s) => s.traceScore.teleop.cl1)),
-							Math.max(...score.map((s) => s.traceScore.teleop.cl1)),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1)),
-							average(score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl1 + s.traceScore.teleop.cl1))
-						]
-					},
-					{
-						label: 'Level 2',
-						data: [
-							// Auto
-							Math.min(...score.map((s) => s.traceScore.auto.cl2)),
-							average(score.map((s) => s.traceScore.auto.cl2)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl2)),
-							// Teleop
-							Math.min(...score.map((s) => s.traceScore.teleop.cl2)),
-							average(score.map((s) => s.traceScore.teleop.cl2)),
-							Math.max(...score.map((s) => s.traceScore.teleop.cl2)),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2)),
-							average(score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl2 + s.traceScore.teleop.cl2))
-						]
-					},
-					{
-						label: 'Level 3',
-						data: [
-							// Auto
-							Math.min(...score.map((s) => s.traceScore.auto.cl3)),
-							average(score.map((s) => s.traceScore.auto.cl3)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl3)),
-							// Teleop
-							Math.min(...score.map((s) => s.traceScore.teleop.cl3)),
-							average(score.map((s) => s.traceScore.teleop.cl3)),
-							Math.max(...score.map((s) => s.traceScore.teleop.cl3)),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3)),
-							average(score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl3 + s.traceScore.teleop.cl3))
-						]
-					},
-					{
-						label: 'Level 4',
-						data: [
-							// Auto
-							Math.min(...score.map((s) => s.traceScore.auto.cl4)),
-							average(score.map((s) => s.traceScore.auto.cl4)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl4)),
-							// Teleop
-							Math.min(...score.map((s) => s.traceScore.teleop.cl4)),
-							average(score.map((s) => s.traceScore.teleop.cl4)),
-							Math.max(...score.map((s) => s.traceScore.teleop.cl4)),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4)),
-							average(score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4)),
-							Math.max(...score.map((s) => s.traceScore.auto.cl4 + s.traceScore.teleop.cl4))
-						]
-					},
-					{
-						label: 'Barge',
-						data: [
-							// Auto
-							Math.min(...score.map(barge('auto'))),
-							average(score.map(barge('auto'))),
-							Math.max(...score.map(barge('auto'))),
-							// Teleop
-							Math.min(...score.map(barge('teleop'))),
-							average(score.map(barge('teleop'))),
-							Math.max(...score.map(barge('teleop'))),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => barge('auto')(s) + barge('teleop')(s))),
-							average(score.map((s) => barge('auto')(s) + barge('teleop')(s))),
-							Math.max(...score.map((s) => barge('auto')(s) + barge('teleop')(s)))
-						]
-					},
-					{
-						label: 'Processor',
-						data: [
-							// Auto
-							Math.min(...score.map(processor('auto'))),
-							average(score.map(processor('auto'))),
-							Math.max(...score.map(processor('auto'))),
-							// Teleop
-							Math.min(...score.map(processor('teleop'))),
-							average(score.map(processor('teleop'))),
-							Math.max(...score.map(processor('teleop'))),
-							// Endgame
-							0,
-							0,
-							0,
-							// Total
-							Math.min(...score.map((s) => processor('auto')(s) + processor('teleop')(s))),
-							average(score.map((s) => processor('auto')(s) + processor('teleop')(s))),
-							Math.max(...score.map((s) => processor('auto')(s) + processor('teleop')(s)))
-						]
-					},
-					{
-						label: 'Parked',
-						data: [
-							// Auto
-							0,
-							0,
-							0,
-							// Teleop
-							0,
-							0,
-							0,
-							// Endgame
-							Math.min(...score.map((s) => endgame(s).parked)),
-							average(score.map((s) => endgame(s).parked)),
-							Math.max(...score.map((s) => endgame(s).parked)),
-							// Total
-							Math.min(...score.map((s) => endgame(s).parked)),
-							average(score.map((s) => endgame(s).parked)),
-							Math.max(...score.map((s) => endgame(s).parked))
-						]
-					},
-					{
-						label: 'Shallow Climb',
-						data: [
-							// Auto
-							0,
-							0,
-							0,
-							// Teleop
-							0,
-							0,
-							0,
-							// Endgame
-							Math.min(...score.map((s) => endgame(s).shallowClimb)),
-							average(score.map((s) => endgame(s).shallowClimb)),
-							Math.max(...score.map((s) => endgame(s).shallowClimb)),
-							// Total
-							Math.min(...score.map((s) => endgame(s).shallowClimb)),
-							average(score.map((s) => endgame(s).shallowClimb)),
-							Math.max(...score.map((s) => endgame(s).shallowClimb))
-						]
-					},
-					{
-						label: 'Deep Climb',
-						data: [
-							// Auto
-							0,
-							0,
-							0,
-							// Teleop
-							0,
-							0,
-							0,
-							// Endgame
-							Math.min(...score.map((s) => endgame(s).deepClimb)),
-							average(score.map((s) => endgame(s).deepClimb)),
-							Math.max(...score.map((s) => endgame(s).deepClimb)),
-							// Total
-							Math.min(...score.map((s) => endgame(s).deepClimb)),
-							average(score.map((s) => endgame(s).deepClimb)),
-							Math.max(...score.map((s) => endgame(s).deepClimb))
-						]
-					}
+				const chartColors = [
+					'rgba(255, 99, 132, 0.2)',
+					'rgba(54, 162, 235, 0.2)',
+					'rgba(255, 206, 86, 0.2)',
+					'rgba(75, 192, 192, 0.2)',
+					'rgba(153, 102, 255, 0.2)',
+					'rgba(255, 159, 64, 0.2)',
+					'rgba(201, 203, 207, 0.2)',
+					'rgba(100, 149, 237, 0.2)',
+					'rgba(255, 215, 0, 0.2)'
 				];
 
-				const colors = [
-					'rgba(255, 99, 132, 0.2)', // Level 1
-					'rgba(54, 162, 235, 0.2)', // Level 2
-					'rgba(255, 206, 86, 0.2)', // Level 3
-					'rgba(75, 192, 192, 0.2)', // Level 4
-					'rgba(153, 102, 255, 0.2)', // Barge
-					'rgba(255, 159, 64, 0.2)', // Processor
-					'rgba(201, 203, 207, 0.2)', // Park
-					'rgba(100, 149, 237, 0.2)', // Shallow Climb
-					'rgba(255, 215, 0, 0.2)'  // Deep Climb
-				];
-
-				const borderColors = [
+				const chartBorderColors = [
 					'rgba(255, 99, 132, 1)',
 					'rgba(54, 162, 235, 1)',
 					'rgba(255, 206, 86, 1)',
@@ -342,14 +83,208 @@
 					'rgba(255, 215, 0, 1)'
 				];
 
-				// Assign colors to datasets
-				for (let i = 0; i < datasets.length; i++) {
-					datasets[i].backgroundColor = colors[i];
-					datasets[i].borderColor = borderColors[i];
-					datasets[i].borderWidth = 1;
+				const actionDatasets = [
+					{
+						label: 'Level 1',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.cl1 || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.cl1 || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.cl1 || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.cl1 || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.cl1 || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.cl1 || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.cl1 || 0) + (c.teleopCounts.cl1 || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.cl1 || 0) + (c.teleopCounts.cl1 || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.cl1 || 0) + (c.teleopCounts.cl1 || 0)))
+						],
+						backgroundColor: chartColors[0],
+						borderColor: chartBorderColors[0],
+						borderWidth: 1
+					},
+					{
+						label: 'Level 2',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.cl2 || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.cl2 || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.cl2 || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.cl2 || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.cl2 || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.cl2 || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.cl2 || 0) + (c.teleopCounts.cl2 || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.cl2 || 0) + (c.teleopCounts.cl2 || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.cl2 || 0) + (c.teleopCounts.cl2 || 0)))
+						],
+						backgroundColor: chartColors[1],
+						borderColor: chartBorderColors[1],
+						borderWidth: 1
+					},
+					{
+						label: 'Level 3',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.cl3 || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.cl3 || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.cl3 || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.cl3 || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.cl3 || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.cl3 || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.cl3 || 0) + (c.teleopCounts.cl3 || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.cl3 || 0) + (c.teleopCounts.cl3 || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.cl3 || 0) + (c.teleopCounts.cl3 || 0)))
+						],
+						backgroundColor: chartColors[2],
+						borderColor: chartBorderColors[2],
+						borderWidth: 1
+					},
+					{
+						label: 'Level 4',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.cl4 || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.cl4 || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.cl4 || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.cl4 || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.cl4 || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.cl4 || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.cl4 || 0) + (c.teleopCounts.cl4 || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.cl4 || 0) + (c.teleopCounts.cl4 || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.cl4 || 0) + (c.teleopCounts.cl4 || 0)))
+						],
+						backgroundColor: chartColors[3],
+						borderColor: chartBorderColors[3],
+						borderWidth: 1
+					},
+					{
+						label: 'Barge',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.brg || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.brg || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.brg || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.brg || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.brg || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.brg || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.brg || 0) + (c.teleopCounts.brg || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.brg || 0) + (c.teleopCounts.brg || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.brg || 0) + (c.teleopCounts.brg || 0)))
+						],
+						backgroundColor: chartColors[4],
+						borderColor: chartBorderColors[4],
+						borderWidth: 1
+					},
+					{
+						label: 'Processor',
+						data: [
+							Math.min(...counts.map((c) => c.autoCounts.prc || 0)),
+							calculateAverage(counts.map((c) => c.autoCounts.prc || 0)),
+							Math.max(...counts.map((c) => c.autoCounts.prc || 0)),
+							Math.min(...counts.map((c) => c.teleopCounts.prc || 0)),
+							calculateAverage(counts.map((c) => c.teleopCounts.prc || 0)),
+							Math.max(...counts.map((c) => c.teleopCounts.prc || 0)),
+							0,
+							0,
+							0,
+							Math.min(...counts.map((c) => (c.autoCounts.prc || 0) + (c.teleopCounts.prc || 0))),
+							calculateAverage(
+								counts.map((c) => (c.autoCounts.prc || 0) + (c.teleopCounts.prc || 0))
+							),
+							Math.max(...counts.map((c) => (c.autoCounts.prc || 0) + (c.teleopCounts.prc || 0)))
+						],
+						backgroundColor: chartColors[5],
+						borderColor: chartBorderColors[5],
+						borderWidth: 1
+					},
+					{
+						label: 'Shallow Climb',
+						data: [
+							0, // auto
+							0, // auto
+							0, // auto
+							0, // tele
+							0, // tele
+							0, // tele
+							Math.min(...counts.map((c) => c.endgameCounts.shc || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.shc || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.shc || 0)),
+							Math.min(...counts.map((c) => c.endgameCounts.shc || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.shc || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.shc || 0))
+						],
+						backgroundColor: chartColors[6],
+						borderColor: chartBorderColors[6],
+						borderWidth: 1
+					},
+					{
+						label: 'Deep Climb',
+						data: [
+							0, // auto
+							0, // auto
+							0, // auto
+							0, // tele
+							0, // tele
+							0, // tele
+							Math.min(...counts.map((c) => c.endgameCounts.dpc || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.dpc || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.dpc || 0)),
+							Math.min(...counts.map((c) => c.endgameCounts.dpc || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.dpc || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.dpc || 0))
+						],
+						backgroundColor: chartColors[7],
+						borderColor: chartBorderColors[7],
+						borderWidth: 1
+					},
+					{
+						label: 'Parked',
+						data: [
+							0, // auto
+							0, // auto
+							0, // auto
+							0, // tele
+							0, // tele
+							0, // tele
+							Math.min(...counts.map((c) => c.endgameCounts.prk || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.prk || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.prk || 0)),
+							Math.min(...counts.map((c) => c.endgameCounts.prk || 0)),
+							calculateAverage(counts.map((c) => c.endgameCounts.prk || 0)),
+							Math.max(...counts.map((c) => c.endgameCounts.prk || 0))
+						],
+						backgroundColor: chartColors[8],
+						borderColor: chartBorderColors[8],
+						borderWidth: 1
+					}
+				];
+
+				for (let i = 0; i < actionDatasets.length; i++) {
+					actionDatasets[i].backgroundColor = chartColors[i];
+					actionDatasets[i].borderColor = chartBorderColors[i];
+					actionDatasets[i].borderWidth = 1;
 				}
 
-				const labels = [
+				const chartLabels = [
 					'Min Auto',
 					'Avg Auto',
 					'Max Auto',
@@ -364,33 +299,24 @@
 					'Max Total'
 				];
 
-				let max = 0;
-				for (let i = 0; i < labels.length; i++) {
-					const sum = datasets.reduce((acc, d) => acc + d.data[i], 0);
-					if (sum === Infinity) continue;
-					max = Math.max(max, sum);
-				}
-				staticY = Math.max(staticY || 0, max);
-
 				chart = new Chart(canvas, {
+					type: 'bar',
+					data: {
+						labels: chartLabels,
+						datasets: actionDatasets
+					},
 					options: {
+						responsive: true,
+						maintainAspectRatio: false,
 						scales: {
 							y: {
 								beginAtZero: true,
-								stacked: true,
-								max: staticY ? staticY : undefined
+								stacked: true
 							},
 							x: {
 								stacked: true
 							}
-						},
-						responsive: true,
-						maintainAspectRatio: false
-					},
-					type: 'bar',
-					data: {
-						datasets,
-						labels
+						}
 					}
 				});
 			} catch (error) {

@@ -13,6 +13,8 @@
 	import MatchTable from '$lib/components/robot-display/MatchTable.svelte';
 	import Progress from '$lib/components/charts/Progress.svelte';
 	import TeamEventStats from '$lib/components/charts/TeamEventStats.svelte';
+	import AverageContributions from '$lib/components/robot-display/AverageContributions.svelte';
+	import AverageContributionsPie from '$lib/components/charts/AverageContributionsPie.svelte';
 	import type { DataArr, Blank, StructData } from 'drizzle-struct/front-end';
 	import { onMount } from 'svelte';
 	import { listen } from '$lib/utils/struct-listener';
@@ -150,12 +152,16 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
 				height: 1
 			},
 			md: {
-				width: 6,
+				width: 12,
 				height: 1
 			},
 			sm: {
@@ -177,12 +183,16 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
 				height: 1
 			},
 			md: {
-				width: 6,
+				width: 12,
 				height: 1
 			},
 			sm: {
@@ -204,8 +214,43 @@
 		size: {
 			width: 4,
 			height: 1,
+			xl: {
+				width: 6,
+				height: 1
+			},
 			lg: {
 				width: 6,
+				height: 1
+			},
+			md: {
+				width: 12,
+				height: 1
+			},
+			sm: {
+				width: 6,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
+
+	const averageContributionsTable = new Dashboard.Card({
+		name: 'Average Contribution',
+		iconType: 'material-icons',
+		icon: 'all_inclusive',
+		id: 'average_contributions_table',
+		size: {
+			width: 2,
+			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
+			lg: {
+				width: 3,
 				height: 1
 			},
 			md: {
@@ -213,7 +258,38 @@
 				height: 1
 			},
 			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
+
+	const averageContributionsPie = new Dashboard.Card({
+		name: 'Average Contribution',
+		iconType: 'material-icons',
+		icon: 'all_inclusive',
+		id: 'average_contributions_pie',
+		size: {
+			width: 2,
+			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
+			lg: {
+				width: 3,
+				height: 1
+			},
+			md: {
 				width: 6,
+				height: 1
+			},
+			sm: {
+				width: 4,
 				height: 1
 			},
 			xs: {
@@ -467,6 +543,16 @@
 			<Card card={eventStats}>
 				{#snippet body()}
 					<TeamEventStats {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={averageContributionsTable}>
+				{#snippet body()}
+					<AverageContributions {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={averageContributionsPie}>
+				{#snippet body()}
+					<AverageContributionsPie {team} {event} {scouting} {matches} />
 				{/snippet}
 			</Card>
 			<Card card={scoutSummary}>

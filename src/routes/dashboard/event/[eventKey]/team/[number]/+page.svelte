@@ -232,13 +232,100 @@
 			},
 			xs: {
 				width: 12,
-				height: 1,
+				height: 1
 			}
 		}
 	});
 
+	const averageContributionsTable = new Dashboard.Card({
+		name: 'Average Contribution',
+		iconType: 'material-icons',
+		icon: 'all_inclusive',
+		id: 'average_contributions_table',
+		size: {
+			width: 2,
+			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
+			lg: {
+				width: 3,
+				height: 1
+			},
+			md: {
+				width: 6,
+				height: 1
+			},
+			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
 
-	
+	const averageContributionsPie = new Dashboard.Card({
+		name: 'Average Contribution',
+		iconType: 'material-icons',
+		icon: 'all_inclusive',
+		id: 'average_contributions_pie',
+		size: {
+			width: 2,
+			height: 1,
+			xl: {
+				width: 3,
+				height: 1
+			},
+			lg: {
+				width: 3,
+				height: 1
+			},
+			md: {
+				width: 6,
+				height: 1
+			},
+			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
+
+	const scoutSummary = new Dashboard.Card({
+		name: 'Scout Summary',
+		iconType: 'material-icons',
+		icon: 'summarize',
+		id: 'scout_summary',
+		size: {
+			width: 2,
+			height: 1,
+			lg: {
+				width: 4,
+				height: 1
+			},
+			md: {
+				width: 4,
+				height: 1
+			},
+			sm: {
+				width: 4,
+				height: 1
+			},
+			xs: {
+				width: 12,
+				height: 1
+			}
+		}
+	});
+
 	// const actionHeatmap = new Dashboard.Card({
 	// 	name: 'Action Heatmap',
 	// 	iconType: 'material-icons',
@@ -456,6 +543,21 @@
 			<Card card={eventStats}>
 				{#snippet body()}
 					<TeamEventStats {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={averageContributionsTable}>
+				{#snippet body()}
+					<AverageContributions {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={averageContributionsPie}>
+				{#snippet body()}
+					<AverageContributionsPie {team} {event} {scouting} {matches} />
+				{/snippet}
+			</Card>
+			<Card card={scoutSummary}>
+				{#snippet body()}
+					<ScoutSummary scouts={scoutingAccounts} />
 				{/snippet}
 			</Card>
 		{/key}

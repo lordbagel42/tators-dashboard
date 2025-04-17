@@ -10,7 +10,6 @@ import { Scouting } from '../structs/scouting';
 import { teamsFromMatch } from 'tatorscout/tba';
 import { attemptAsync } from 'ts-utils/check';
 import { Table } from './google-summary';
-import { match } from 'assert';
 
 export const actionSummary = (eventKey: string, action: Action2025) => {
 	return attemptAsync(async () => {

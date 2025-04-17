@@ -67,7 +67,7 @@ export default (event: TBAEvent) => {
 			},
 			{
 				name: 'Strategy',
-				href: '/dashboard/event/' + event.key + '/strategy',
+				href: 'https://docs.google.com/presentation/d/1kwopP8dvpRW90R5VY4jQy9Rx5XiZPmFtyoY_8qw5628/edit?usp=sharing',
 				icon: 'assessment',
 				type: 'material-icons'
 			},

@@ -537,7 +537,7 @@
 			</Card>
 			<Card card={progress}>
 				{#snippet body()}
-					<Progress {team} {event} {scouting} {matches} />
+					<Progress {team} {event} {scouting} {matches} defaultView={'points'} />
 				{/snippet}
 			</Card>
 			<Card card={eventStats}>

@@ -11,7 +11,6 @@ import { teamsFromMatch } from 'tatorscout/tba';
 import { attemptAsync } from 'ts-utils/check';
 import { Table } from './google-summary';
 import { match } from 'assert';
-import type MatchActions from '$lib/components/robot-display/MatchActions.svelte';
 
 export const actionSummary = (eventKey: string, action: Action2025) => {
 	return attemptAsync(async () => {

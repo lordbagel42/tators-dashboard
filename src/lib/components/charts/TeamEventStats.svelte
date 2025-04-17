@@ -31,7 +31,7 @@
 		return scouting.subscribe(async (data) => {
 			if (chart) chart.destroy();
 			try {
-				const counts = data.map((s: any) => {
+				const counts = data.map((s) => {
 					const trace = TraceSchema.parse(JSON.parse(s.data.trace || '[]')) as TraceArray;
 
 					const sectionCounts = trace.reduce(

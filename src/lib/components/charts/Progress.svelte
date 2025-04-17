@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Scouting } from '$lib/model/scouting';
-	import { TBATeam, TBAEvent } from '$lib/utils/tba';
+	import { TBATeam, TBAEvent, TBAMatch } from '$lib/utils/tba';
 	import { Chart } from 'chart.js';
 	import { onMount } from 'svelte';
 	import { TraceSchema, type TraceArray } from 'tatorscout/trace';
@@ -8,6 +8,7 @@
 	interface Props {
 		team: TBATeam;
 		event: TBAEvent;
+		matches: TBAMatch[];
 		staticY?: number;
 		scouting: Scouting.MatchScoutingArr;
 	}

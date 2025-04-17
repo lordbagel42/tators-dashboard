@@ -33,7 +33,7 @@ export namespace Scouting {
 			scoutUsername: 'string',
 			alliance: 'string',
 			year: 'number',
-			sliders: 'string',
+			sliders: 'string'
 		},
 		socket: sse,
 		browser
@@ -189,7 +189,7 @@ export namespace Scouting {
 				prc: averages.prc || 0,
 				shc: averages.shc || 0,
 				dpc: averages.dpc || 0,
-				prk: averages.prk || 0,
+				prk: averages.prk || 0
 			};
 		}).unwrap();
 	};

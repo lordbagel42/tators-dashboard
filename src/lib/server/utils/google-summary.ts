@@ -486,7 +486,7 @@ export const summarize = async (eventKey: string) => {
 	});
 };
 
-class Table {
+export class Table {
 	public readonly columns: Column<ColType>[] = [];
 
 	constructor(public readonly name: string) {}

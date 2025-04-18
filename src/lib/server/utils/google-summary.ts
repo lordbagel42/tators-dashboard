@@ -14,13 +14,13 @@ import e from 'express';
 import { teamsFromMatch } from 'tatorscout/tba';
 
 export const auth = (event: RequestEvent) => {
-	const key = event.request.headers.get('X-Auth-Key');
-	if (key !== process.env.WEBHOOK_AUTH_KEY) {
-		console.error('Unauthorized webhook ping event', key, process.env.WEBHOOK_AUTH_KEY);
-		throw fail(ServerCode.unauthorized, {
-			message: 'Unauthorized'
-		});
-	}
+	// const key = event.request.headers.get('X-Auth-Key');
+	// if (key !== process.env.WEBHOOK_AUTH_KEY) {
+	// 	console.error('Unauthorized webhook ping event', key, process.env.WEBHOOK_AUTH_KEY);
+	// 	throw fail(ServerCode.unauthorized, {
+	// 		message: 'Unauthorized'
+	// 	});
+	// }
 };
 
 type ColType = number | string | undefined | void;

@@ -4,7 +4,7 @@ import { auth } from '$lib/server/utils/google-summary';
 import { ServerCode } from 'ts-utils/status';
 
 export const GET = async (event) => {
-	auth(event);
+	// auth(event);
 	const data = await summarize(event.params.eventKey);
 	if (data.isErr())
 		throw fail(ServerCode.internalServerError, {

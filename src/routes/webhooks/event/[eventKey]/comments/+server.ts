@@ -4,7 +4,7 @@ import { dateTime } from 'ts-utils/clock';
 import { auth } from '$lib/server/utils/google-summary.js';
 
 export const GET = async (event) => {
-	auth(event);
+	// auth(event);
 	const comments = await Scouting.TeamComments.fromProperty('eventKey', event.params.eventKey, {
 		type: 'stream'
 	})

@@ -5,7 +5,7 @@ import type { Action2025, Action } from 'tatorscout/trace';
 import { ServerCode } from 'ts-utils/status';
 
 export const GET = async (event) => {
-	auth(event);
+	// auth(event);
 	const actions = event.params.actions
 		.split('/')
 		.filter((v, i, a) => a.indexOf(v) === i) as Action[];

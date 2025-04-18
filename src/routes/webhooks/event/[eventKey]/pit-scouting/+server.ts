@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { auth } from '$lib/server/utils/google-summary.js';
 
 export const GET = async (event) => {
-	auth(event);
+	// auth(event);
 	const data = await Scouting.PIT.getQuestionsFromEvent(event.params.eventKey).unwrap();
 
 	const answers = await Scouting.PIT.getAnswersFromEvent(event.params.eventKey).unwrap();

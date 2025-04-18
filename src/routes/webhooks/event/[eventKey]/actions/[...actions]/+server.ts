@@ -1,12 +1,12 @@
 import { actionSummary } from '$lib/server/utils/action-summary.js';
 import { fail } from '@sveltejs/kit';
 import { auth } from '$lib/server/utils/google-summary';
-import type { Action2025 } from 'tatorscout/trace';
+import type { Action2025, Action } from 'tatorscout/trace';
 import { ServerCode } from 'ts-utils/status';
 
 export const GET = async (event) => {
     auth(event);
-    const actions = event.params.actions.split('/').filter((v, i, a) => a.indexOf(v) === i) as Action2025[];
+    const actions = event.params.actions.split('/').filter((v, i, a) => a.indexOf(v) === i) as Action[];
 
     const data = await actionSummary(event.params.eventKey, actions);
     if  (data.isErr())

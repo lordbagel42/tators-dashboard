@@ -4,18 +4,15 @@
 // rows are the teams
 // each cell is filled with the amount of all actions summed
 
-import { Trace, TraceSchema, type TraceArray, type Action2025 } from 'tatorscout/trace';
+import { Trace, TraceSchema, type TraceArray, type Action2025, type Action } from 'tatorscout/trace';
 import { Event, Team, Match } from './tba';
 import { Scouting } from '../structs/scouting';
 import { teamsFromMatch } from 'tatorscout/tba';
 import { attemptAsync } from 'ts-utils/check';
 import { Table } from './google-summary';
 
-export const actionSummary = (eventKey: string, actions: Action2025[]) => {
+export const actionSummary = (eventKey: string, actions: Action[]) => {
 	return attemptAsync(async () => {
-		const event = (await Event.getEvent(eventKey)).unwrap();
-		const matches = (await event.getMatches()).unwrap().filter((m) => ['red', 'blue', 'tie'].includes(String(m.tba.winning_alliance)));
-
 		const cache = new Map<number, { trace: TraceArray; match: Scouting.MatchScoutingData }[]>();
 
 		const getAllTraces = async (team: Team) => {
@@ -31,9 +28,19 @@ export const actionSummary = (eventKey: string, actions: Action2025[]) => {
 			cache.set(team.tba.team_number, data);
 			return data;
 		};
+		const event = (await Event.getEvent(eventKey)).unwrap();
+		const matches = (await event.getMatches()).unwrap().filter((m) => ['red', 'blue', 'tie'].includes(String(m.tba.winning_alliance)));
+		const teams = (await event.getTeams()).unwrap();
+		const teamTraces = (await Promise.all(teams.map(async t => {
+			return {
+				team: t,
+				traces: await getAllTraces(t),
+			}
+		})));
+
 
 		const getActionCount = async (team: Team, match: Match) => {
-			const traces = await getAllTraces(team);
+			const traces = teamTraces.find(t => t.team.tba.team_number === team.tba.team_number)?.traces;
 			if (!traces) throw new Error('No traces found');
 			const matchTrace = traces.find(
 				(trace) => {
@@ -45,7 +52,8 @@ export const actionSummary = (eventKey: string, actions: Action2025[]) => {
 				const [,,,action] = point;
 				if (!action) return acc;
 				if (actions.includes(action)) {
-					return acc++;
+					// console.log('Action found:', action, acc);
+					return acc + 1;
 				}
 				return acc;
 			}, 0);
@@ -57,7 +65,6 @@ export const actionSummary = (eventKey: string, actions: Action2025[]) => {
 		t.column('Team Name', (t) => t.tba.nickname || 'Unknown');
 		for (const match of matches) {
 			t.column(match.tba.comp_level + match.tba.match_number, (t) => {
-				console.log('Match:', match.tba.match_number);
 				return getActionCount(t, match);
 			});
 		}

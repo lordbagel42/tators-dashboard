@@ -8,7 +8,7 @@ describe('Run action summary on 2025joh', async () => {
 	(await openStructs()).unwrap();
 	(await Struct.buildAll(DB)).unwrap();
 	test('Action summary', async () => {
-		const res = await (await actionSummary('2025joh', ['cl1']));
+		const res = await (await actionSummary('2025joh', 'cl1').unwrap()).serialize();
 		expect(res.isOk()).toBe(true);
 	}, 30_000);
 });

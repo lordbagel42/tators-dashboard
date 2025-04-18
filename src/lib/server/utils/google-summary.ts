@@ -489,11 +489,11 @@ export const summarize = async (eventKey: string) => {
 export class Table {
 	public readonly columns: Column<ColType>[] = [];
 
-	constructor(public readonly name: string) {}
+	constructor(public readonly eventKey: string) {}
 
 	public column<T extends ColType>(name: string, fn: (team: Team) => T | Promise<T>): Column<T> {
 		if (this.columns.find((c) => c.name === name))
-			throw new Error(`Column ${name} already exists in table ${this.name}`);
+			throw new Error(`Column ${name} already exists in table ${this.eventKey}`);
 		const c = new Column<T>(this, name, this.columns.length, fn);
 		this.columns.push(c);
 		return c;
@@ -502,7 +502,7 @@ export class Table {
 	serialize() {
 		// TODO: Use multi-threading instead of Promise.all
 		return attemptAsync(async () => {
-			const event = (await Event.getEvent(this.name)).unwrap();
+			const event = (await Event.getEvent(this.eventKey)).unwrap();
 			const teams = (await event.getTeams()).unwrap();
 			return [
 				this.columns.map((c) => c.name),

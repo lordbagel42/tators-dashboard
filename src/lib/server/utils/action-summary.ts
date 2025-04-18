@@ -11,12 +11,10 @@ import { teamsFromMatch } from 'tatorscout/tba';
 import { attemptAsync } from 'ts-utils/check';
 import { Table } from './google-summary';
 
-export const actionSummary = (eventKey: string, action: Action2025) => {
+export const actionSummary = (eventKey: string, actions: Action2025[]) => {
 	return attemptAsync(async () => {
 		const event = (await Event.getEvent(eventKey)).unwrap();
-		const matches = (await event.getMatches()).unwrap();
-
-		if (event.tba.year !== 2025) throw new Error('Only 2025 events are currently supported');
+		const matches = (await event.getMatches()).unwrap().filter((m) => ['red', 'blue', 'tie'].includes(String(m.tba.winning_alliance)));
 
 		const cache = new Map<number, { trace: TraceArray; match: Scouting.MatchScoutingData }[]>();
 
@@ -34,45 +32,55 @@ export const actionSummary = (eventKey: string, action: Action2025) => {
 			return data;
 		};
 
-        const getActionCount = async (team: Team, match: Match, action: Action2025) => {
-            const traces = await getAllTraces(team);
-            if (!traces) throw new Error('No traces found');
-            const matchTrace = traces.filter((trace) => trace.match.data.matchNumber === match.tba.match_number);
-            const count = matchTrace.reduce((acc, traceData) => {
-                const trace = traceData.trace;
-                trace.forEach((curr) => {
-                    if (curr[3] === action) {
-                        acc += 1;
-                    }
-                });
-                return acc;
-            }, 0);
-
-            return count;
-        };
+		const getActionCount = async (team: Team, match: Match) => {
+			const traces = await getAllTraces(team);
+			if (!traces) throw new Error('No traces found');
+			const matchTrace = traces.find(
+				(trace) => {
+					return trace.match.data.matchNumber === match.tba.match_number && trace.match.data.compLevel === match.tba.comp_level && trace.match.data.team === team.tba.team_number
+				}
+			);
+			if (!matchTrace) return;
+			return matchTrace.trace.reduce((acc, point) => {
+				const [,,,action] = point;
+				if (!action) return acc;
+				if (actions.includes(action)) {
+					return acc++;
+				}
+				return acc;
+			}, 0);
+		};
 
 		const t = new Table(eventKey);
-		const teams = (await event.getTeams()).unwrap();
 
-        teams.forEach((team) => {
-            t.column('Team Number', (t) => t.tba.team_number);
-            matches.forEach((match) => {
-                const allianceTeams = [
-                    ...match.tba.alliances.red.team_keys,
-                    ...match.tba.alliances.blue.team_keys
-                ];
+		t.column('Team Number', (t) => t.tba.team_number);
+		t.column('Team Name', (t) => t.tba.nickname || 'Unknown');
+		for (const match of matches) {
+			t.column(match.tba.comp_level + match.tba.match_number, (t) => {
+				console.log('Match:', match.tba.match_number);
+				return getActionCount(t, match);
+			});
+		}
 
-                if (allianceTeams.includes(`frc${team.tba.team_number}`)) {
-                    t.column(match.tba.match_number.toString(), async (t) => {
-                        return await getActionCount(t, match, action);
-                    })
-                } else {
-                    t.column(match.tba.match_number.toString(), async () => {
-                        return '';
-                    });
-                }
-            });
-        })
+		// teams.forEach((team) => {
+		// 	t.column('Team Number', (t) => t.tba.team_number);
+		// 	matches.forEach((match) => {
+		// 		const allianceTeams = [
+		// 			...match.tba.alliances.red.team_keys,
+		// 			...match.tba.alliances.blue.team_keys
+		// 		];
+
+		// 		if (allianceTeams.includes(`frc${team.tba.team_number}`)) {
+		// 			t.column(match.tba.match_number.toString(), async (t) => {
+		// 				return await getActionCount(t, match, action);
+		// 			});
+		// 		} else {
+		// 			t.column(match.tba.match_number.toString(), async () => {
+		// 				return '';
+		// 			});
+		// 		}
+		// 	});
+		// });
 
 		return t;
 	});

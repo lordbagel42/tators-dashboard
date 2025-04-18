@@ -1,8 +1,10 @@
 import { Scouting } from '$lib/server/structs/scouting';
 import { Event } from '$lib/server/utils/tba.js';
 import { dateTime } from 'ts-utils/clock';
+import { auth } from '$lib/server/utils/google-summary.js';
 
 export const GET = async (event) => {
+	auth(event);
 	const comments = await Scouting.TeamComments.fromProperty('eventKey', event.params.eventKey, {
 		type: 'stream'
 	})

@@ -107,6 +107,33 @@ export const summarize = async (eventKey: string) => {
 			}
 		};
 
+		const getScoresWithoutDefense = async (team: Team) => {
+			try {
+				const traces = await getAllTraces(team);
+				if (!traces) throw new Error('No traces found');
+				const teamMatches = matches.filter((m) =>
+					teamsFromMatch(m.tba).includes(team.tba.team_number)
+				);
+				if (teamMatches.length === 0) throw new Error('No matches found');
+
+				const traceScore = traces
+					.map((t) => {
+						if (!t.match.data.checks.includes('defense')) {
+							return Trace.score.parse2025(
+								t.trace,
+								(t.match.data.alliance || 'red') as 'red' | 'blue'
+							);
+						}
+					})
+					.filter((score) => score !== undefined); // Remove undefined values
+
+				return { traceScore };
+			} catch (error) {
+				terminal.error(`Error pulling scores for team ${team.tba.team_number}`, error);
+				throw error;
+			}
+		};
+
 		const getPitScouting = async (requestedQuestion: string, team: Team) => {
 			try {
 				const res = await DB.select()
@@ -387,18 +414,86 @@ export const summarize = async (eventKey: string) => {
 				)
 			);
 		});
+		t.column('Average Score Contribution Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.total));
+		});
+		t.column('Max Score Contribution Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.total));
+		});
+		t.column('Average Auto Score Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.total));
+		});
+		t.column('Max Auto Score Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.total));
+		});
+		t.column('Average Teleop Score Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.teleop.total));
+		});
+		t.column('Average Coral L1 Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.cl1 + s.teleop.cl1));
+		});
+		t.column('Average Coral L2 Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.cl2 + s.teleop.cl2));
+		});
+		t.column('Average Coral L3 Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.cl3 + s.teleop.cl3));
+		});
+		t.column('Average Coral L4 Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.cl4 + s.teleop.cl4));
+		});
+		t.column('Average Processor Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.prc + s.teleop.prc));
+		});
+		t.column('Average Barge Points Per Match Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return average(scores.traceScore.map((s) => s.auto.brg + s.teleop.brg));
+		});
+		t.column('Max Coral L1 Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.cl1 + s.teleop.cl1));
+		});
+		t.column('Max Coral L2 Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.cl2 + s.teleop.cl2));
+		});
+		t.column('Max Coral L3 Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.cl3 + s.teleop.cl3));
+		});
+		t.column('Max Coral L4 Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.cl4 + s.teleop.cl4));
+		});
+		t.column('Max Processor Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.prc + s.teleop.prc));
+		});
+		t.column('Max Barge Points Without Defense', async (t) => {
+			const scores = await getScoresWithoutDefense(t);
+			return Math.max(...scores.traceScore.map((s) => s.auto.brg + s.teleop.brg));
+		});
 		return t;
 	});
 };
 
-class Table {
+export class Table {
 	public readonly columns: Column<ColType>[] = [];
 
-	constructor(public readonly name: string) {}
+	constructor(public readonly eventKey: string) {}
 
 	public column<T extends ColType>(name: string, fn: (team: Team) => T | Promise<T>): Column<T> {
 		if (this.columns.find((c) => c.name === name))
-			throw new Error(`Column ${name} already exists in table ${this.name}`);
+			throw new Error(`Column ${name} already exists in table ${this.eventKey}`);
 		const c = new Column<T>(this, name, this.columns.length, fn);
 		this.columns.push(c);
 		return c;
@@ -407,7 +502,7 @@ class Table {
 	serialize() {
 		// TODO: Use multi-threading instead of Promise.all
 		return attemptAsync(async () => {
-			const event = (await Event.getEvent(this.name)).unwrap();
+			const event = (await Event.getEvent(this.eventKey)).unwrap();
 			const teams = (await event.getTeams()).unwrap();
 			return [
 				this.columns.map((c) => c.name),

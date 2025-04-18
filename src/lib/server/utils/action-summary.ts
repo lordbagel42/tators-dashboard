@@ -4,7 +4,13 @@
 // rows are the teams
 // each cell is filled with the amount of all actions summed
 
-import { Trace, TraceSchema, type TraceArray, type Action2025, type Action } from 'tatorscout/trace';
+import {
+	Trace,
+	TraceSchema,
+	type TraceArray,
+	type Action2025,
+	type Action
+} from 'tatorscout/trace';
 import { Event, Team, Match } from './tba';
 import { Scouting } from '../structs/scouting';
 import { teamsFromMatch } from 'tatorscout/tba';
@@ -29,27 +35,34 @@ export const actionSummary = (eventKey: string, actions: Action[]) => {
 			return data;
 		};
 		const event = (await Event.getEvent(eventKey)).unwrap();
-		const matches = (await event.getMatches()).unwrap().filter((m) => ['red', 'blue', 'tie'].includes(String(m.tba.winning_alliance)));
+		const matches = (await event.getMatches())
+			.unwrap()
+			.filter((m) => ['red', 'blue', 'tie'].includes(String(m.tba.winning_alliance)));
 		const teams = (await event.getTeams()).unwrap();
-		const teamTraces = (await Promise.all(teams.map(async t => {
-			return {
-				team: t,
-				traces: await getAllTraces(t),
-			}
-		})));
-
+		const teamTraces = await Promise.all(
+			teams.map(async (t) => {
+				return {
+					team: t,
+					traces: await getAllTraces(t)
+				};
+			})
+		);
 
 		const getActionCount = async (team: Team, match: Match) => {
-			const traces = teamTraces.find(t => t.team.tba.team_number === team.tba.team_number)?.traces;
+			const traces = teamTraces.find(
+				(t) => t.team.tba.team_number === team.tba.team_number
+			)?.traces;
 			if (!traces) throw new Error('No traces found');
-			const matchTrace = traces.find(
-				(trace) => {
-					return trace.match.data.matchNumber === match.tba.match_number && trace.match.data.compLevel === match.tba.comp_level && trace.match.data.team === team.tba.team_number
-				}
-			);
+			const matchTrace = traces.find((trace) => {
+				return (
+					trace.match.data.matchNumber === match.tba.match_number &&
+					trace.match.data.compLevel === match.tba.comp_level &&
+					trace.match.data.team === team.tba.team_number
+				);
+			});
 			if (!matchTrace) return;
 			return matchTrace.trace.reduce((acc, point) => {
-				const [,,,action] = point;
+				const [, , , action] = point;
 				if (!action) return acc;
 				if (actions.includes(action)) {
 					// console.log('Action found:', action, acc);

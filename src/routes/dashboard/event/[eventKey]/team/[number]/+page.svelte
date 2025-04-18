@@ -19,6 +19,7 @@
 	import { onMount } from 'svelte';
 	import { listen } from '$lib/utils/struct-listener';
 	import ScoutSummary from '$lib/components/robot-display/ScoutSummary.svelte';
+	import ChecksSummary from '$lib/components/robot-display/ChecksSummary.svelte';
 
 	const { data } = $props();
 	const event = $derived(new TBAEvent(data.event));
@@ -34,6 +35,7 @@
 	const answerAccounts = $derived(data.answerAccounts);
 	const matches = $derived(data.matches.map((m) => new TBAMatch(m, event)));
 	const scoutingAccounts = $derived(data.scoutingAccounts);
+	const checksSum = $derived(data.checksSum);
 	$effect(() => nav(event.tba));
 
 	const summary = new Dashboard.Card({
@@ -326,6 +328,33 @@
 		}
 	});
 
+	const checksSummary = new Dashboard.Card({
+        name: 'Checks Summary',
+        iconType: 'material-icons',
+        icon: 'summarize',
+        id: 'checks_summary',
+        size: {
+            width: 4,
+            height: 1,
+            lg: {
+                width: 6,
+                height: 1
+            },
+            md: {
+                width: 6,
+                height: 1
+            },
+            sm: {
+                width: 6,
+                height: 1
+            },
+            xs: {
+                width: 12,
+                height: 1
+            }
+        }
+    });
+
 	// const actionHeatmap = new Dashboard.Card({
 	// 	name: 'Action Heatmap',
 	// 	iconType: 'material-icons',
@@ -348,7 +377,8 @@
 				matchViewer,
 				progress,
 				eventStats,
-				scoutSummary
+				scoutSummary,
+				checksSummary
 			],
 			id: 'robot-display'
 		})
@@ -365,7 +395,8 @@
 				pitScouting,
 				matchViewer,
 				progress,
-				eventStats
+				eventStats,
+				checksSummary
 			],
 			id: 'robot-display'
 		});
@@ -560,6 +591,11 @@
 					<ScoutSummary scouts={scoutingAccounts} />
 				{/snippet}
 			</Card>
+			<Card card={checksSummary}>
+                {#snippet body()}
+                    <ChecksSummary checks={checksSum} />
+                {/snippet}
+            </Card>
 		{/key}
 	{/snippet}
 </DB>

@@ -22,8 +22,10 @@ const data = $derived(
 <ul class="list">
     {#each Object.entries(data) as [user, count]}
         <li class="list-item">
-            <span class="list-item-title">{user}</span>
-            <span class="list-item-count">{count}</span>
+            <div class="d-flex justify-content-between">
+                <span class="list-item-title">{user}</span>
+                <span class="list-item-count">{count}</span>
+            </div>
         </li>
     {/each}
 </ul>

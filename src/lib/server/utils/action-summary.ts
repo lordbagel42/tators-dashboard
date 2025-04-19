@@ -64,7 +64,9 @@ export const actionSummary = (eventKey: string, actions: Action[]) => {
 			return matchTrace.trace.reduce((acc, point) => {
 				const [, , , action] = point;
 				if (!action) return acc;
-				if (actions.includes(action)) {
+
+
+				if ((Trace.getSection(point) === 'teleop') && actions.includes(action)) {
 					// console.log('Action found:', action, acc);
 					return acc + 1;
 				}

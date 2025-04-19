@@ -84,6 +84,27 @@ export const load = async (event) => {
 		).filter((a) => a[1] !== undefined)
 	);
 
+	const checks: Record<string, string[]> = {};
+    for (const s of scouting.value) {
+        try {
+            const parsedChecks = JSON.parse(s.data.checks);
+        
+            if (Array.isArray(parsedChecks) && parsedChecks.every((item) => typeof item === 'string')) {
+                const key = s.data.eventKey + s.data.matchNumber;
+
+                if (!checks[key]) {
+                    checks[key] = parsedChecks;
+                } else {
+                    checks[key] = Array.from(
+                        new Set([...checks[key], ...parsedChecks])
+                    );
+                }
+            }
+        } catch {
+            // Skip if JSON.parse fails
+        }
+    }
+	
 	// console.log(accounts);
 
 	return {
@@ -102,6 +123,7 @@ export const load = async (event) => {
 			.filter(Boolean)
 			.map((a) => a.safe()),
 		matches: matches.value.map((m) => m.tba),
-		scoutingAccounts: accounts
+		scoutingAccounts: accounts,
+		checksSum: checks,
 	};
 };

@@ -43,8 +43,8 @@ jobs:
 
       - name: Set up Docker Compose
         run: |
-          docker compose version || sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m)" -o ./docker-compose.yml
-          sudo chmod +x ./docker-compose.yml
+          docker compose version || sudo curl -L "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m)" -o ./dev.docker-compose.yml
+          sudo chmod +x ./dev.docker-compose.yml
 
       - name: Load .env variables
         run: |

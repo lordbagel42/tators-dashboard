@@ -1,12 +1,22 @@
 services:
-  db:
-    env_file:
-      - .env
-    image: postgres
-    restart: always
-    ports:
-      - ${DB_PORT}:5432
+  postgres:
+    image: postgres:16
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: dashboard
+      POSTGRES_PASSWORD: dashboard
+      POSTGRES_DB: dashboard
+      POSTGRES_HOST: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  tators-dashboard:
+    build: .
+    depends_on:
+      - postgres
+    env_file: .env
+    ports:
+      - 2122:8000
+    # command: sleep infinity
+
+volumes:
+  postgres_data:

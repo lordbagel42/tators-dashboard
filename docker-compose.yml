@@ -10,7 +10,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   tators-dashboard:
-    image: ghcr.io/lordbagel42/tators-dashboard:latest
+    image: ghcr.io/lordbagel42/tators-dashboard:main
     depends_on:
       - postgres
     env_file: .env
